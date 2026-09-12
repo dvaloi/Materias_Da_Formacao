@@ -1,0 +1,366 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Prova de Vida — Slides implementação | FIAP × INSS</title>
+  <style>
+    :root {
+      --green: #006233; --green-dark: #004d28; --green-soft: #e6f4ec;
+      --gold: #c9a227; --gold-soft: #fff8e1; --red: #ce1126; --red-soft: #fde8ea;
+      --blue: #0d47a1; --border: #94a3b8; --text: #000; --bg: #fff; --onde: #0b3d91;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: 'Segoe UI', system-ui, sans-serif; background: var(--bg);
+      color: var(--text); overflow: hidden; height: 100vh; font-weight: 700;
+    }
+    .flag-bar {
+      position: fixed; top: 0; left: 0; right: 0; height: 10px; z-index: 200;
+      background: linear-gradient(90deg,#006233 0 25%,#111 25% 50%,#fcd116 50% 75%,#ce1126 75% 100%);
+    }
+    .progress {
+      position: fixed; top: 10px; left: 0; height: 6px;
+      background: var(--red); z-index: 100; transition: width .3s;
+    }
+    .deck { height: 100vh; position: relative; }
+    .slide {
+      display: none; height: 100vh; padding: 1.85rem 2.75rem 5.4rem;
+      flex-direction: column; animation: fadeIn .25s ease; overflow: hidden;
+    }
+    .slide.active { display: flex; }
+    .slide.fill { justify-content: center; text-align: center; }
+    @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+    h1 {
+      font-size: clamp(2.2rem, 4.5vw, 3.3rem); font-weight: 900;
+      color: var(--green); line-height: 1.1; margin-bottom: .65rem;
+    }
+    h2 {
+      font-size: clamp(1.75rem, 3.1vw, 2.4rem); color: var(--green); font-weight: 900;
+      border-bottom: 5px solid var(--gold); padding-bottom: .3rem; margin-bottom: .65rem;
+      flex-shrink: 0; line-height: 1.15;
+    }
+    p, li {
+      font-size: clamp(1.1rem, 1.7vw, 1.4rem); line-height: 1.32; font-weight: 700; margin-bottom: .4rem;
+    }
+    ul, ol { padding-left: 1.3rem; }
+    strong { font-weight: 900; }
+    code {
+      font-family: Consolas, monospace; background: #111; color: #e8f5ee;
+      padding: .06rem .3rem; border-radius: 4px; font-weight: 800; font-size: .88em;
+    }
+    .highlight {
+      color: var(--red); font-size: clamp(1.25rem, 2vw, 1.7rem);
+      font-weight: 900; margin-bottom: .65rem;
+    }
+    .content { flex: 1; display: flex; flex-direction: column; gap: .5rem; min-height: 0; }
+    .content.split {
+      display: grid; grid-template-columns: 1fr 1.15fr; gap: 1rem; align-items: stretch;
+    }
+    .content.split-rev { grid-template-columns: 1.15fr 1fr; }
+    .callout {
+      background: var(--gold-soft); border: 3px solid var(--gold); border-left: 10px solid var(--gold);
+      border-radius: 12px; padding: .7rem 1rem; font-size: clamp(1.05rem, 1.55vw, 1.3rem); font-weight: 800;
+    }
+    .callout.green { background: var(--green-soft); border-color: var(--green); border-left-color: var(--green); }
+    .callout.red { background: var(--red-soft); border-color: var(--red); border-left-color: var(--red); }
+    .tag-ex {
+      display: inline-block; background: var(--blue); color: #fff; font-weight: 900;
+      padding: .18rem .55rem; border-radius: 6px; font-size: .95rem; margin-bottom: .25rem;
+    }
+    .tag-ex.run { background: var(--green); }
+    pre.term {
+      background: #0c0c0c; color: #d8d8d8; padding: .65rem .9rem; border-radius: 10px;
+      border: 2px solid #333; font-family: Consolas, monospace;
+      font-size: clamp(.95rem, 1.3vw, 1.15rem); line-height: 1.32; white-space: pre-wrap;
+    }
+    table { width: 100%; border-collapse: collapse; font-size: clamp(1rem, 1.4vw, 1.2rem); }
+    th, td { border: 2px solid var(--border); padding: .35rem .5rem; text-align: left; }
+    th { background: var(--green); color: #fff; }
+    .shot {
+      border: 3px solid var(--border); border-radius: 12px; overflow: hidden;
+      background: #f4f6f8; display: flex; flex-direction: column; min-height: 0; height: 100%;
+    }
+    .shot img {
+      width: 100%; height: 100%; object-fit: contain; display: block;
+      max-height: calc(100vh - 10.5rem); background: #f4f6f8;
+    }
+    .shot figcaption {
+      background: #f0f3f8; color: #111; padding: .4rem .65rem;
+      font-size: clamp(.9rem, 1.15vw, 1.05rem); border-top: 2px solid var(--border); flex-shrink: 0;
+    }
+    .nav-bar {
+      position: fixed; bottom: 0; left: 0; right: 0; background: #fff;
+      padding: .6rem 1.4rem; display: flex; justify-content: space-between; align-items: center;
+      border-top: 4px solid var(--green); z-index: 100;
+    }
+    .nav-bar button {
+      background: var(--green); color: #fff; border: none; padding: .6rem 1.3rem;
+      border-radius: 8px; cursor: pointer; font-size: 1.05rem; font-weight: 800; min-width: 130px;
+    }
+    .nav-bar button:hover { background: var(--green-dark); }
+    .nav-bar button:disabled { opacity: .35; cursor: not-allowed; }
+    .slide-counter { font-size: 1.1rem; font-weight: 900; }
+    .hint {
+      position: fixed; top: 1rem; right: 1rem; font-size: .85rem; font-weight: 800; color: #444;
+      z-index: 150; background: #fff; border: 2px solid var(--border); border-radius: 8px; padding: .28rem .55rem;
+    }
+    @media (max-width: 900px) {
+      .content.split, .content.split-rev { grid-template-columns: 1fr; }
+      .slide { padding: 1.3rem 1rem 5.1rem; }
+      .shot img { max-height: 38vh; }
+    }
+  </style>
+</head>
+<body>
+  <div class="flag-bar"></div>
+  <div class="progress" id="progress" style="width:4%"></div>
+  <div class="hint">← → · PageUp/Down · F11</div>
+
+  <div class="deck">
+
+    <section class="slide fill active">
+      <h1>Prova de Vida</h1>
+      <p class="highlight">Do desenho da turma → código no pacote</p>
+      <p>FRONT · CONTRIBUINTE · BENEFÍCIOS · DADOS BIOMÉTRICOS · PROVA DE VIDA · MOBILE</p>
+      <div class="callout green" style="max-width:44rem;margin:1rem auto;text-align:left">
+        Conceito: rascunho/PDF da turma<br/>
+        Entrega: <code>fiap-aluno-com-prova-vida</code><br/>
+        Texto: <strong>roteiro-prova-vida.html</strong>
+      </div>
+    </section>
+
+    <section class="slide">
+      <h2>O desenho que vocês fizeram</h2>
+      <div class="content split">
+        <figure class="shot">
+          <img src="img/prova-vida/conceito-alunos-rascunho.jpg" alt="Rascunho alunos" />
+          <figcaption>Rascunho da turma (foto)</figcaption>
+        </figure>
+        <div>
+          <ul>
+            <li><strong>FRONT</strong> → CONTRIBUINTE e BENEFÍCIOS</li>
+            <li><strong>GUID</strong> liga contribuinte → dados biométricos</li>
+            <li><strong>MOBILE</strong> alimenta biométrica + prova de vida</li>
+          </ul>
+          <div class="callout">Isso é o “PDF/proposta” em forma de arquitetura</div>
+        </div>
+      </div>
+    </section>
+
+    <section class="slide">
+      <h2>Mesmo desenho · com o que rodamos</h2>
+      <div class="content">
+        <figure class="shot">
+          <img src="img/prova-vida/conceito-alunos-implementado.png" alt="Conceito implementado" />
+          <figcaption>:5173 · :5001 · :5002 · embedding · :5003 · app/webcam</figcaption>
+        </figure>
+      </div>
+    </section>
+
+    <section class="slide">
+      <h2>Mapa: desenho → o que foi a mais</h2>
+      <div class="content">
+        <table>
+          <tr><th>Desenho</th><th>Antes</th><th>Implementado a mais</th></tr>
+          <tr><td>FRONT</td><td>Portal :5173</td><td>Webcam :5180 (demo)</td></tr>
+          <tr><td>CONTRIBUINTE</td><td>:5001</td><td>Pensionista + /pensionistas</td></tr>
+          <tr><td>BENEFÍCIOS</td><td>:5002</td><td>(igual — fora do fluxo PV)</td></tr>
+          <tr><td>DADOS BIOMÉTRICOS</td><td>—</td><td><strong>NOVO</strong> Perfil + 128D + GUID</td></tr>
+          <tr><td>PROVA DE VIDA</td><td>—</td><td><strong>NOVO</strong> API :5003</td></tr>
+          <tr><td>MOBILE</td><td>—</td><td><strong>NOVO</strong> app-mobile / APK</td></tr>
+        </table>
+        <div class="callout green">Caixas de baixo do papel = o que não existia no sem-prova-vida</div>
+      </div>
+    </section>
+
+    <section class="slide">
+      <h2>Duas pastas no pen drive</h2>
+      <div class="content">
+        <table>
+          <tr><th>Pasta</th><th>Conteúdo</th></tr>
+          <tr><td><code>fiap-aluno-sem-prova-vida</code></td><td>FRONT + CONTRIBUINTE + BENEFÍCIOS</td></tr>
+          <tr><td><code>fiap-aluno-com-prova-vida</code></td><td>+ DADOS BIOMÉTRICOS + PROVA DE VIDA + MOBILE</td></tr>
+        </table>
+        <div class="callout">Aula de PV usa a pasta <strong>com</strong>.</div>
+      </div>
+    </section>
+
+    <section class="slide">
+      <h2>Antes × depois</h2>
+      <div class="content">
+        <figure class="shot">
+          <img src="img/prova-vida/diagrama-antes-depois.png" alt="Antes e depois" />
+          <figcaption>Entram :5003, app Android e webcam</figcaption>
+        </figure>
+      </div>
+    </section>
+
+    <section class="slide">
+      <h2>Pastas que foram adicionadas</h2>
+      <div class="content">
+        <figure class="shot">
+          <img src="img/prova-vida/diagrama-pastas-implementacao.png" alt="Pastas novas" />
+          <figcaption>ProvaVida.* · app-mobile · webcam · Pensionista</figcaption>
+        </figure>
+      </div>
+    </section>
+
+    <section class="slide">
+      <h2>I1 — Pensionistas em Contribuintes</h2>
+      <div class="content">
+        <div class="tag-ex">IMPLEMENTAÇÃO</div>
+        <ul>
+          <li>Enum perfil · seed NUIT <code>30040050x</code></li>
+          <li>Endpoints <code>/pensionistas</code> e <code>/por-nuit</code></li>
+          <li>Trabalhador (<code>100200301</code>) → deve falhar na PV</li>
+        </ul>
+        <div class="callout green">Só aposentado/pensionista faz prova de vida</div>
+      </div>
+    </section>
+
+    <section class="slide">
+      <h2>I2 — Microsserviço em camadas</h2>
+      <div class="content">
+        <figure class="shot">
+          <img src="img/prova-vida/diagrama-camadas-provavida.png" alt="Camadas ProvaVida" />
+          <figcaption>Api → Application → Domain → Infrastructure → Postgres</figcaption>
+        </figure>
+      </div>
+    </section>
+
+    <section class="slide">
+      <h2>I3 — NUIT → GUID → embedding</h2>
+      <div class="content">
+        <figure class="shot">
+          <img src="img/prova-vida/diagrama-nuit-guid-embedding.png" alt="NUIT GUID embedding" />
+          <figcaption>Não grava arquivo de foto · só vetor 128D</figcaption>
+        </figure>
+      </div>
+    </section>
+
+    <section class="slide">
+      <h2>I4 — Cadastrar · Consultar · Renovar</h2>
+      <div class="content">
+        <figure class="shot">
+          <img src="img/prova-vida/diagrama-fluxo-operacoes.png" alt="Três operações" />
+          <figcaption>Consultar válida = autentica sem renovar</figcaption>
+        </figure>
+      </div>
+    </section>
+
+    <section class="slide">
+      <h2>I5 — Webcam + I6 — APK</h2>
+      <div class="content split">
+        <div>
+          <div class="tag-ex">DOCS + MOBILE</div>
+          <ul>
+            <li><code>prova-vida-webcam.html</code></li>
+            <li>MediaPipe + face-api</li>
+            <li><code>projeto/app-mobile</code></li>
+            <li>EAS preview → APK 1.0.1+</li>
+          </ul>
+        </div>
+        <figure class="shot">
+          <img src="img/prova-vida/eas-install-qr.jpg" alt="QR Expo" />
+          <figcaption>Install on a test device</figcaption>
+        </figure>
+      </div>
+    </section>
+
+    <section class="slide">
+      <h2>I7 — Liveness (3 poses)</h2>
+      <div class="content split-rev split">
+        <figure class="shot">
+          <img src="img/prova-vida/diagrama-liveness-3-poses.png" alt="3 poses" />
+          <figcaption>Didático · produção = SDK pago</figcaption>
+        </figure>
+        <figure class="shot">
+          <img src="img/prova-vida/app-liveness-passo2.jpg" alt="App passo 2" />
+          <figcaption>App real · Passo 2/3</figcaption>
+        </figure>
+      </div>
+    </section>
+
+    <section class="slide">
+      <h2>I8 / I9 — CORS e getEnv</h2>
+      <div class="content split">
+        <figure class="shot">
+          <img src="img/prova-vida/webcam-cors-erro.png" alt="CORS" />
+          <figcaption>CORS · reiniciar :5001</figcaption>
+        </figure>
+        <figure class="shot">
+          <img src="img/prova-vida/apk-getenv-erro.png" alt="getEnv" />
+          <figcaption>getEnv · APK 1.0.1+</figcaption>
+        </figure>
+      </div>
+    </section>
+
+    <section class="slide">
+      <h2>Aluno — subir ambiente</h2>
+      <div class="content">
+        <div class="tag-ex run">RODAR</div>
+        <pre class="term">cd C:\fiap-aluno-com-prova-vida\projeto\api
+docker compose up -d
+
+dotnet run --project src\Contribuintes.Api --no-launch-profile --urls http://0.0.0.0:5001
+dotnet run --project src\ProvaVida.Api --no-launch-profile --urls http://0.0.0.0:5003
+
+cd ..\..\docs
+npx --yes serve . -p 5180 --no-clipboard</pre>
+        <div class="callout">NUIT demo: <code>300400504</code> · António Idoso Sitoe</div>
+      </div>
+    </section>
+
+    <section class="slide">
+      <h2>Checklist</h2>
+      <div class="content">
+        <ul>
+          <li>Pasta <code>fiap-aluno-com-prova-vida</code> no HD</li>
+          <li>Docker · :5001 · :5003</li>
+          <li>Webcam ou APK · 3 poses</li>
+          <li>Match ≥ 72% · sem foto no banco</li>
+        </ul>
+        <div class="callout green">Roteiro completo: docs/roteiro-prova-vida.html</div>
+      </div>
+    </section>
+
+    <section class="slide fill">
+      <h1>Próximo: mãos no código</h1>
+      <p class="highlight">Abram o pacote com-prova-vida</p>
+      <p>Sigam I1→I9 no roteiro · depois rodem o ambiente</p>
+    </section>
+
+  </div>
+
+  <div class="nav-bar">
+    <button type="button" id="prev" disabled>← Anterior</button>
+    <span class="slide-counter"><span id="cur">1</span> / <span id="total">1</span></span>
+    <button type="button" id="next">Próximo →</button>
+  </div>
+
+  <script>
+    const slides = [...document.querySelectorAll('.slide')];
+    const total = slides.length;
+    let i = 0;
+    document.getElementById('total').textContent = total;
+    function show(n) {
+      i = Math.max(0, Math.min(total - 1, n));
+      slides.forEach((s, idx) => s.classList.toggle('active', idx === i));
+      document.getElementById('cur').textContent = i + 1;
+      document.getElementById('prev').disabled = i === 0;
+      document.getElementById('next').disabled = i === total - 1;
+      document.getElementById('progress').style.width = ((i + 1) / total * 100) + '%';
+    }
+    document.getElementById('prev').onclick = () => show(i - 1);
+    document.getElementById('next').onclick = () => show(i + 1);
+    document.addEventListener('keydown', (e) => {
+      if (['ArrowRight', 'PageDown', ' ', 'Enter'].includes(e.key)) { e.preventDefault(); show(i + 1); }
+      if (['ArrowLeft', 'PageUp', 'Backspace'].includes(e.key)) { e.preventDefault(); show(i - 1); }
+      if (e.key === 'Home') show(0);
+      if (e.key === 'End') show(total - 1);
+    });
+    show(0);
+  </script>
+</body>
+</html>

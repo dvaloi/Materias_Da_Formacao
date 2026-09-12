@@ -1,0 +1,30 @@
+﻿================================================================================
+  LEIA-ME — pacote COM Prova de Vida · INSS Moçambique · FIAP
+================================================================================
+
+Evolução do projeto que a turma já fez:
+
+  fiap-aluno-sem-prova-vida  →  portal + Contribuintes + Benefícios
+  fiap-aluno-com-prova-vida  →  o mesmo + ProvaVida.Api + app-mobile + webcam
+
+Copie esta pasta para o HD, por exemplo:
+  C:\fiap-aluno-com-prova-vida
+
+NÃO trabalhem direto no pen drive.
+
+Comece por (nesta ordem):
+  1) PASSO-A-PASSO.txt                         (ligar ambiente)
+  2) docs\roteiro-prova-vida.html              (o que foi IMPLEMENTADO + imagens)
+  3) docs\slides-prova-vida.html               (projetor)
+
+NUIT demo: 300400504 (António Idoso Sitoe)
+
+Pastas novas nesta versão:
+  projeto\api\src\ProvaVida.*
+  projeto\app-mobile
+  docs\prova-vida-webcam.html
+  docs\img\prova-vida\
+
+Regenerar (professor):
+  .\scripts\montar-fiap-aluno-com-prova-vida.ps1
+================================================================================

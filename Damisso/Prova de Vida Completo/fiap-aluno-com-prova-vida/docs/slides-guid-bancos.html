@@ -1,0 +1,437 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>GUID · Dois bancos · Bounded contexts | FIAP × INSS</title>
+  <style>
+    :root {
+      --green: #006233;
+      --green-dark: #004d28;
+      --green-soft: #e6f4ec;
+      --gold: #c9a227;
+      --gold-soft: #fff8e1;
+      --red: #ce1126;
+      --red-soft: #fde8ea;
+      --border: #94a3b8;
+      --text: #000;
+      --bg: #fff;
+      --surface: #f4f6f5;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: 'Segoe UI', system-ui, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      overflow: hidden;
+      height: 100vh;
+      font-weight: 700;
+    }
+    .flag-bar {
+      position: fixed; top: 0; left: 0; right: 0; height: 10px; z-index: 200;
+      background: linear-gradient(90deg,
+        #006233 0 25%, #111 25% 50%, #fcd116 50% 75%, #ce1126 75% 100%);
+    }
+    .progress {
+      position: fixed; top: 10px; left: 0; height: 6px;
+      background: var(--red); z-index: 100; transition: width .3s;
+    }
+    .deck { height: 100vh; position: relative; }
+    .slide {
+      display: none;
+      height: 100vh;
+      padding: 2.25rem 3.5rem 5.75rem;
+      flex-direction: column;
+      justify-content: flex-start;
+      animation: fadeIn .25s ease;
+    }
+    .slide.active { display: flex; }
+    .slide.fill { justify-content: center; text-align: center; }
+    @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+
+    h1 {
+      font-size: clamp(2.6rem, 5vw, 3.8rem);
+      font-weight: 900;
+      color: var(--green);
+      line-height: 1.1;
+      margin-bottom: .75rem;
+    }
+    h2 {
+      font-size: clamp(2.1rem, 3.8vw, 2.9rem);
+      color: var(--green);
+      font-weight: 900;
+      border-bottom: 5px solid var(--gold);
+      padding-bottom: .4rem;
+      margin-bottom: 1.1rem;
+      flex-shrink: 0;
+    }
+    p, li {
+      font-size: clamp(1.4rem, 2.2vw, 1.85rem);
+      line-height: 1.45;
+      font-weight: 700;
+      margin-bottom: .7rem;
+    }
+    ul, ol { padding-left: 1.6rem; }
+    strong { font-weight: 900; }
+    code {
+      font-family: Consolas, 'Courier New', monospace;
+      background: #111;
+      color: #e8f5ee;
+      padding: .12rem .45rem;
+      border-radius: 5px;
+      font-weight: 800;
+      font-size: .92em;
+    }
+    .highlight {
+      color: var(--red);
+      font-size: clamp(1.55rem, 2.5vw, 2.05rem);
+      font-weight: 900;
+      margin-bottom: 1rem;
+    }
+    .content { flex: 1; display: flex; flex-direction: column; gap: .85rem; min-height: 0; }
+    .callout {
+      background: var(--gold-soft);
+      border: 3px solid var(--gold);
+      border-left: 10px solid var(--gold);
+      border-radius: 14px;
+      padding: 1.1rem 1.4rem;
+      font-size: clamp(1.35rem, 2vw, 1.7rem);
+      font-weight: 800;
+    }
+    .callout.green {
+      background: var(--green-soft);
+      border-color: var(--green);
+      border-left-color: var(--green);
+    }
+    .callout.red {
+      background: var(--red-soft);
+      border-color: var(--red);
+      border-left-color: var(--red);
+    }
+    .grid-2 {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1.25rem;
+      flex: 1;
+    }
+    .card {
+      background: var(--surface);
+      border: 3px solid var(--border);
+      border-left: 10px solid var(--green);
+      border-radius: 14px;
+      padding: 1.2rem 1.4rem;
+    }
+    .card.gold { border-left-color: var(--gold); background: var(--gold-soft); }
+    .card h3 {
+      font-size: clamp(1.4rem, 2vw, 1.75rem);
+      color: var(--green-dark);
+      margin-bottom: .6rem;
+      font-weight: 900;
+    }
+    .card table { width: 100%; border-collapse: collapse; font-size: clamp(1.1rem, 1.6vw, 1.35rem); }
+    .card th, .card td {
+      border: 2px solid var(--border);
+      padding: .45rem .55rem;
+      text-align: left;
+      font-family: Consolas, monospace;
+      font-weight: 800;
+    }
+    .card th { background: #222; color: #fff; }
+    .hl {
+      background: #fff3b0;
+      outline: 3px solid var(--gold);
+    }
+    .no-list { list-style: none; padding-left: 0; }
+    .no-list li {
+      background: var(--gold-soft);
+      border: 3px solid var(--gold);
+      border-left: 10px solid var(--red);
+      border-radius: 12px;
+      padding: .85rem 1.15rem;
+      margin-bottom: .75rem;
+    }
+    .benefit {
+      list-style: none;
+      padding-left: 0;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: .85rem;
+    }
+    .benefit li {
+      background: var(--green-soft);
+      border: 3px solid var(--green);
+      border-radius: 12px;
+      padding: .9rem 1.1rem;
+      margin: 0;
+    }
+    .flow {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: .35rem;
+      max-width: 52rem;
+      margin: 0 auto;
+    }
+    .flow-row { display: flex; gap: 1.5rem; width: 100%; justify-content: center; }
+    .flow-box {
+      border: 3px solid var(--border);
+      border-radius: 12px;
+      padding: .85rem 1.2rem;
+      text-align: center;
+      font-weight: 900;
+      font-size: clamp(1.2rem, 1.8vw, 1.5rem);
+      min-width: 14rem;
+    }
+    .flow-box small { display: block; font-size: .85em; font-weight: 700; margin-top: .25rem; }
+    .flow-box.portal { background: var(--green-soft); border-color: var(--green); }
+    .flow-box.api { background: var(--gold-soft); border-color: var(--gold); }
+    .flow-box.db { background: #111; color: #e8f5ee; border-color: #111; }
+    .arrow { font-size: 1.6rem; font-weight: 900; color: var(--red); }
+    .bridge {
+      margin-top: .75rem;
+      padding: .75rem 1.25rem;
+      border: 3px dashed var(--red);
+      border-radius: 12px;
+      color: var(--red);
+      font-weight: 900;
+      font-size: clamp(1.25rem, 2vw, 1.6rem);
+      text-align: center;
+    }
+    .nav-bar {
+      position: fixed; bottom: 0; left: 0; right: 0;
+      background: #fff;
+      padding: .75rem 1.5rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-top: 4px solid var(--green);
+      z-index: 100;
+    }
+    .nav-bar button {
+      background: var(--green);
+      color: #fff;
+      border: none;
+      padding: .75rem 1.6rem;
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 1.2rem;
+      font-weight: 800;
+      min-width: 150px;
+    }
+    .nav-bar button:hover { background: var(--green-dark); }
+    .nav-bar button:disabled { opacity: .35; cursor: not-allowed; }
+    .slide-counter { font-size: 1.25rem; font-weight: 900; }
+    .hint {
+      position: fixed;
+      top: 1.1rem;
+      right: 1.25rem;
+      font-size: .95rem;
+      font-weight: 800;
+      color: #444;
+      z-index: 150;
+      background: #fff;
+      border: 2px solid var(--border);
+      border-radius: 8px;
+      padding: .35rem .7rem;
+    }
+    @media (max-width: 900px) {
+      .grid-2, .benefit, .flow-row { grid-template-columns: 1fr; flex-direction: column; }
+      .slide { padding: 1.5rem 1.2rem 5.5rem; }
+    }
+  </style>
+</head>
+<body>
+  <div class="flag-bar"></div>
+  <div class="progress" id="progress" style="width:10%"></div>
+  <div class="hint">← → · PageUp/Down · cliqueiro · F11 tela cheia</div>
+
+  <div class="deck">
+
+    <section class="slide active fill">
+      <h1>Dois bancos · uma ponte</h1>
+      <p class="highlight" style="color:var(--red)">GUID · Bounded contexts · sem JOIN</p>
+      <p style="font-size:clamp(1.4rem,2.2vw,1.8rem)">FIAP · INSS Moçambique · arquitetura que escolhemos</p>
+      <div class="callout" style="max-width:40rem;margin:1.5rem auto 0;text-align:left">
+        Use o <strong>cliqueiro</strong> ou as setas para avançar — um conceito por slide.
+      </div>
+    </section>
+
+    <section class="slide">
+      <h2>O mapa — um portal, duas APIs, dois bancos</h2>
+      <div class="content">
+        <div class="flow">
+          <div class="flow-box portal">Portal React<small>:5173</small></div>
+          <div class="arrow">↓ HTTP</div>
+          <div class="flow-row">
+            <div>
+              <div class="flow-box api">API Contribuintes<small>:5001</small></div>
+              <div class="arrow" style="text-align:center">↓</div>
+              <div class="flow-box db">inss_contribuintes<small>tabela Contribuintes</small></div>
+            </div>
+            <div>
+              <div class="flow-box api">API Benefícios<small>:5002</small></div>
+              <div class="arrow" style="text-align:center">↓</div>
+              <div class="flow-box db">inss_beneficios<small>tabela PedidosBeneficio</small></div>
+            </div>
+          </div>
+          <div class="bridge">Ponte = ContribuinteId (GUID) · não é JOIN no SQL</div>
+        </div>
+      </div>
+    </section>
+
+    <section class="slide">
+      <h2>O que é um GUID?</h2>
+      <div class="content">
+        <p class="highlight">Identificador único — a “chave” da pessoa entre os dois mundos.</p>
+        <div class="callout green" style="font-family:Consolas,monospace;font-size:clamp(1.5rem,2.4vw,2rem);text-align:center">
+          e5f6a7b8-1111-2222-3333-444455556666
+        </div>
+        <ul>
+          <li>Em <strong>Contribuintes</strong> → coluna <code>Id</code></li>
+          <li>Em <strong>PedidosBeneficio</strong> → coluna <code>ContribuinteId</code></li>
+          <li>Mesmo valor = mesma pessoa · <strong>sem</strong> copiar Nome/NUIT no pedido</li>
+        </ul>
+      </div>
+    </section>
+
+    <section class="slide">
+      <h2>Mesmo GUID nos dois bancos</h2>
+      <div class="content">
+        <div class="grid-2">
+          <div class="card">
+            <h3>Banco 1 · Contribuintes</h3>
+            <table>
+              <tr><th>Id</th><th>Nuit</th><th>Nome</th></tr>
+              <tr>
+                <td class="hl">e5f6…6666</td>
+                <td>100200301</td>
+                <td>Ana Celeste</td>
+              </tr>
+            </table>
+            <p style="margin-top:.8rem;font-size:1.25rem">Cadastro completo mora aqui.</p>
+          </div>
+          <div class="card gold">
+            <h3>Banco 2 · Pedidos</h3>
+            <table>
+              <tr><th>Id pedido</th><th>ContribuinteId</th><th>Tipo</th></tr>
+              <tr>
+                <td>a1b2…9999</td>
+                <td class="hl">e5f6…6666</td>
+                <td>Reforma</td>
+              </tr>
+            </table>
+            <p style="margin-top:.8rem;font-size:1.25rem"><strong>Não</strong> tem Nome nem NUIT — só o GUID.</p>
+          </div>
+        </div>
+        <div class="callout" style="text-align:center">
+          <code>ContribuinteId</code> = <code>Id</code> → a ponte
+        </div>
+      </div>
+    </section>
+
+    <section class="slide">
+      <h2>Isto NÃO é “falta”</h2>
+      <div class="content">
+        <p class="highlight">É a arquitetura que escolhemos — 2 bounded contexts.</p>
+        <ul class="no-list">
+          <li>❌ Um único banco com as duas tabelas — monólito de dados; quisemos bancos independentes</li>
+          <li>❌ JOIN SQL entre os dois databases — bancos diferentes; ponte = GUID na app</li>
+        </ul>
+      </div>
+    </section>
+
+    <section class="slide">
+      <h2>Isto NÃO é “falta” (2)</h2>
+      <div class="content">
+        <ul class="no-list">
+          <li>❌ Coluna <code>Nome</code> em PedidosBeneficio — evita duplicar cadastro; nome só em Contribuintes</li>
+          <li>❌ As duas APIs se chamando para gravar o pedido — cada microsserviço grava só no <strong>seu</strong> banco</li>
+        </ul>
+        <div class="callout green">
+          Bounded context (DDD, padrão atual): cada contexto = regras + API + dados próprios.
+        </div>
+      </div>
+    </section>
+
+    <section class="slide">
+      <h2>Por que não tem JOIN?</h2>
+      <div class="content">
+        <ol>
+          <li><strong>JOIN é para o mesmo banco.</strong> Aqui são dois: <code>inss_contribuintes</code> e <code>inss_beneficios</code>.</li>
+          <li><strong>Foi escolha.</strong> Não esquecemos a FK. Pessoa ≠ pedido de benefício.</li>
+          <li><strong>Bounded context:</strong> um módulo não amarra o outro num banco único.</li>
+          <li><strong>Ligação = GUID.</strong> Portal/APIs montam a tela — não o SQL.</li>
+        </ol>
+      </div>
+    </section>
+
+    <section class="slide">
+      <h2>Por que isso vale a pena</h2>
+      <div class="content">
+        <ul class="benefit">
+          <li><strong>Independência</strong><br/>:5001 ok com :5002 parado (e o contrário)</li>
+          <li><strong>Clareza</strong><br/>Cadastro num lugar · pedido noutro</li>
+          <li><strong>Menos acoplamento</strong><br/>Cada API dona do seu dado</li>
+          <li><strong>Escala / deploy</strong><br/>Publicar um contexto sem derrubar o outro</li>
+        </ul>
+        <div class="callout" style="margin-top:.5rem;text-align:center">
+          Padrão de mercado: microsserviços + bounded contexts
+        </div>
+      </div>
+    </section>
+
+    <section class="slide fill">
+      <h1>Para lembrar</h1>
+      <div class="callout" style="max-width:48rem;margin:1.5rem auto;font-size:clamp(1.5rem,2.4vw,2rem);text-align:left">
+        Não tem JOIN porque são <strong>2 contextos / 2 bancos</strong>.<br/><br/>
+        A ponte é o <code>ContribuinteId</code> (GUID) —<br/>
+        independência, clareza e menos acoplamento.
+      </div>
+      <p style="margin-top:1.5rem;font-size:1.3rem">Próximo: SQL no Docker · provar a ponte na máquina</p>
+    </section>
+
+  </div>
+
+  <nav class="nav-bar">
+    <button type="button" id="prev" disabled>← Anterior</button>
+    <span class="slide-counter" id="counter">1 / 9</span>
+    <button type="button" id="next">Próximo →</button>
+  </nav>
+
+  <script>
+    const slides = document.querySelectorAll('.slide');
+    const prev = document.getElementById('prev');
+    const next = document.getElementById('next');
+    const counter = document.getElementById('counter');
+    const progress = document.getElementById('progress');
+    let current = 0;
+
+    function showSlide(n) {
+      slides[current].classList.remove('active');
+      current = Math.max(0, Math.min(n, slides.length - 1));
+      slides[current].classList.add('active');
+      counter.textContent = `${current + 1} / ${slides.length}`;
+      progress.style.width = `${((current + 1) / slides.length) * 100}%`;
+      prev.disabled = current === 0;
+      next.disabled = current === slides.length - 1;
+    }
+
+    prev.addEventListener('click', (e) => { e.stopPropagation(); showSlide(current - 1); });
+    next.addEventListener('click', (e) => { e.stopPropagation(); showSlide(current + 1); });
+
+    function onNavKey(e) {
+      const nextKeys = ['ArrowRight', 'ArrowDown', 'PageDown', ' ', 'Enter', 'n', 'N'];
+      const prevKeys = ['ArrowLeft', 'ArrowUp', 'PageUp', 'Backspace', 'p', 'P'];
+      if (nextKeys.includes(e.key)) { e.preventDefault(); showSlide(current + 1); }
+      else if (prevKeys.includes(e.key)) { e.preventDefault(); showSlide(current - 1); }
+      else if (e.key === 'f' || e.key === 'F11') { /* F11 nativo */ }
+    }
+    document.addEventListener('keydown', onNavKey);
+
+    document.querySelector('.deck')?.addEventListener('click', (e) => {
+      if (e.target.closest('a, button, input, nav')) return;
+      showSlide(current + 1);
+    });
+  </script>
+</body>
+</html>

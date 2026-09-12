@@ -1,0 +1,419 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Testes + Nuvem — passo a passo | FIAP × INSS</title>
+  <style>
+    :root {
+      --green: #006233; --green-dark: #004d28; --green-soft: #e8f5ee;
+      --gold: #c9a227; --gold-soft: #fff8e1; --red: #ce1126;
+      --blue: #0b3d91; --onde: #0b3d91;
+    }
+    * { box-sizing: border-box; }
+    body {
+      font-family: 'Segoe UI', system-ui, sans-serif;
+      line-height: 1.4; max-width: 960px; margin: 0 auto;
+      padding: 0 1.2rem 3.5rem; color: #111; font-weight: 700; font-size: 1.12rem;
+    }
+    .flag {
+      height: 10px; margin: 0 -1.2rem 1.2rem;
+      background: linear-gradient(90deg,#006233 0 25%,#111 25% 50%,#fcd116 50% 75%,#ce1126 75% 100%);
+    }
+    h1 { color: var(--green); border-bottom: 4px solid var(--gold); padding-bottom: .45rem; font-size: 1.8rem; }
+    h2 { color: var(--green); margin-top: 2rem; font-size: 1.4rem; border-bottom: 2px solid var(--gold); padding-bottom: .25rem; }
+    code, pre { font-family: Consolas, 'Courier New', monospace; }
+    code { background: #111; color: #e8f5ee; padding: .1rem .35rem; border-radius: 4px; font-size: .9em; }
+    pre {
+      background: #0c0c0c; color: #ccc; padding: .8rem 1rem; overflow-x: auto;
+      border-radius: 8px; border: 2px solid #333; line-height: 1.4; font-size: .88rem;
+    }
+    .onde, .digite, .aparece, .tag {
+      display: inline-block; font-weight: 900; padding: .15rem .5rem; border-radius: 4px; margin: .25rem .3rem .25rem 0;
+    }
+    .onde { background: var(--onde); color: #fff; }
+    .digite { background: #111; color: #7dffa8; }
+    .aparece { background: #1a3a2a; color: #b8f0c8; }
+    .tag { background: var(--red); color: #fff; font-size: .95rem; }
+    .caso {
+      background: #f5f7fb; border-left: 6px solid var(--green);
+      padding: 1rem 1.15rem; margin: 1.15rem 0; border-radius: 0 10px 10px 0;
+    }
+    .caso.cloud { border-left-color: #7c3aed; background: #f7f4ff; }
+    .aviso { background: #fdecea; border-left: 6px solid var(--red); padding: .7rem 1rem; margin: .9rem 0; border-radius: 0 8px 8px 0; }
+    .ok { background: var(--green-soft); border-left: 6px solid var(--green); padding: .7rem 1rem; margin: .9rem 0; border-radius: 0 8px 8px 0; }
+    .todo { background: var(--gold-soft); border-left: 6px solid var(--gold); padding: .7rem 1rem; margin: .9rem 0; border-radius: 0 8px 8px 0; }
+    table { border-collapse: collapse; width: 100%; margin: .8rem 0; }
+    th, td { border: 2px solid #ccc; padding: .4rem .55rem; text-align: left; vertical-align: top; }
+    th { background: var(--green); color: #fff; }
+    nav {
+      background: var(--green-soft); padding: 1rem; margin-bottom: 1.2rem;
+      border-radius: 8px; border: 2px solid #b7dfc4; columns: 2; gap: 1rem;
+    }
+    nav strong { display: block; break-after: avoid; margin-bottom: .3rem; }
+    nav a { display: block; margin: .22rem 0; color: var(--green); font-weight: 800; text-decoration: none; break-inside: avoid; }
+    .links a {
+      display: inline-block; background: var(--blue); color: #fff; text-decoration: none;
+      padding: .45rem .8rem; border-radius: 8px; font-weight: 800; margin: .25rem .35rem .25rem 0;
+    }
+    .links a.gold { background: var(--gold); color: #111; }
+    .bloco { margin: .5rem 0; }
+    @media (max-width: 800px) { nav { columns: 1; } }
+  </style>
+</head>
+<body>
+  <div class="flag"></div>
+  <h1>Testes + subir na nuvem — passo a passo</h1>
+  <p>
+    Pacote <strong>fiap-aluno-sem-prova-vida</strong>.
+    Ordem: testes no PC → contas → GitHub → Neon → Render → Vercel → CORS → validar a URL do projeto.
+  </p>
+  <div class="links">
+    <a class="gold" href="slides-testes-nuvem.html">Slides</a>
+  </div>
+
+  <div class="aviso">
+    <strong>Antes de começar:</strong> a pasta do projeto já está no HD
+    (ex.: <code>C:\fiap-aluno</code>). Têm internet. Browser: Chrome ou Edge.
+  </div>
+
+  <div class="ok" id="minhas-urls">
+    <strong>Minhas URLs</strong> — deixem esta página aberta. Quando o GitHub / Render / Vercel
+    mostrar um endereço, <strong>copiem e colem no campo</strong> abaixo. Nos passos seguintes
+    usam estes mesmos campos (fica salvo neste browser).
+    <div style="margin-top:.75rem;display:grid;gap:.55rem">
+      <label>Usuário GitHub<br/><input id="u-github" type="text" placeholder="ex.: joaoinss" style="width:100%;padding:.45rem;font-size:1rem;font-weight:700;border:2px solid #94a3b8;border-radius:6px" /></label>
+      <label>Nome do repositório<br/><input id="u-repo" type="text" placeholder="ex.: inss-fiap-joao" style="width:100%;padding:.45rem;font-size:1rem;font-weight:700;border:2px solid #94a3b8;border-radius:6px" /></label>
+      <label>URL API Contribuintes (Render)<br/><input id="u-contrib" type="url" placeholder="https://….onrender.com" style="width:100%;padding:.45rem;font-size:1rem;font-weight:700;border:2px solid #94a3b8;border-radius:6px" /></label>
+      <label>URL API Benefícios (Render)<br/><input id="u-benef" type="url" placeholder="https://….onrender.com" style="width:100%;padding:.45rem;font-size:1rem;font-weight:700;border:2px solid #94a3b8;border-radius:6px" /></label>
+      <label>URL do portal (Vercel)<br/><input id="u-vercel" type="url" placeholder="https://….vercel.app" style="width:100%;padding:.45rem;font-size:1rem;font-weight:700;border:2px solid #94a3b8;border-radius:6px" /></label>
+    </div>
+    <p style="margin-top:.6rem;font-size:.95rem;color:#333">Os valores ficam salvos neste browser automaticamente.</p>
+  </div>
+  <script>
+    (function () {
+      const keys = ['u-github', 'u-repo', 'u-contrib', 'u-benef', 'u-vercel'];
+      keys.forEach((id) => {
+        const el = document.getElementById(id);
+        if (!el) return;
+        el.value = localStorage.getItem('fiap-' + id) || '';
+        el.addEventListener('input', () => localStorage.setItem('fiap-' + id, el.value.trim()));
+      });
+    })();
+  </script>
+
+  <nav>
+    <strong>Parte A — Testes</strong>
+    <a href="#a1">A1 Abrir PowerShell</a>
+    <a href="#a2">A2 Rodar testes</a>
+    <a href="#a3">A3 Abrir arquivo xUnit</a>
+    <a href="#a4">A4 Abrir arquivo Moq</a>
+    <a href="#a5">A5 Quebrar e consertar</a>
+    <strong>Parte B — Contas</strong>
+    <a href="#b01">B0.1 GitHub</a>
+    <a href="#b02">B0.2 Neon</a>
+    <a href="#b03">B0.3 Render</a>
+    <a href="#b04">B0.4 Vercel</a>
+    <strong>Parte C — Publicar</strong>
+    <a href="#c1">C1 Repo no GitHub</a>
+    <a href="#c2">C2 Push do código</a>
+    <a href="#c3">C3 Neon bancos</a>
+    <a href="#c4">C4 Render Contribuintes</a>
+    <a href="#c5">C5 Render Benefícios</a>
+    <a href="#c6">C6 Vercel portal</a>
+    <a href="#c7">C7 CORS</a>
+    <a href="#c8">C8 Testar SUA URL</a>
+  </nav>
+
+  <!-- ========== A ========== -->
+  <h2>Parte A — Testar no PC (xUnit / Moq)</h2>
+
+  <div class="caso" id="a1">
+    <div class="tag">A1</div>
+    <div class="bloco"><span class="onde">ONDE</span> Windows → digitem <code>PowerShell</code> → Enter</div>
+    <div class="bloco"><span class="digite">DIGITAM</span></div>
+    <pre>cd C:\fiap-aluno\projeto\api</pre>
+    <div class="bloco"><span class="aparece">APARECE</span> o prompt terminando em <code>...\projeto\api&gt;</code></div>
+    <div class="aviso">Se a pasta for outra, usem o caminho real. Digitem <code>dir</code> — devem ver a pasta <code>tests</code>.</div>
+  </div>
+
+  <div class="caso" id="a2">
+    <div class="tag">A2</div>
+    <div class="bloco"><span class="onde">ONDE</span> mesmo PowerShell</div>
+    <div class="bloco"><span class="digite">DIGITAM</span> (pode demorar 1–2 min na 1ª vez)</div>
+    <pre>dotnet test --filter "FullyQualifiedName~UnitTests"</pre>
+    <div class="bloco"><span class="aparece">APARECE</span> no final algo como:</div>
+    <pre>Passed!  - Failed: 0</pre>
+    <div class="aviso">Se aparecer “não é reconhecido”: instalem o .NET SDK e abram um PowerShell novo.</div>
+  </div>
+
+  <div class="caso" id="a3">
+    <div class="tag">A3 — Ver um teste xUnit</div>
+    <div class="bloco"><span class="onde">ONDE</span> Explorador de Arquivos</div>
+    <div class="bloco"><span class="digite">ABREM</span> este arquivo (botão direito → Abrir com Bloco de Notas ou VS Code):</div>
+    <pre>C:\fiap-aluno\projeto\api\tests\Contribuintes.UnitTests\Domain\ContribuinteTests.cs</pre>
+    <div class="bloco"><span class="aparece">PROCUREM</span> a linha com <code>1350m</code> — é o Assert do 3% do salário.</div>
+    <p>Isso é um teste <strong>unitário</strong>: não precisa de internet nem de API ligada.</p>
+  </div>
+
+  <div class="caso" id="a4">
+    <div class="tag">A4 — Ver um teste Moq</div>
+    <div class="bloco"><span class="digite">ABREM</span></div>
+    <pre>C:\fiap-aluno\projeto\api\tests\Contribuintes.UnitTests\Application\ContribuinteServiceTests.cs</pre>
+    <div class="bloco"><span class="aparece">PROCUREM</span> a palavra <code>Mock</code> e <code>Setup</code>.</div>
+    <p>Moq = “mentira” do banco. O teste finge que o repositório já tem um NUIT.</p>
+  </div>
+
+  <div class="caso" id="a5">
+    <div class="tag">A5 — Exercício (2 minutos)</div>
+    <ol>
+      <li>No arquivo do A3, mudem <code>1350m</code> para <code>999m</code> · salvem</li>
+      <li>No PowerShell:
+        <pre>dotnet test --filter "FullyQualifiedName~ContribuinteTests"</pre>
+      </li>
+      <li><span class="aparece">APARECE</span> <strong>Failed</strong></li>
+      <li>Voltem para <code>1350m</code> · salvem · rodem de novo · verde</li>
+    </ol>
+  </div>
+
+  <!-- ========== B CONTAS ========== -->
+  <h2>Parte B — Criar contas</h2>
+
+  <div class="caso cloud" id="b01">
+    <div class="tag">B0.1 — Conta GitHub</div>
+    <div class="bloco"><span class="onde">ONDE</span> Chrome</div>
+    <div class="bloco"><span class="digite">ABREM</span> <a href="https://github.com/signup" target="_blank" rel="noopener">https://github.com/signup</a></div>
+    <ol>
+      <li>Digitem e-mail · senha · usuário (ex.: <code>joaoinss</code>)</li>
+      <li>Resolvam o captcha se pedir</li>
+      <li>Confirmem o e-mail (abrim a caixa de entrada)</li>
+    </ol>
+    <div class="bloco"><span class="aparece">APARECE</span> a página inicial do GitHub logado (avatar no canto superior direito).</div>
+    <div class="ok">Colem o usuário GitHub no campo <strong>Usuário GitHub</strong> em <a href="#minhas-urls">Minhas URLs</a> (topo desta página).</div>
+    <div class="aviso">Já têm GitHub? Pulem para B0.2 — só façam login.</div>
+  </div>
+
+  <div class="caso cloud" id="b02">
+    <div class="tag">B0.2 — Conta Neon (banco Postgres)</div>
+    <div class="bloco"><span class="digite">ABREM</span> <a href="https://console.neon.tech/signup" target="_blank" rel="noopener">https://console.neon.tech/signup</a></div>
+    <ol>
+      <li>Cliquem em <strong>Continue with GitHub</strong> (botão grande)</li>
+      <li>Se o GitHub pedir, cliquem <strong>Authorize</strong> / Autorizar</li>
+      <li>Esperem abrir o painel do Neon</li>
+    </ol>
+    <div class="bloco"><span class="aparece">APARECE</span> dashboard Neon (pode pedir criar projeto — isso será no passo C3).</div>
+  </div>
+
+  <div class="caso cloud" id="b03">
+    <div class="tag">B0.3 — Conta Render (APIs)</div>
+    <div class="bloco"><span class="digite">ABREM</span> <a href="https://dashboard.render.com/register" target="_blank" rel="noopener">https://dashboard.render.com/register</a></div>
+    <ol>
+      <li>Cliquem <strong>GitHub</strong> / Sign up with GitHub</li>
+      <li>Authorize Render</li>
+      <li>Se perguntar plano: escolham <strong>Free</strong> / Hobby free</li>
+    </ol>
+    <div class="bloco"><span class="aparece">APARECE</span> Dashboard do Render (página em branco ou “Create a new service”).</div>
+  </div>
+
+  <div class="caso cloud" id="b04">
+    <div class="tag">B0.4 — Conta Vercel (portal React)</div>
+    <div class="bloco"><span class="digite">ABREM</span> <a href="https://vercel.com/signup" target="_blank" rel="noopener">https://vercel.com/signup</a></div>
+    <ol>
+      <li>Cliquem <strong>Continue with GitHub</strong></li>
+      <li>Authorize Vercel</li>
+      <li>Se perguntar Hobby / Pro → escolham <strong>Hobby</strong> (grátis)</li>
+    </ol>
+    <div class="bloco"><span class="aparece">APARECE</span> dashboard Vercel (“Add New…”).</div>
+    <div class="ok">Agora têm 4 logins. Próximo: enviar o código.</div>
+  </div>
+
+  <!-- ========== C PUBLICAR ========== -->
+  <h2>Parte C — Publicar o projeto (clique a clique)</h2>
+
+  <div class="caso cloud" id="c1">
+    <div class="tag">C1 — Criar repositório vazio no GitHub</div>
+    <div class="bloco"><span class="onde">ONDE</span> Chrome · logados no GitHub</div>
+    <ol>
+      <li>Canto superior direito: botão <strong>+</strong> → <strong>New repository</strong></li>
+      <li><strong>Repository name:</strong> digitem <code>inss-fiap-</code> + o vosso nome (sem espaços), ex.: <code>inss-fiap-joao</code></li>
+      <li>Public ou Private — tanto faz</li>
+      <li><strong>NÃO</strong> marquem “Add a README file”</li>
+      <li><strong>NÃO</strong> marquem .gitignore nem license</li>
+      <li>Cliquem o botão verde <strong>Create repository</strong></li>
+    </ol>
+    <div class="bloco"><span class="aparece">APARECE</span> uma página com comandos <code>git remote add origin ...</code></div>
+    <div class="ok">
+      Na barra do browser aparece algo como <code>https://github.com/joaoinss/inss-fiap-joao</code>.
+      Colem o usuário e o nome do repo nos campos de <a href="#minhas-urls">Minhas URLs</a>.
+    </div>
+  </div>
+
+  <div class="caso cloud" id="c2">
+    <div class="tag">C2 — Enviar a pasta do HD para o GitHub</div>
+    <div class="bloco"><span class="onde">ONDE</span> PowerShell</div>
+    <p>Primeiro confiram se o <code>git</code> existe:</p>
+    <pre>git --version</pre>
+    <div class="aviso">
+      Se “não é reconhecido”: instalem Git (<a href="https://git-scm.com/download/win" target="_blank" rel="noopener">git-scm.com</a>)
+      <strong>ou</strong> usem o GitHub Desktop: Add Local Repository → Publish repository.
+    </div>
+    <div class="bloco"><span class="digite">DIGITAM</span> um comando de cada vez (troquem a URL pela do vosso repo):</div>
+    <pre>cd C:\fiap-aluno
+git init
+git add .
+git status
+git commit -m "INSS FIAP aluno"
+git branch -M main
+git remote add origin https://github.com/SEU_USUARIO/inss-fiap-SEU_NOME.git
+git push -u origin main</pre>
+    <p>Na primeira vez o GitHub pode abrir o browser para autorizar / pedir login.</p>
+    <div class="bloco"><span class="aparece">APARECE</span> no final <code>branch 'main' set up to track...</code></div>
+    <div class="bloco"><span class="digite">CONFEREM</span> no browser: atualizem a página do repo → veem pastas <code>projeto</code> e <code>docs</code>.</div>
+    <div class="aviso">Erro “remote origin already exists”:
+      <pre>git remote remove origin
+git remote add origin https://github.com/SEU_USUARIO/inss-fiap-SEU_NOME.git
+git push -u origin main</pre>
+    </div>
+  </div>
+
+  <div class="caso cloud" id="c3">
+    <div class="tag">C3 — Neon: criar projeto e 2º banco</div>
+    <div class="bloco"><span class="onde">ONDE</span> <a href="https://console.neon.tech" target="_blank" rel="noopener">console.neon.tech</a></div>
+    <ol>
+      <li>Se pedirem projeto: <strong>Create project</strong> · nome <code>inss-aula</code> · região perto (ex. Frankfurt ou US) · Create</li>
+      <li>Na tela do projeto, procurem <strong>Connection string</strong> ou <strong>Connect</strong></li>
+      <li>Copiem a string que parece <code>postgresql://usuario:senha@host/neondb?...</code> · colem no Bloco de Notas</li>
+      <li>Abram o menu <strong>SQL Editor</strong></li>
+      <li>Digitem exatamente e rodem (Run / Play):</li>
+    </ol>
+    <pre>CREATE DATABASE inss_beneficios;</pre>
+    <div class="bloco"><span class="aparece">APARECE</span> sucesso / “CREATE DATABASE”</div>
+
+    <p><strong>Agora montem 2 strings no Bloco de Notas</strong> (mesmo host/usuário/senha; só muda Database):</p>
+    <p>Do connection string original, tirem Host, User, Password. Formato para o Render:</p>
+    <pre>Host=SEU_HOST.neon.tech;Database=neondb;Username=SEU_USER;Password=SUA_SENHA;SSL Mode=Require;Trust Server Certificate=true
+
+Host=SEU_HOST.neon.tech;Database=inss_beneficios;Username=SEU_USER;Password=SUA_SENHA;SSL Mode=Require;Trust Server Certificate=true</pre>
+    <div class="todo">
+      Se o DB padrão não for <code>neondb</code>, usem o nome que o Neon mostrou na connection string.<br/>
+      String 1 = Contribuintes · String 2 = Benefícios.
+    </div>
+  </div>
+
+  <div class="caso cloud" id="c4">
+    <div class="tag">C4 — Render: 1ª API (Contribuintes) — mais longo</div>
+    <div class="bloco"><span class="onde">ONDE</span> <a href="https://dashboard.render.com" target="_blank" rel="noopener">dashboard.render.com</a></div>
+    <ol>
+      <li>Botão <strong>New +</strong> → <strong>Web Service</strong></li>
+      <li>Se pedirem conectar GitHub: <strong>Connect account</strong> → autorizem → escolham o repo <code>inss-fiap-...</code></li>
+      <li>Cliquem no repositório de vocês</li>
+    </ol>
+    <p>Preencham <strong>campo a campo</strong> (não inventem):</p>
+    <table>
+      <tr><th>Campo na tela</th><th>O que digitar / escolher</th></tr>
+      <tr><td>Name</td><td><code>inss-contrib-</code> + vosso nome (sem acento)</td></tr>
+      <tr><td>Language / Runtime</td><td><strong>Docker</strong></td></tr>
+      <tr><td>Root Directory</td><td>Edit → digitem <code>projeto/api</code></td></tr>
+      <tr><td>Dockerfile Path</td><td><code>./docker/Dockerfile.contribuintes</code> (ou <code>docker/Dockerfile.contribuintes</code>)</td></tr>
+      <tr><td>Instance Type</td><td><strong>Free</strong></td></tr>
+    </table>
+    <p>Secção <strong>Environment Variables</strong> → Add (um por um):</p>
+    <table>
+      <tr><th>Key</th><th>Value</th></tr>
+      <tr><td><code>ASPNETCORE_ENVIRONMENT</code></td><td><code>Production</code></td></tr>
+      <tr><td><code>ConnectionStrings__Default</code></td><td>cole a <strong>String 1</strong> do Neon (Bloco de Notas)</td></tr>
+      <tr><td><code>Jwt__Key</code></td><td><code>InssMozambique2026ChaveSecretaMin32Chars!</code></td></tr>
+      <tr><td><code>Jwt__Issuer</code></td><td><code>InssContribuintes</code></td></tr>
+      <tr><td><code>Jwt__Audience</code></td><td><code>InssPortal</code></td></tr>
+    </table>
+    <p>Cliquem <strong>Create Web Service</strong>.</p>
+    <div class="bloco"><span class="aparece">APARECE</span> log de build (vários minutos). Esperem ficar <strong>Live</strong> / verde.</div>
+    <div class="ok">No topo da página do serviço há a URL <code>https://algo.onrender.com</code> — colem no campo <strong>URL API Contribuintes</strong> em <a href="#minhas-urls">Minhas URLs</a>.</div>
+  </div>
+
+  <div class="caso cloud" id="c5">
+    <div class="tag">C5 — Render: 2ª API (Benefícios)</div>
+    <p>Repitam New + → Web Service → <strong>mesmo</strong> repositório.</p>
+    <table>
+      <tr><th>Campo</th><th>Valor</th></tr>
+      <tr><td>Name</td><td><code>inss-benef-</code> + vosso nome</td></tr>
+      <tr><td>Root Directory</td><td><code>projeto/api</code></td></tr>
+      <tr><td>Dockerfile Path</td><td><code>docker/Dockerfile.beneficios</code></td></tr>
+      <tr><td>Instance</td><td>Free</td></tr>
+      <tr><td><code>ConnectionStrings__Default</code></td><td><strong>String 2</strong> (database <code>inss_beneficios</code>)</td></tr>
+      <tr><td>JWT (3 keys)</td><td>iguais ao C4</td></tr>
+    </table>
+    <div class="ok">Colem a 2ª URL no campo <strong>URL API Benefícios</strong> em <a href="#minhas-urls">Minhas URLs</a>.</div>
+  </div>
+
+  <div class="caso cloud" id="c6">
+    <div class="tag">C6 — Vercel: publicar o portal</div>
+    <div class="bloco"><span class="onde">ONDE</span> <a href="https://vercel.com/dashboard" target="_blank" rel="noopener">vercel.com/dashboard</a></div>
+    <ol>
+      <li><strong>Add New…</strong> → <strong>Project</strong></li>
+      <li>Importem o repo <code>inss-fiap-...</code> (botão Import)</li>
+      <li>Antes de Deploy, cliquem em <strong>Root Directory</strong> → Edit → digitem <code>projeto/app</code> → Continue</li>
+      <li>Framework deve aparecer <strong>Vite</strong> (se não, escolham Vite)</li>
+      <li>Abram <strong>Environment Variables</strong> e adicionem <strong>duas</strong>:</li>
+    </ol>
+    <table>
+      <tr><th>Key</th><th>Value (copiar de Minhas URLs)</th></tr>
+      <tr><td><code>VITE_CONTRIBUINTES_API</code></td><td>campo URL API Contribuintes (sem / no fim)</td></tr>
+      <tr><td><code>VITE_BENEFICIOS_API</code></td><td>campo URL API Benefícios (sem / no fim)</td></tr>
+    </table>
+    <ol start="6">
+      <li>Cliquem <strong>Deploy</strong></li>
+      <li>Esperem o build terminar (1–3 min)</li>
+    </ol>
+    <div class="bloco"><span class="aparece">APARECE</span> “Congratulations” + botão Visit</div>
+    <div class="ok">Colem a URL <code>https://….vercel.app</code> no campo <strong>URL do portal (Vercel)</strong> em <a href="#minhas-urls">Minhas URLs</a>.</div>
+  </div>
+
+  <div class="caso cloud" id="c7">
+    <div class="tag">C7 — CORS (senão o login falha)</div>
+    <div class="bloco"><span class="onde">ONDE</span> Render → abram o serviço <strong>Contribuintes</strong></div>
+    <ol>
+      <li>Menu esquerdo: <strong>Environment</strong></li>
+      <li>Add Environment Variable:</li>
+    </ol>
+    <pre>Key:   Cors__Origins
+Value: https://SEU-PROJETO.vercel.app</pre>
+    <p>(cole a URL Vercel de <a href="#minhas-urls">Minhas URLs</a> · <strong>sem</strong> barra no final)</p>
+    <ol start="3">
+      <li>Save · esperem redeploy</li>
+      <li>Repitam <strong>igual</strong> no serviço Benefícios</li>
+    </ol>
+    <div class="aviso">Se esquecerem o CORS: no portal aparece erro de rede / Failed to fetch.</div>
+  </div>
+
+  <div class="caso cloud" id="c8">
+    <div class="tag">C8 — Testar a URL de VOCÊS</div>
+    <ol>
+      <li>Abram no Chrome a URL Contribuintes do Render · esperem carregar (pode demorar 1 min — Free dorme)</li>
+      <li>Abram a URL Benefícios do Render · esperem</li>
+      <li>Abram a URL <strong>Vercel</strong> de vocês</li>
+      <li>Login: usuário <code>admin</code> · senha <code>123</code></li>
+      <li>Devem ver a lista de contribuintes</li>
+      <li>Cliquem em um nome · depois criem um contribuinte novo (NUIT com 9 dígitos)</li>
+      <li>Vão em pedidos / benefícios · criem um pedido</li>
+    </ol>
+    <div class="bloco"><span class="aparece">SUCESSO</span> se lista + criar funcionarem na <strong>sua</strong> URL Vercel.</div>
+    <div class="aviso">
+      Portal vazio? Esperem as APIs acordarem · F5 · confira CORS e se as <code>VITE_*</code> estão certas
+      (se mudarem env na Vercel, façam <strong>Redeploy</strong>).
+    </div>
+  </div>
+
+  <h2>Checklist final</h2>
+  <ul>
+    <li>[ ] <code>dotnet test</code> unitários verdes</li>
+    <li>[ ] Repo GitHub meu com pastas <code>projeto</code></li>
+    <li>[ ] Neon com <code>inss_beneficios</code> criado</li>
+    <li>[ ] 2 URLs Render Live</li>
+    <li>[ ] 1 URL Vercel com login admin/123</li>
+    <li>[ ] CORS preenchido nas 2 APIs</li>
+  </ul>
+
+  <div class="ok">Slides: <a href="slides-testes-nuvem.html"><strong>slides-testes-nuvem.html</strong></a> · um passo por tela.</div>
+</body>
+</html>

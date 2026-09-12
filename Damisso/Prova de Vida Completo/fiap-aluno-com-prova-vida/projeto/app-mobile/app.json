@@ -1,0 +1,60 @@
+{
+  "expo": {
+    "name": "INSS Prova de Vida",
+    "slug": "inss-prova-vida-mz",
+    "version": "1.0.1",
+    "orientation": "portrait",
+    "userInterfaceStyle": "light",
+    "icon": "./assets/icon.png",
+    "splash": {
+      "image": "./assets/splash.png",
+      "resizeMode": "contain",
+      "backgroundColor": "#0d47a1"
+    },
+    "ios": {
+      "supportsTablet": true,
+      "bundleIdentifier": "mz.gov.inss.provavida"
+    },
+    "android": {
+      "adaptiveIcon": {
+        "foregroundImage": "./assets/adaptive-icon.png",
+        "backgroundColor": "#0d47a1"
+      },
+      "package": "mz.gov.inss.provavida",
+      "permissions": [
+        "android.permission.CAMERA",
+        "android.permission.INTERNET"
+      ]
+    },
+    "plugins": [
+      [
+        "expo-camera",
+        {
+          "cameraPermission": "Permitir câmera para Prova de Vida com reconhecimento facial.",
+          "microphonePermission": false,
+          "recordAudioAndroid": false
+        }
+      ],
+      [
+        "expo-build-properties",
+        {
+          "android": {
+            "usesCleartextTraffic": true,
+            "minSdkVersion": 24,
+            "kotlinVersion": "1.9.25"
+          }
+        }
+      ],
+      "expo-asset",
+      "expo-font"
+    ],
+    "extra": {
+      "contribuintesApiUrl": "http://192.168.0.14:5001",
+      "provaVidaApiUrl": "http://192.168.0.14:5003",
+      "eas": {
+        "projectId": "cae0cf9c-56d8-454f-9ed7-474e5e3a8123"
+      }
+    },
+    "owner": "fernandolopesfiap"
+  }
+}

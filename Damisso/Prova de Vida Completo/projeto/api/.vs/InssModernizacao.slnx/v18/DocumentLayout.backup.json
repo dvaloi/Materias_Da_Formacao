@@ -1,0 +1,86 @@
+{
+  "Version": 1,
+  "WorkspaceRootPath": "C:\\fiap\\projeto\\api\\",
+  "Documents": [
+    {
+      "AbsoluteMoniker": "D:0:0:{16CA093D-C759-8282-8396-178BF348353C}|src\\Beneficios.Api\\Beneficios.Api.csproj|c:\\fiap\\projeto\\api\\src\\beneficios.api\\properties\\launchsettings.json||{90A6B3A7-C1A3-4009-A288-E2FF89E96FA0}",
+      "RelativeMoniker": "D:0:0:{16CA093D-C759-8282-8396-178BF348353C}|src\\Beneficios.Api\\Beneficios.Api.csproj|solutionrelative:src\\beneficios.api\\properties\\launchsettings.json||{90A6B3A7-C1A3-4009-A288-E2FF89E96FA0}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{A0AB7262-0730-DDE4-6DBB-8445CB3078A8}|tests\\Contribuintes.UnitTests\\Contribuintes.UnitTests.csproj|c:\\fiap\\projeto\\api\\tests\\contribuintes.unittests\\domain\\contribuintetests.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{A0AB7262-0730-DDE4-6DBB-8445CB3078A8}|tests\\Contribuintes.UnitTests\\Contribuintes.UnitTests.csproj|solutionrelative:tests\\contribuintes.unittests\\domain\\contribuintetests.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{7A20D0E1-8E4D-61AB-F2AC-E717D361144B}|tests\\Beneficios.UnitTests\\Beneficios.UnitTests.csproj|c:\\fiap\\projeto\\api\\tests\\beneficios.unittests\\domain\\pedidobeneficiotests.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{7A20D0E1-8E4D-61AB-F2AC-E717D361144B}|tests\\Beneficios.UnitTests\\Beneficios.UnitTests.csproj|solutionrelative:tests\\beneficios.unittests\\domain\\pedidobeneficiotests.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{A0AB7262-0730-DDE4-6DBB-8445CB3078A8}|tests\\Contribuintes.UnitTests\\Contribuintes.UnitTests.csproj|c:\\fiap\\projeto\\api\\tests\\contribuintes.unittests\\application\\contribuinteservicetests.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{A0AB7262-0730-DDE4-6DBB-8445CB3078A8}|tests\\Contribuintes.UnitTests\\Contribuintes.UnitTests.csproj|solutionrelative:tests\\contribuintes.unittests\\application\\contribuinteservicetests.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    }
+  ],
+  "DocumentGroupContainers": [
+    {
+      "Orientation": 0,
+      "VerticalTabListWidth": 256,
+      "DocumentGroups": [
+        {
+          "DockedWidth": 200,
+          "SelectedChildIndex": 0,
+          "Children": [
+            {
+              "$type": "Document",
+              "DocumentIndex": 0,
+              "Title": "launchSettings.json",
+              "DocumentMoniker": "C:\\fiap\\projeto\\api\\src\\Beneficios.Api\\Properties\\launchSettings.json",
+              "RelativeDocumentMoniker": "src\\Beneficios.Api\\Properties\\launchSettings.json",
+              "ToolTip": "C:\\fiap\\projeto\\api\\src\\Beneficios.Api\\Properties\\launchSettings.json",
+              "RelativeToolTip": "src\\Beneficios.Api\\Properties\\launchSettings.json",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAkAAAAJAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001642|",
+              "WhenOpened": "2026-08-26T20:19:42.75Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 1,
+              "Title": "ContribuinteTests.cs",
+              "DocumentMoniker": "C:\\fiap\\projeto\\api\\tests\\Contribuintes.UnitTests\\Domain\\ContribuinteTests.cs",
+              "RelativeDocumentMoniker": "tests\\Contribuintes.UnitTests\\Domain\\ContribuinteTests.cs",
+              "ToolTip": "C:\\fiap\\projeto\\api\\tests\\Contribuintes.UnitTests\\Domain\\ContribuinteTests.cs",
+              "RelativeToolTip": "tests\\Contribuintes.UnitTests\\Domain\\ContribuinteTests.cs",
+              "ViewState": "AgIAADwAAAAAAAAAAAAuwD0AAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-08-26T17:52:14.558Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 2,
+              "Title": "PedidoBeneficioTests.cs",
+              "DocumentMoniker": "C:\\fiap\\projeto\\api\\tests\\Beneficios.UnitTests\\Domain\\PedidoBeneficioTests.cs",
+              "RelativeDocumentMoniker": "tests\\Beneficios.UnitTests\\Domain\\PedidoBeneficioTests.cs",
+              "ToolTip": "C:\\fiap\\projeto\\api\\tests\\Beneficios.UnitTests\\Domain\\PedidoBeneficioTests.cs",
+              "RelativeToolTip": "tests\\Beneficios.UnitTests\\Domain\\PedidoBeneficioTests.cs",
+              "ViewState": "AgIAAAMAAAAAAAAAAAAAABAAAAAqAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-08-26T17:47:38.288Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 3,
+              "Title": "ContribuinteServiceTests.cs",
+              "DocumentMoniker": "C:\\fiap\\projeto\\api\\tests\\Contribuintes.UnitTests\\Application\\ContribuinteServiceTests.cs",
+              "RelativeDocumentMoniker": "tests\\Contribuintes.UnitTests\\Application\\ContribuinteServiceTests.cs",
+              "ToolTip": "C:\\fiap\\projeto\\api\\tests\\Contribuintes.UnitTests\\Application\\ContribuinteServiceTests.cs",
+              "RelativeToolTip": "tests\\Contribuintes.UnitTests\\Application\\ContribuinteServiceTests.cs",
+              "ViewState": "AgIAABIAAAAAAAAAAAAYwAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-08-26T15:44:14.661Z"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

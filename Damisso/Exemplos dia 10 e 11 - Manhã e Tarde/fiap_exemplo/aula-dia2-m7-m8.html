@@ -1,0 +1,2083 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Portal INSS — M7 e M8</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@600;700&family=Source+Sans+3:wght@600;700;800;900&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --green: #006233; --green-dark: #004d28; --green-soft: #e6f4ec;
+      --gold: #c9a227; --gold-soft: #fff8e1; --red: #ce1126; --red-soft: #fde8ea;
+      --blue: #0b3d91; --border: #94a3b8;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    html { font-size: 20px; }
+    body {
+      font-family: "Source Sans 3", "Segoe UI", Calibri, sans-serif;
+      background: #fff; color: #111; overflow: hidden; height: 100vh; font-weight: 700;
+      letter-spacing: .01em; text-rendering: optimizeLegibility;
+      -webkit-font-smoothing: antialiased;
+    }
+    .flag-bar {
+      position: fixed; top: 0; left: 0; right: 0; height: 10px; z-index: 200;
+      background: linear-gradient(90deg,#006233 0 25%,#111 25% 50%,#fcd116 50% 75%,#ce1126 75% 100%);
+    }
+    .progress {
+      position: fixed; top: 10px; left: 0; height: 6px;
+      background: var(--red); z-index: 100; transition: width .25s;
+    }
+    .slide {
+      display: none; height: 100vh; padding: 0.65rem 1.5rem 3.5rem;
+      flex-direction: column; animation: fadeIn .2s ease;
+      overflow: hidden;
+    }
+    .slide.active { display: flex; }
+    .slide.fill { justify-content: center; text-align: center; }
+    @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+    h1 {
+      font-size: 2.9rem; font-weight: 800; color: var(--green);
+      line-height: 1.08; margin-bottom: .45rem; letter-spacing: -.03em;
+    }
+    h2 {
+      font-size: 2rem; color: var(--green); font-weight: 800;
+      border-bottom: 4px solid var(--gold); padding-bottom: .2rem; margin-bottom: .45rem;
+      letter-spacing: -.02em; flex-shrink: 0;
+    }
+    p, li { font-size: 1.32rem; line-height: 1.3; font-weight: 700; margin-bottom: .22rem; }
+    ul, ol { padding-left: 1.5rem; }
+    strong { font-weight: 900; }
+    code {
+      font-family: "IBM Plex Mono", Consolas, monospace; background: #111; color: #e8f5ee;
+      padding: .08rem .35rem; border-radius: 5px; font-size: .92em; font-weight: 700;
+      white-space: normal; overflow-wrap: anywhere; word-break: break-word;
+    }
+    .highlight { color: var(--red); font-size: 2rem; font-weight: 800; margin-bottom: .5rem; }
+    .content {
+      flex: 1 1 auto; display: flex; flex-direction: column;
+      justify-content: flex-start; gap: 0.45rem; min-height: 0; min-width: 0;
+      width: 100%; overflow: hidden;
+    }
+    .fluxo {
+      display: flex; flex-wrap: wrap; align-items: stretch;
+      justify-content: center; gap: 0.65rem; margin: .1rem 0;
+      flex-shrink: 0;
+    }
+    .fluxo .passo {
+      flex: 1 1 7.5rem; background: var(--green-soft); border: 3px solid var(--green);
+      border-radius: 10px; padding: .55rem .65rem; text-align: center;
+      font-size: 1.1rem; font-weight: 700; line-height: 1.25;
+    }
+    .fluxo .passo small { display: block; font-weight: 700; font-size: .88em; margin-top: .15rem; }
+    .fluxo .seta {
+      align-self: center; color: var(--red); font-weight: 900;
+      font-size: 1.8rem;
+    }
+    .callout {
+      background: var(--gold-soft); border: 3px solid var(--gold); border-left: 10px solid var(--gold);
+      border-radius: 12px; padding: .85rem 1.15rem;
+      font-size: 1.5rem; font-weight: 700; line-height: 1.3;
+    }
+    .fill .callout { max-width: 46rem; margin: 1rem auto; text-align: left; }
+    .callout.green { background: var(--green-soft); border-color: var(--green); border-left-color: var(--green); }
+    .callout.red { background: var(--red-soft); border-color: var(--red); border-left-color: var(--red); }
+    .tag {
+      display: inline-block; background: var(--blue); color: #fff; font-weight: 900;
+      padding: .25rem .65rem; border-radius: 8px; font-size: 1.25rem; margin-bottom: .25rem;
+    }
+    .tag.ok { background: var(--green); }
+    .tag.gold { background: var(--gold); color: #111; }
+    table { width: 100%; border-collapse: collapse; font-size: 1.3rem; }
+    th, td { border: 2px solid var(--border); padding: .45rem .6rem; text-align: left; vertical-align: top; }
+    th { background: var(--green); color: #fff; }
+    .nav-bar {
+      position: fixed; bottom: 0; left: 0; right: 0; background: #fff;
+      padding: .35rem 1.2rem; display: flex; justify-content: space-between; align-items: center;
+      border-top: 4px solid var(--green); z-index: 100;
+    }
+    .nav-bar button {
+      background: var(--green); color: #fff; border: none; padding: .4rem 1.1rem;
+      border-radius: 8px; cursor: pointer; font-size: 1.05rem; font-weight: 800; min-width: 120px;
+    }
+    .nav-bar button:disabled { opacity: .35; }
+    .slide-counter { font-size: 1.25rem; font-weight: 900; }
+    .hint {
+      position: fixed; top: .95rem; right: .95rem; font-size: 1rem; font-weight: 800; color: #444;
+      z-index: 150; background: #fff; border: 2px solid var(--border); border-radius: 8px; padding: .35rem .6rem;
+    }
+    .tela {
+      border: 3px solid #3c3c3c; border-radius: 8px; overflow: hidden;
+      font-family: Consolas, "IBM Plex Mono", "Courier New", monospace;
+      flex: 0 1 auto; min-height: 0; max-height: 100%;
+      display: flex; flex-direction: column;
+      box-shadow: 0 0 0 1px #252526;
+    }
+    .tela-bar {
+      background: #2d2d30; color: #cccccc; padding: .35rem .7rem;
+      font-size: 1rem; font-weight: 700;
+      border-bottom: 1px solid #1e1e1e;
+      border-left: 3px solid #007acc;
+      flex-shrink: 0;
+    }
+    .tela-body {
+      background: #1e1e1e; color: #d4d4d4; padding: .55rem .8rem;
+      font-size: 1.05rem; line-height: 1.38; white-space: pre-wrap;
+      overflow-wrap: anywhere; flex: 1 1 auto; min-height: 0;
+      overflow: auto; font-weight: 500;
+    }
+    /* Cores do Visual Studio Dark */
+    .tela-body .k, .term .k { color: #569cd6; }   /* keyword: public, if, return, new */
+    .tela-body .t, .term .t, .tela-body .hi { color: #4ec9b0; } /* tipo: class, string, Contribuinte */
+    .tela-body .s, .term .s { color: #ce9178; }   /* string */
+    .tela-body .c, .term .c { color: #6a9955; }   /* comentÃ¡rio */
+    .tela-body .a, .term .a { color: #9cdcfe; }   /* atributo / parÃ¢metro */
+    .tela-body .at, .term .at { color: #c586c0; } /* [HttpGet] */
+    .tela-body .m, .term .m { color: #dcdcaa; }   /* mÃ©todo */
+    .tela-body .n, .term .n { color: #b5cea8; }   /* nÃºmero */
+    .tela-body .mark { background: #264f78; color: #fff; }
+    .tela-body.denso {
+      font-size: 1rem; line-height: 1.36; padding: .5rem .75rem;
+    }
+    .legenda-vs {
+      display: flex; flex-wrap: wrap; gap: .35rem .7rem; margin-top: .35rem;
+      font-size: .85rem !important; font-weight: 700; font-family: Consolas, monospace;
+    }
+    .legenda-vs span { font-size: .85rem !important; }
+    .legenda-vs .k { color: #569cd6; }
+    .legenda-vs .t { color: #4ec9b0; }
+    .legenda-vs .s { color: #ce9178; }
+    .legenda-vs .c { color: #6a9955; }
+    .legenda-vs .at { color: #c586c0; }
+    .legenda-vs .m { color: #dcdcaa; }
+    pre.term {
+      background: #1e1e1e; color: #d4d4d4; padding: .65rem .85rem; border-radius: 8px;
+      border: 2px solid #3c3c3c; font-family: Consolas, "IBM Plex Mono", monospace;
+      font-size: 1.1rem; line-height: 1.4; white-space: pre-wrap; overflow-wrap: anywhere;
+      max-width: 100%; font-weight: 500; overflow: auto; flex: 0 1 auto;
+    }
+    .split.codigo {
+      grid-template-columns: minmax(0, 1.9fr) minmax(9.5rem, 0.65fr); gap: .85rem;
+    }
+    .arvore {
+      background: #252526; color: #cccccc; border: 1px solid #3c3c3c; border-radius: 6px;
+      padding: 0; font-family: "Segoe UI", Consolas, sans-serif;
+      font-size: 1.05rem; line-height: 1.4; font-weight: 600;
+      flex: 0 1 auto; min-height: 0; overflow: auto;
+    }
+    .arvore .bar {
+      background: #2d2d30; color: #cccccc; font-size: .92rem; font-weight: 700;
+      border-bottom: 1px solid #3c3c3c; padding: .4rem .7rem;
+      display: flex; align-items: center; gap: .4rem;
+    }
+    .arvore .bar::before {
+      content: ""; width: 10px; height: 10px; border-radius: 2px; background: #007acc;
+    }
+    .arvore ul { list-style: none; margin: 0; padding: .25rem 0 .35rem; }
+    .arvore li {
+      padding: .08rem .7rem .08rem 1rem; color: #cccccc;
+      font-size: .95rem !important; line-height: 1.25; margin-bottom: 0 !important;
+    }
+    .arvore li.indent { padding-left: 1.8rem; }
+    .arvore li.indent2 { padding-left: 2.6rem; }
+    .arvore .pasta::before { content: ""; }
+    .arvore .arq::before { content: ""; }
+    .arvore .cs::before { content: ""; }
+    .arvore .pasta { color: #dcb67a; }
+    .arvore .arq, .arvore .cs { color: #9cdcfe; }
+    .arvore .novo { color: #b5cea8; font-weight: 800; }
+    .arvore .foco {
+      background: #094771; border-left: 3px solid #007acc; padding-left: calc(1rem - 3px);
+    }
+    .arvore .foco.indent { padding-left: calc(1.8rem - 3px); }
+    .arvore .foco.indent2 { padding-left: calc(2.6rem - 3px); }
+    .arvore .hint { color: #858585; font-size: .88rem; font-weight: 600; margin-left: .35rem; }
+    .vs-path {
+      display: flex; flex-wrap: wrap; align-items: center; gap: .25rem;
+      margin-bottom: .35rem;
+    }
+    .vs-path .chip {
+      background: #2d2d30; color: #e0e0e0; border: 1px solid #3c3c3c;
+      border-radius: 4px; padding: .2rem .55rem; font-size: 1rem; font-weight: 700;
+      font-family: "Segoe UI", sans-serif;
+    }
+    .vs-path .sep { color: #858585; font-weight: 800; font-size: 1.1rem; }
+    .vs-path .chip.accent { background: #007acc; border-color: #007acc; color: #fff; }
+    .nuget {
+      background: #1e1e1e; border: 1px solid #3c3c3c; border-radius: 6px; overflow: hidden;
+    }
+    .nuget .nb {
+      background: #2d2d30; color: #ccc; padding: .4rem .7rem; font-size: .95rem; font-weight: 700;
+      border-bottom: 1px solid #3c3c3c;
+    }
+    .nuget .nb span { color: #007acc; margin-right: .5rem; }
+    .nuget .row {
+      display: flex; justify-content: space-between; align-items: center;
+      padding: .55rem .75rem; border-bottom: 1px solid #2d2d30;
+      font-family: Consolas, monospace; font-size: 1.05rem; color: #9cdcfe; font-weight: 700;
+    }
+    .nuget .row:last-child { border-bottom: none; }
+    .nuget .btn {
+      background: #0e639c; color: #fff; border-radius: 3px; padding: .2rem .55rem;
+      font-size: .9rem; font-weight: 800; font-family: "Segoe UI", sans-serif;
+    }
+    .term-bar {
+      background: #2d2d30; color: #ccc; padding: .3rem .65rem; font-size: .9rem; font-weight: 700;
+      border-radius: 6px 6px 0 0; border: 1px solid #3c3c3c; border-bottom: none;
+      font-family: "Segoe UI", sans-serif;
+    }
+    pre.term.vs {
+      border-radius: 0 0 6px 6px; margin-top: 0; border-color: #3c3c3c;
+    }
+    .passo-limpo {
+      font-size: 1.25rem !important; margin-bottom: .45rem !important; font-weight: 700;
+    }
+    .slide.compact p, .slide.compact li { font-size: 1.25rem; margin-bottom: .18rem; }
+    .slide.compact h2 { margin-bottom: .3rem; }
+    .slide.compact ol, .slide.compact ul { margin-bottom: 0; }
+    .slide.mapa-final .split { align-items: stretch; }
+    .slide.mapa-final .passo-limpo { margin-bottom: .2rem !important; }
+    .split {
+      flex: 1; display: grid; grid-template-columns: minmax(0, 1.5fr) minmax(12rem, 0.9fr); gap: 1.2rem;
+      min-height: 0; min-width: 0; align-items: stretch; width: 100%;
+    }
+    .split .col {
+      display: flex; flex-direction: column; gap: 0.4rem;
+      min-height: 0; min-width: 0; overflow: hidden; max-height: 100%;
+    }
+    .split .col > p,
+    .split .col > ol,
+    .split .col > ul,
+    .split .col > .passo-limpo,
+    .split .col > .vs-path,
+    .split .col > .tag,
+    .split .col > .legenda-vs { flex-shrink: 0; }
+    .cards {
+      display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 0.9rem; flex: 0 0 auto;
+      align-items: stretch;
+    }
+    .cards.dois { grid-template-columns: 1fr 1fr; }
+    .card {
+      background: #f3f6f4; border: 2px solid var(--border); border-left: 8px solid var(--green);
+      border-radius: 12px; padding: 0.85rem 1rem; display: flex; flex-direction: column;
+      justify-content: flex-start; min-width: 0; overflow-wrap: anywhere;
+    }
+    .card h3 {
+      color: var(--green); font-size: 1.35rem;
+      margin-bottom: .25rem; font-weight: 800; letter-spacing: -.02em; line-height: 1.2;
+    }
+    .card p, .slide.compact .card p, .slide.compact .card li {
+      font-size: 1.15rem; margin-bottom: .15rem; font-weight: 700;
+      line-height: 1.3;
+    }
+    .lado {
+      background: #1f2a22; color: #f4f6f5; border-radius: 14px; padding: 1.15rem 1.25rem;
+      display: flex; flex-direction: column; gap: 0.55rem;
+      min-height: 0; min-width: 0; overflow-wrap: anywhere; align-self: stretch;
+    }
+    .lado h3 { color: #fcd116; font-size: 1.4rem; font-weight: 800; letter-spacing: -.02em; }
+    .lado ol, .lado ul { margin: 0; padding-left: 1.2rem; }
+    .lado li, .lado p {
+      color: #f4f6f5; font-size: 1.15rem !important;
+      margin-bottom: .35rem; font-weight: 700; line-height: 1.3;
+      overflow-wrap: anywhere;
+    }
+    .lado .rodape { margin-top: auto; font-size: 1.05rem !important; opacity: .95; font-weight: 700; }
+    .explica {
+      background: #eef3ff; border: 2px solid #9cb4e8; border-left: 8px solid var(--blue);
+      border-radius: 0 10px 10px 0; padding: .55rem .9rem;
+      font-size: 1.35rem; font-weight: 700; line-height: 1.35;
+    }
+  </style>
+</head>
+<body>
+  <div class="flag-bar"></div>
+  <div class="progress" id="progress" style="width:2%"></div>
+  <div class="hint">← → · PageUp/Down · F11</div>
+
+  <div class="deck">
+
+    <section class="slide fill active">
+      <h1>Construção de APIs<br>com ASP.NET Core</h1>
+      <p class="highlight">Dia 2 — do caderno ao posto organizado</p>
+      <p>Profº Fernando Lopes Cardoso Ferreira</p>
+      <p>11 de setembro de 2026 · G2 · INSS Moçambique</p>
+    </section>
+
+    <section class="slide compact">
+      <h2>O que já temos (Dia 1)</h2>
+      <div class="content">
+        <div class="split">
+          <div class="col">
+            <div class="cards dois">
+              <div class="card">
+                <h3>M5 · manhã</h3>
+                <p>API no Swagger. Contribuinte no projetor. Pedido vocês sozinhos. Lista na memória.</p>
+              </div>
+              <div class="card">
+                <h3>M6 · tarde</h3>
+                <p>Mesmo <code>InssApi</code>. <code>AppDbContext</code> · migration · <code>inss.db</code>. A Ana não some no F5.</p>
+              </div>
+            </div>
+          </div>
+          <aside class="lado">
+            <h3>Ainda falta</h3>
+            <p>O pedido não está ligado à ficha da Ana.</p>
+            <p>E o balcão ainda vai sozinho ao caderno.</p>
+            <p class="rodape">Hoje: M7 de manhã · M8 à tarde.</p>
+          </aside>
+        </div>
+      </div>
+    </section>
+
+    <section class="slide compact">
+      <h2>O dia inteiro</h2>
+      <div class="content">
+        <div class="split">
+          <div class="col">
+            <div class="cards dois">
+              <div class="card">
+                <h3>Manhã · M7 · 09:00–13:00</h3>
+                <p>Relação 1:N · LINQ · projeção · paginação · transação · concorrência · async · falhas.</p>
+              </div>
+              <div class="card">
+                <h3>Tarde · M8 · 14:00–18:00</h3>
+                <p>DI e ciclos de vida · Controller / Service / Repository · middleware · logs · correlação.</p>
+              </div>
+            </div>
+          </div>
+          <aside class="lado">
+            <h3>Como ontem</h3>
+            <p>Primeiro conceitos. Depois prática no mesmo <code>InssApi</code>.</p>
+            <p class="rodape">Alunos: o InssApi de ontem. Eu: InssApiDia2 / InssApiTardeDia2.</p>
+          </aside>
+        </div>
+      </div>
+    </section>
+
+    <section class="slide compact">
+      <h2>Abram o InssApi de ontem</h2>
+      <div class="content">
+        <div class="split">
+          <div class="col">
+            <p class="passo-limpo">Visual Studio 2026 → abrir a solução de ontem:</p>
+            <div class="arvore">
+              <div class="bar">Gerenciador de Soluções</div>
+              <ul>
+                <li class="pasta">InssApi</li>
+                <li class="indent pasta">Controllers</li>
+                <li class="indent2 cs">ContribuintesController.cs</li>
+                <li class="indent2 cs">PedidosController.cs</li>
+                <li class="indent pasta">Data</li>
+                <li class="indent2 cs">AppDbContext.cs</li>
+                <li class="indent pasta">Migrations</li>
+                <li class="indent pasta">Models</li>
+                <li class="indent arq">inss.db</li>
+                <li class="indent cs">Program.cs</li>
+              </ul>
+            </div>
+          </div>
+          <aside class="lado">
+            <h3>Prova rápida</h3>
+            <p>F5 → Swagger → GET contribuintes.</p>
+            <p>A Ana tem que estar lá.</p>
+            <p class="rodape">Se não estiver: ontem faltou update ou SaveChanges.</p>
+          </aside>
+        </div>
+      </div>
+    </section>
+
+    <section class="slide fill">
+      <h1>M7 · Manhã</h1>
+      <p class="highlight">Dados avançados e operações assíncronas</p>
+      <p>Primeiro os conceitos. Depois a prática.</p>
+      <p>09:00 às 13:00</p>
+    </section>
+
+    <section class="slide fill">
+      <h1>Manhã · Conceitos</h1>
+      <p class="highlight">Ainda não digitamos.</p>
+      <p>O que é cada coisa · no InssApi de vocês</p>
+    </section>
+
+    <section class="slide compact">
+      <h2>Palavras da manhã (decorar)</h2>
+      <div class="content">
+        <div class="split">
+          <div class="col">
+            <table>
+              <tr><th>Palavra</th><th>No InssApi</th></tr>
+              <tr><td>Relação 1:N</td><td>1 Ana → vários pedidos</td></tr>
+              <tr><td>LINQ</td><td>Pedir ao <code>inss.db</code> em C#</td></tr>
+              <tr><td>Projeção</td><td>JSON só com o que a tela precisa</td></tr>
+              <tr><td>Paginação</td><td><code>?pagina=1&amp;tamanho=2</code></td></tr>
+              <tr><td>Transação</td><td>Tudo grava ou nada grava</td></tr>
+              <tr><td>async</td><td>Esperar o arquivo sem travar a fila</td></tr>
+            </table>
+          </div>
+          <aside class="lado">
+            <h3>Vocês já têm</h3>
+            <p>Ana no <code>inss.db</code>.</p>
+            <p>Pedido com <code>contribuinteId</code>.</p>
+            <p class="rodape">Falta ligar e consultar direito.</p>
+          </aside>
+        </div>
+      </div>
+    </section>
+
+    <section class="slide compact">
+      <h2>1 — O pedido ainda está solto</h2>
+      <div class="content">
+        <div class="split">
+          <div class="col">
+            <p>Ontem o <code>PedidoBeneficio</code> tem <code>ContribuinteId</code> — um número.</p>
+            <p>O EF <strong>não junta</strong> as tabelas sozinho. GET pedidos devolve id, não o nome da Ana.</p>
+            <div class="tela">
+              <div class="tela-bar">Hoje no JSON (solto)</div>
+              <div class="tela-body">{ "id": 1, "contribuinteId": 1, "tipo": "Velhice", "status": "Aberto" }</div>
+            </div>
+          </div>
+          <aside class="lado">
+            <h3>Meta</h3>
+            <p>1 Contribuinte → <strong>N</strong> Pedidos.</p>
+            <p>Ana Mucavel</p>
+            <p>· Pedido velhice</p>
+            <p>· Pedido invalidez</p>
+            <p class="rodape">Como no balcão: a ficha tem os processos.</p>
+          </aside>
+        </div>
+      </div>
+    </section>
+
+    <section class="slide compact">
+      <h2>2 — O que é relação 1:N</h2>
+      <div class="content">
+        <div class="split">
+          <div class="col">
+            <p class="passo-limpo"><strong>1:N</strong> = um lado tem vários do outro. Uma Ana, muitos pedidos. Não o contrário.</p>
+            <p>No C# isso vira uma propriedade de cada lado. O EF usa para juntar as tabelas (JOIN).</p>
+            <div class="tela">
+              <div class="tela-bar">Models — ideia</div>
+              <div class="tela-body denso"><span class="k">class</span> <span class="t">Contribuinte</span> {
+    <span class="k">public</span> <span class="t">List</span>&lt;<span class="t">PedidoBeneficio</span>&gt; Pedidos { <span class="k">get</span>; <span class="k">set</span>; }
+}
+<span class="k">class</span> <span class="t">PedidoBeneficio</span> {
+    <span class="k">public int</span> ContribuinteId { <span class="k">get</span>; <span class="k">set</span>; }
+    <span class="k">public</span> <span class="t">Contribuinte</span>? Contribuinte { <span class="k">get</span>; <span class="k">set</span>; }
+}</div>
+            </div>
+          </div>
+          <aside class="lado">
+            <h3>Nomes</h3>
+            <p><code>ContribuinteId</code> = chave estrangeira (já temos).</p>
+            <p><code>Contribuinte</code> = a ficha do outro lado.</p>
+            <p><code>Pedidos</code> = a gaveta da Ana.</p>
+            <p class="rodape">Sem isto, Include não funciona.</p>
+          </aside>
+        </div>
+      </div>
+    </section>
+
+    <section class="slide compact">
+      <h2>3 — O que é Include</h2>
+      <div class="content">
+        <div class="split">
+          <div class="col">
+            <p><code>Include</code> = “além da Ana, traga os pedidos dela”. Sem isso o EF devolve a ficha e a lista vem vazia.</p>
+            <div class="tela">
+              <div class="tela-bar">GET /api/contribuintes/1/pedidos</div>
+              <div class="tela-body denso"><span class="k">var</span> <span class="a">c</span> = <span class="k">await</span> _db.Contribuintes
+    .AsNoTracking()
+    .Include(x =&gt; x.Pedidos)
+    .FirstOrDefaultAsync(x =&gt; x.Id == <span class="a">id</span>, ct);</div>
+            </div>
+          </div>
+          <aside class="lado">
+            <h3>Tradução</h3>
+            <p>SQL faz JOIN.</p>
+            <p>A Ana volta com a lista de pedidos.</p>
+            <p class="rodape">Sem Include = Pedidos vazio.</p>
+          </aside>
+        </div>
+      </div>
+    </section>
+
+    <section class="slide compact">
+      <h2>4 — O que é LINQ</h2>
+      <div class="content">
+        <div class="split">
+          <div class="col">
+            <p><strong>LINQ</strong> = escrever a pergunta em C#. O EF vira SQL. Vocês não abrem o <code>inss.db</code> à mão.</p>
+            <p>No GET de pedidos: “abertos, ordenados, só o tipo”.</p>
+            <div class="term-bar">Consulta</div>
+            <pre class="term vs">_db.Pedidos
+  .Where(x => x.Status == "Aberto")
+  .OrderBy(x => x.Id)
+  .Select(x => x.Tipo)</pre>
+            <table>
+              <tr><th>Método</th><th>Ideia</th></tr>
+              <tr><td><code>Where</code></td><td>Filtrar</td></tr>
+              <tr><td><code>OrderBy</code></td><td>Ordenar</td></tr>
+              <tr><td><code>Select</code></td><td>Projetar (escolher campos)</td></tr>
+            </table>
+          </div>
+          <aside class="lado">
+            <h3>Performance</h3>
+            <p>O filtro acontece no SQLite — não na memória da API.</p>
+            <p class="rodape">ToListAsync no fim. Antes é só a receita.</p>
+          </aside>
+        </div>
+      </div>
+    </section>
+
+    <section class="slide compact">
+      <h2>5 — Projeção (DTO resumo)</h2>
+      <div class="content">
+        <div class="split">
+          <div class="col">
+            <p><strong>Projeção</strong> = escolher colunas. Em vez da ficha inteira da Ana, o JSON leva só o nome.</p>
+            <p>Ontem o DTO era o formulário do POST. Hoje também é o <strong>resumo da saída</strong>.</p>
+            <div class="tela">
+              <div class="tela-bar">Models/PedidoResumoDto.cs</div>
+              <div class="tela-body denso"><span class="k">public record</span> <span class="t">PedidoResumoDto</span>(
+    <span class="k">int</span> Id, <span class="t">string</span> Tipo, <span class="t">string</span> Status,
+    <span class="t">string</span> NomeContribuinte);</div>
+            </div>
+          </div>
+          <aside class="lado">
+            <h3>Porquê</h3>
+            <p>Não mandamos a ficha inteira da Ana dentro de cada pedido.</p>
+            <p>Só o nome — o portal agradece.</p>
+            <p class="rodape">DTO = formulário de saída.</p>
+          </aside>
+        </div>
+      </div>
+    </section>
+
+    <section class="slide compact">
+      <h2>6 — Paginação (porquê)</h2>
+      <div class="content">
+        <div class="split">
+          <div class="col">
+            <p><strong>Paginação</strong> = não devolver 1000 pedidos de uma vez. O Swagger pede a fatia: página e tamanho.</p>
+            <div class="term-bar">Swagger — query</div>
+            <pre class="term vs">GET /api/pedidos?pagina=1&amp;tamanho=2</pre>
+            <table>
+              <tr><th>Query</th><th>Significado</th></tr>
+              <tr><td><code>pagina</code></td><td>Qual fatia (começa em 1)</td></tr>
+              <tr><td><code>tamanho</code></td><td>Quantos por fatia (máx. 50)</td></tr>
+            </table>
+          </div>
+          <aside class="lado">
+            <h3>SQL</h3>
+            <p><code>Skip</code> + <code>Take</code> = OFFSET / LIMIT.</p>
+            <p class="rodape">Página 1, tamanho 2 → 2 itens. total não muda.</p>
+          </aside>
+        </div>
+      </div>
+    </section>
+
+    <section class="slide compact">
+      <h2>6 — Paginação (código)</h2>
+      <div class="content">
+        <div class="split">
+          <div class="col">
+            <div class="tela">
+              <div class="tela-bar">Skip + Take + Select</div>
+              <div class="tela-body denso"><span class="k">var</span> <span class="a">total</span> = <span class="k">await</span> query.CountAsync(ct);
+<span class="k">var</span> <span class="a">itens</span> = <span class="k">await</span> query
+    .OrderBy(p =&gt; p.Id)
+    .Skip((pagina - <span class="n">1</span>) * tamanho)
+    .Take(tamanho)
+    .Select(p =&gt; <span class="k">new</span> <span class="t">PedidoResumoDto</span>(
+        p.Id, p.Tipo, p.Status, p.Contribuinte!.Nome))
+    .ToListAsync(ct);
+
+<span class="k">return</span> <span class="m">Ok</span>(<span class="k">new</span> { total, pagina, tamanho, itens });</div>
+            </div>
+          </div>
+          <aside class="lado">
+            <h3>JSON</h3>
+            <p><code>total</code> · <code>pagina</code> · <code>tamanho</code> · <code>itens</code></p>
+            <p class="rodape">itens[ ].nomeContribuinte = Ana Mucavel</p>
+          </aside>
+        </div>
+      </div>
+    </section>
+
+    <section class="slide compact">
+      <h2>7 — Transação (tudo ou nada)</h2>
+      <div class="content">
+        <div class="split">
+          <div class="col">
+            <p><strong>Transação</strong> = ou o pedido da Ana grava inteiro, ou não grava nada. Se o <code>SaveChanges</code> falhar no meio, o arquivo volta atrás.</p>
+            <div class="tela">
+              <div class="tela-bar">Ideia no POST do pedido</div>
+              <div class="tela-body denso"><span class="k">await using var</span> <span class="a">tx</span> = <span class="k">await</span> _db.Database.BeginTransactionAsync(ct);
+<span class="k">try</span> {
+    _db.Pedidos.Add(<span class="a">p</span>);
+    <span class="k">await</span> _db.SaveChangesAsync(ct);
+    <span class="k">await</span> <span class="a">tx</span>.CommitAsync(ct);
+} <span class="k">catch</span> {
+    <span class="k">await</span> <span class="a">tx</span>.RollbackAsync(ct);
+    <span class="k">throw</span>;
+}</div>
+            </div>
+          </div>
+          <aside class="lado">
+            <h3>Quando</h3>
+            <p>1 <code>SaveChanges</code> já é uma transação.</p>
+            <p><code>BeginTransaction</code> quando há <strong>vários</strong> passos.</p>
+            <p class="rodape">Erro no meio = nada gravado.</p>
+          </aside>
+        </div>
+      </div>
+    </section>
+
+    <section class="slide compact">
+      <h2>8 — Concorrência</h2>
+      <div class="content">
+        <div class="split">
+          <div class="col">
+            <p><strong>Concorrência</strong> = dois POST ao mesmo tempo (dois alunos, ou dois cliques). Quem ganha? O banco precisa de regra.</p>
+            <table>
+              <tr><th>Risco</th><th>Nesta aula</th></tr>
+              <tr><td>Dois POST com o mesmo NUIT</td><td>Índice único + 400</td></tr>
+              <tr><td>Pedido com ContribuinteId inventado</td><td>400 “inexistente”</td></tr>
+              <tr><td>Dois updates no mesmo id</td><td>Ideia: token de versão (avançado)</td></tr>
+            </table>
+          </div>
+          <aside class="lado">
+            <h3>Hoje</h3>
+            <p>NUIT único no banco (já no Fluent de ontem).</p>
+            <p>Se repetir → <strong>400</strong>, não 500.</p>
+            <p class="rodape">Mensagem clara para o Swagger.</p>
+          </aside>
+        </div>
+      </div>
+    </section>
+
+    <section class="slide compact">
+      <h2>9 — async / await (desempenho)</h2>
+      <div class="content">
+        <div class="split">
+          <div class="col">
+            <p><strong>async / await</strong> = a API espera o <code>inss.db</code> sem bloquear os outros GET. Como mandar foto no WhatsApp e continuar falando.</p>
+            <table>
+              <tr><th>Ontem à tarde</th><th>Hoje</th></tr>
+              <tr><td><code>ToListAsync()</code></td><td><code>ToListAsync(ct)</code></td></tr>
+              <tr><td>Já esperava o arquivo</td><td>Passam o <code>ct</code> em tudo</td></tr>
+            </table>
+            <div class="term-bar">Assinatura</div>
+            <pre class="term vs">public async Task&lt;IActionResult&gt; Listar(..., CancellationToken ct)</pre>
+          </div>
+          <aside class="lado">
+            <h3>CancellationToken</h3>
+            <p>O aluno fechou o browser → paramos a query.</p>
+            <p class="rodape">Passem o <code>ct</code> até o EF.</p>
+          </aside>
+        </div>
+      </div>
+    </section>
+
+    <section class="slide compact">
+      <h2>10 — Falhas de persistência</h2>
+      <div class="content">
+        <div class="split">
+          <div class="col">
+            <table>
+              <tr><th>Erro</th><th>Resposta</th></tr>
+              <tr><td>ContribuinteId inexistente</td><td><strong>400</strong> + mensagem</td></tr>
+              <tr><td>NUIT repetido</td><td><strong>400</strong></td></tr>
+              <tr><td>Tipo vazio</td><td><strong>400</strong></td></tr>
+              <tr><td>Arquivo .db bloqueado / crash</td><td><strong>500</strong> + log (à tarde)</td></tr>
+            </table>
+          </div>
+          <aside class="lado">
+            <h3>Regra</h3>
+            <p>O Swagger vê mensagem útil.</p>
+            <p>Stack e detalhe técnico → Output do VS.</p>
+            <p class="rodape">Não vazem exception no JSON.</p>
+          </aside>
+        </div>
+      </div>
+    </section>
+
+    <section class="slide fill">
+      <h1>Manhã · Prática</h1>
+      <p class="highlight">Mesmo InssApi. Eu mostro. Vocês acompanham.</p>
+      <p>Navegação · Include · GET paginado · async</p>
+    </section>
+
+    <section class="slide compact">
+      <h2>Roteiro da manhã</h2>
+      <div class="content">
+        <div class="split">
+          <div class="col">
+            <ol>
+              <li>Abrir o <code>InssApi</code> de ontem</li>
+              <li>Navegação nos Models + Fluent 1:N</li>
+              <li>Nova migration → update</li>
+              <li>GET <code>/api/contribuintes/{id}/pedidos</code></li>
+              <li><code>IgnoreCycles</code> no <code>Program.cs</code> (senão o JSON quebra)</li>
+              <li><code>PedidoResumoDto</code> + GET pedidos paginado</li>
+              <li>POST pedido: existe? + transação</li>
+              <li>POST Ana: NUIT duplicado → 400</li>
+              <li>Prova no Swagger</li>
+            </ol>
+          </div>
+          <aside class="lado">
+            <h3>Eu mostro</h3>
+            <p>Vocês digitam no projetor.</p>
+            <p class="rodape">Não pulem a migration.</p>
+          </aside>
+        </div>
+      </div>
+    </section>
+
+    <section class="slide compact">
+      <h2>Manhã 1 — Navegação nos Models</h2>
+      <div class="content">
+        <div class="split">
+          <div class="col">
+            <p class="passo-limpo">Abram os Models de ontem. <strong>Acrescentem</strong> a linha marcada. O resto não se apaga.</p>
+            <div class="tela">
+              <div class="tela-bar">Models/Contribuinte.cs — no fim da classe</div>
+              <div class="tela-body denso">    <span class="k">public</span> <span class="t">string</span> Status { <span class="k">get</span>; <span class="k">set</span>; } = <span class="s">"Ativo"</span>;
+
+    <span class="mark"><span class="k">public</span> <span class="t">List</span>&lt;<span class="t">PedidoBeneficio</span>&gt; Pedidos { <span class="k">get</span>; <span class="k">set</span>; } = <span class="k">new</span>();</span>
+}</div>
+            </div>
+            <div class="tela">
+              <div class="tela-bar">Models/PedidoBeneficio.cs — a seguir ao ContribuinteId</div>
+              <div class="tela-body denso">    <span class="k">public int</span> ContribuinteId { <span class="k">get</span>; <span class="k">set</span>; }
+    <span class="mark"><span class="k">public</span> <span class="t">Contribuinte</span>? Contribuinte { <span class="k">get</span>; <span class="k">set</span>; }</span>
+    <span class="k">public</span> <span class="t">string</span> Tipo { <span class="k">get</span>; <span class="k">set</span>; } = <span class="t">string</span>.Empty;</div>
+            </div>
+          </div>
+          <aside class="lado">
+            <h3>Solution Explorer</h3>
+            <div class="arvore">
+              <div class="bar">Models</div>
+              <ul>
+                <li class="foco cs">Contribuinte.cs</li>
+                <li class="foco cs">PedidoBeneficio.cs</li>
+              </ul>
+            </div>
+            <p class="rodape"><code>ContribuinteId</code> já existia.</p>
+          </aside>
+        </div>
+      </div>
+    </section>
+
+    <section class="slide compact">
+      <h2>Manhã 2 — Fluent 1:N</h2>
+      <div class="content">
+        <div class="split">
+          <div class="col">
+            <p class="passo-limpo">Abram <code>Data/AppDbContext.cs</code>. No bloco do Contribuinte de ontem, <strong>depois</strong> do <code>HasIndex</code>, acrescentem as 4 linhas marcadas:</p>
+            <div class="tela">
+              <div class="tela-bar">Data/AppDbContext.cs — o que já tinham + o novo</div>
+              <div class="tela-body denso">modelBuilder.Entity&lt;<span class="t">Contribuinte</span>&gt;(e =&gt;
+{
+    e.HasKey(c =&gt; c.Id);
+    e.Property(c =&gt; c.Nome).HasMaxLength(<span class="n">100</span>).IsRequired();
+    e.Property(c =&gt; c.Nuit).HasMaxLength(<span class="n">9</span>).IsRequired();
+    e.HasIndex(c =&gt; c.Nuit).IsUnique();
+    <span class="mark">e.HasMany(c =&gt; c.Pedidos)</span>
+    <span class="mark">    .WithOne(p =&gt; p.Contribuinte)</span>
+    <span class="mark">    .HasForeignKey(p =&gt; p.ContribuinteId)</span>
+    <span class="mark">    .OnDelete(DeleteBehavior.Restrict);</span>
+});</div>
+            </div>
+          </div>
+          <aside class="lado">
+            <h3>Onde entra</h3>
+            <p>O <code>e</code> já existe. Não criem método novo.</p>
+            <p>O bloco do <code>PedidoBeneficio</code> não se mexe.</p>
+            <p class="rodape"><code>Restrict</code> = apagar a Ana não apaga os pedidos.</p>
+          </aside>
+        </div>
+      </div>
+    </section>
+
+    <section class="slide compact">
+      <h2>Manhã 2 — Nova migration</h2>
+      <div class="content">
+        <div class="split">
+          <div class="col">
+            <div class="vs-path">
+              <span class="chip">Exibir</span><span class="sep">›</span>
+              <span class="chip accent">Terminal</span>
+            </div>
+            <div class="term-bar">Terminal — pasta InssApi</div>
+            <pre class="term vs">dotnet ef migrations add RelacaoPedidos
+
+dotnet ef database update</pre>
+            <p class="passo-limpo">Não usem de novo o nome <code>InitialCreate</code>.</p>
+          </div>
+          <aside class="lado">
+            <h3>Nascem</h3>
+            <p>Outro arquivo em <code>Migrations</code>.</p>
+            <p class="rodape">Sem update = Include quebra.</p>
+          </aside>
+        </div>
+      </div>
+    </section>
+
+    <section class="slide compact">
+      <h2>Manhã 3 — Pedidos daquele NUIT</h2>
+      <div class="content">
+        <div class="split">
+          <div class="col">
+            <p class="passo-limpo">No <code>ContribuintesController</code>, <strong>entre</strong> o <code>GetById</code> e o <code>Create</code>. Não apaguem os outros.</p>
+            <div class="tela">
+              <div class="tela-bar">ContribuintesController.cs</div>
+              <div class="tela-body denso"><span class="c">// já têm: Get e GetById</span>
+
+[<span class="at">HttpGet</span>(<span class="s">"{id:int}/pedidos"</span>)]
+<span class="k">public async</span> <span class="t">Task</span>&lt;<span class="t">IActionResult</span>&gt; <span class="m">PedidosDoContribuinte</span>(
+    <span class="k">int</span> <span class="a">id</span>, <span class="t">CancellationToken</span> <span class="a">ct</span>)
+{
+    <span class="k">var</span> <span class="a">c</span> = <span class="k">await</span> _db.Contribuintes.AsNoTracking()
+        .Include(x =&gt; x.Pedidos)
+        .FirstOrDefaultAsync(x =&gt; x.Id == <span class="a">id</span>, <span class="a">ct</span>);
+    <span class="k">return</span> <span class="a">c</span> <span class="k">is null</span> ? <span class="m">NotFound</span>() : <span class="m">Ok</span>(<span class="a">c</span>.Pedidos);
+}
+
+<span class="c">// já têm: Create, PUT, PATCH, DELETE</span></div>
+            </div>
+          </div>
+          <aside class="lado">
+            <h3>Rota</h3>
+            <p>REST: recurso aninhado.</p>
+            <p>Não inventem <code>/listarPedidosDaAna</code>.</p>
+            <p class="rodape">404 se o id não existe.</p>
+          </aside>
+        </div>
+      </div>
+    </section>
+
+    <section class="slide compact">
+      <h2>Manhã 3 — JSON sem ciclo</h2>
+      <div class="content">
+        <div class="split">
+          <div class="col">
+            <p class="passo-limpo">No <code>Program.cs</code>: <strong>troquem</strong> a linha <code>AddControllers();</code> de ontem. No topo, o <code>using</code>.</p>
+            <div class="tela">
+              <div class="tela-bar">Program.cs — era uma linha; fica assim</div>
+              <div class="tela-body denso"><span class="k">using</span> System.Text.Json.Serialization;  <span class="c">// no topo</span>
+
+<span class="c">// apaguem: builder.Services.AddControllers();</span>
+builder.Services.<span class="m">AddControllers</span>()
+    .<span class="m">AddJsonOptions</span>(o =&gt; o.JsonSerializerOptions.ReferenceHandler =
+        <span class="t">ReferenceHandler</span>.IgnoreCycles);</div>
+            </div>
+          </div>
+          <aside class="lado">
+            <h3>Porquê</h3>
+            <p>O <code>Include</code> fecha o círculo.</p>
+            <p>O JSON precisa de uma regra: “não ande em volta”.</p>
+            <p class="rodape">Fica até ao fim do Dia 2.</p>
+          </aside>
+        </div>
+      </div>
+    </section>
+
+    <section class="slide compact">
+      <h2>Manhã 4 — DTO de resumo</h2>
+      <div class="content">
+        <div class="split">
+          <div class="col">
+            <div class="vs-path">
+              <span class="chip">Models</span><span class="sep">›</span>
+              <span class="chip">Adicionar</span><span class="sep">›</span>
+              <span class="chip accent">Classe… → PedidoResumoDto.cs</span>
+            </div>
+            <div class="tela">
+              <div class="tela-bar">Models/PedidoResumoDto.cs</div>
+              <div class="tela-body denso"><span class="k">namespace</span> InssApi.Models;
+
+<span class="k">public record</span> <span class="t">PedidoResumoDto</span>(
+    <span class="k">int</span> Id,
+    <span class="t">string</span> Tipo,
+    <span class="t">string</span> Status,
+    <span class="t">string</span> NomeContribuinte);</div>
+            </div>
+          </div>
+          <aside class="lado">
+            <h3>record</h3>
+            <p>Atalho do C# para DTO imutável.</p>
+            <p class="rodape">Pode ser class se preferirem.</p>
+          </aside>
+        </div>
+      </div>
+    </section>
+
+    <section class="slide compact">
+      <h2>Manhã 5 — GET pedidos paginado</h2>
+      <div class="content">
+        <div class="split">
+          <div class="col">
+            <p class="passo-limpo">No <code>PedidosController</code>, <strong>apaguem</strong> o GET sem <code>{id}</code> (o <code>ToListAsync</code> de ontem). Digitem o método abaixo. PUT/PATCH/DELETE <strong>ficam</strong>.</p>
+            <div class="tela">
+              <div class="tela-bar">GET /api/pedidos?pagina=1&amp;tamanho=10</div>
+              <div class="tela-body denso">[<span class="at">HttpGet</span>]
+<span class="k">public async</span> <span class="t">Task</span>&lt;<span class="t">IActionResult</span>&gt; <span class="m">Listar</span>(
+    [<span class="at">FromQuery</span>] <span class="k">int</span> pagina = <span class="n">1</span>,
+    [<span class="at">FromQuery</span>] <span class="k">int</span> tamanho = <span class="n">10</span>,
+    <span class="t">CancellationToken</span> ct = <span class="k">default</span>)
+{
+    <span class="k">if</span> (pagina &lt; <span class="n">1</span>) pagina = <span class="n">1</span>;
+    <span class="k">if</span> (tamanho &lt; <span class="n">1</span> || tamanho &gt; <span class="n">50</span>) tamanho = <span class="n">10</span>;
+
+    <span class="k">var</span> query = _db.Pedidos.AsNoTracking().Include(p =&gt; p.Contribuinte);
+    <span class="k">var</span> total = <span class="k">await</span> query.CountAsync(ct);
+    <span class="k">var</span> itens = <span class="k">await</span> query.OrderBy(p =&gt; p.Id)
+        .Skip((pagina - <span class="n">1</span>) * tamanho).Take(tamanho)
+        .Select(p =&gt; <span class="k">new</span> <span class="t">PedidoResumoDto</span>(
+            p.Id, p.Tipo, p.Status, p.Contribuinte!.Nome))
+        .ToListAsync(ct);
+    <span class="k">return</span> <span class="m">Ok</span>(<span class="k">new</span> { total, pagina, tamanho, itens });
+}</div>
+            </div>
+          </div>
+          <aside class="lado">
+            <h3>FromQuery</h3>
+            <p>Vem da URL, não do body.</p>
+            <p class="rodape">O GET de ontem (lista crua) sai. O resto do CRUD fica.</p>
+          </aside>
+        </div>
+      </div>
+    </section>
+
+    <section class="slide compact">
+      <h2>Manhã 6 — POST: validar</h2>
+      <div class="content">
+        <div class="split">
+          <div class="col">
+            <p class="passo-limpo">Troquem o POST do <code>PedidosController</code>. Primeiro as regras:</p>
+            <div class="tela">
+              <div class="tela-bar">PedidosController — Create (parte 1)</div>
+              <div class="tela-body denso">[<span class="at">HttpPost</span>]
+<span class="k">public async</span> <span class="t">Task</span>&lt;<span class="t">IActionResult</span>&gt; <span class="m">Create</span>(
+    [<span class="at">FromBody</span>] <span class="t">CriarPedidoRequest</span> <span class="a">req</span>,
+    <span class="t">CancellationToken</span> ct)
+{
+    <span class="k">if</span> (<span class="a">req</span>.ContribuinteId &lt;= <span class="n">0</span>)
+        <span class="k">return</span> <span class="m">BadRequest</span>(<span class="s">"ContribuinteId inválido."</span>);
+    <span class="k">if</span> (<span class="t">string</span>.IsNullOrWhiteSpace(<span class="a">req</span>.Tipo))
+        <span class="k">return</span> <span class="m">BadRequest</span>(<span class="s">"Tipo é obrigatório (ex.: Velhice ou Invalidez)."</span>);
+
+    <span class="k">var</span> <span class="a">existe</span> = <span class="k">await</span> _db.Contribuintes
+        .AnyAsync(c =&gt; c.Id == <span class="a">req</span>.ContribuinteId, ct);
+    <span class="k">if</span> (!<span class="a">existe</span>)
+        <span class="k">return</span> <span class="m">BadRequest</span>(<span class="s">"ContribuinteId inexistente."</span>);</div>
+            </div>
+          </div>
+          <aside class="lado">
+            <h3>Ainda não gravou</h3>
+            <p>Próximo slide: a transação.</p>
+            <p class="rodape">Digitam as duas metades no mesmo método.</p>
+          </aside>
+        </div>
+      </div>
+    </section>
+
+    <section class="slide compact">
+      <h2>Manhã 6 — POST: transação</h2>
+      <div class="content">
+        <div class="split">
+          <div class="col">
+            <p class="passo-limpo">Ainda no <strong>mesmo</strong> <code>Create</code>, digitem isto a seguir do <code>if (!existe)</code> — sem fechar o método a meio:</p>
+            <div class="tela">
+              <div class="tela-bar">PedidosController — Create (parte 2), a seguir do if (!existe)</div>
+              <div class="tela-body denso"><span class="c">// ... if (!existe) return BadRequest("ContribuinteId inexistente.");</span>
+    <span class="k">await using var</span> <span class="a">tx</span> =
+        <span class="k">await</span> _db.Database.BeginTransactionAsync(ct);
+    <span class="k">try</span>
+    {
+        <span class="k">var</span> <span class="a">p</span> = <span class="k">new</span> <span class="t">PedidoBeneficio</span> {
+            ContribuinteId = <span class="a">req</span>.ContribuinteId,
+            Tipo = <span class="a">req</span>.Tipo.Trim(),
+            Status = <span class="s">"Aberto"</span>
+        };
+        _db.Pedidos.Add(<span class="a">p</span>);
+        <span class="k">await</span> _db.SaveChangesAsync(ct);
+        <span class="k">await</span> <span class="a">tx</span>.CommitAsync(ct);
+        <span class="k">return</span> <span class="m">CreatedAtAction</span>(<span class="k">nameof</span>(GetById),
+            <span class="k">new</span> { id = <span class="a">p</span>.Id }, <span class="a">p</span>);
+    }
+    <span class="k">catch</span>
+    {
+        <span class="k">await</span> <span class="a">tx</span>.RollbackAsync(ct);
+        <span class="k">throw</span>;
+    }
+}</div>
+            </div>
+          </div>
+          <aside class="lado">
+            <h3>Tudo ou nada</h3>
+            <p>Erro no meio → <code>Rollback</code>.</p>
+            <p class="rodape">201 se gravou.</p>
+          </aside>
+        </div>
+      </div>
+    </section>
+
+    <section class="slide compact">
+      <h2>Manhã 7 — NUIT duplicado</h2>
+      <div class="content">
+        <div class="split">
+          <div class="col">
+            <p class="passo-limpo">No <code>Create</code> do <code>ContribuintesController</code>, <strong>depois</strong> do if do Nome e <strong>antes</strong> do <code>new Contribuinte</code>:</p>
+            <div class="tela">
+              <div class="tela-bar">ContribuintesController — Create de ontem + a linha nova</div>
+              <div class="tela-body denso">    <span class="k">if</span> (<span class="t">string</span>.IsNullOrWhiteSpace(<span class="a">req</span>.Nome))
+        <span class="k">return</span> <span class="m">BadRequest</span>(<span class="s">"Nome é obrigatório."</span>);
+
+    <span class="mark"><span class="k">if</span> (<span class="k">await</span> _db.Contribuintes.AnyAsync(c =&gt; c.Nuit == <span class="a">req</span>.Nuit, ct))</span>
+    <span class="mark">        <span class="k">return</span> <span class="m">BadRequest</span>(<span class="s">"NUIT já cadastrado."</span>);</span>
+
+    <span class="k">var</span> <span class="a">c</span> = <span class="k">new</span> <span class="t">Contribuinte</span> { Nuit = <span class="a">req</span>.Nuit, Nome = <span class="a">req</span>.Nome };
+    _db.Contribuintes.Add(<span class="a">c</span>);</div>
+            </div>
+          </div>
+          <aside class="lado">
+            <h3>Assinatura</h3>
+            <p>Se o <code>Create</code> ainda não tem <code>CancellationToken ct</code>, acrescentem.</p>
+            <p class="rodape">POST a Ana de novo → 400.</p>
+          </aside>
+        </div>
+      </div>
+    </section>
+
+    <section class="slide compact">
+      <h2>Manhã — Prova no Swagger</h2>
+      <div class="content">
+        <div class="split">
+          <div class="col">
+            <div class="tag gold">Obrigatório</div>
+            <ol>
+              <li>GET contribuintes — a Ana está?</li>
+              <li>POST dois pedidos: Velhice e Invalidez (<code>contribuinteId</code> da Ana)</li>
+              <li>GET <code>/contribuintes/{id}/pedidos</code> → os dois</li>
+              <li>GET <code>/pedidos?pagina=1&amp;tamanho=1</code> → 1 item + <code>total</code></li>
+              <li>Cada item tem <code>nomeContribuinte</code></li>
+              <li>POST a Ana de novo → 400</li>
+              <li>PUT / PATCH / DELETE de ontem ainda aparecem</li>
+            </ol>
+          </div>
+          <aside class="lado">
+            <h3>Pronto quando</h3>
+            <p>Página muda o resultado.</p>
+            <p>Nome da Ana no JSON.</p>
+            <p class="rodape">Tarde: organizar o posto.</p>
+          </aside>
+        </div>
+      </div>
+    </section>
+
+    <section class="slide compact">
+      <h2>Checklist M7</h2>
+      <div class="content">
+        <div class="split">
+          <div class="col">
+            <ol>
+              <li>Navegação + Fluent + migration</li>
+              <li>GET aninhado com <code>Include</code></li>
+              <li>GET pedidos: <code>total, pagina, tamanho, itens</code></li>
+              <li>Projeção com nome</li>
+              <li>Tudo <code>async</code> + <code>CancellationToken</code></li>
+              <li><code>IgnoreCycles</code> no <code>Program.cs</code></li>
+              <li>400 em NUIT duplicado e ContribuinteId falso</li>
+              <li>PUT / PATCH / DELETE de ontem ainda no Swagger</li>
+            </ol>
+          </div>
+          <aside class="lado">
+            <h3>Gabarito</h3>
+            <p>Gabarito: <code>C:\fiap_exemplo\InssApiDia2</code></p>
+            <p class="rodape">Se alguém travar, eu abro.</p>
+          </aside>
+        </div>
+      </div>
+    </section>
+
+    <section class="slide fill">
+      <h1>M8 · Tarde</h1>
+      <p class="highlight">Arquitetura em camadas e observabilidade</p>
+      <p>Primeiro os conceitos. Depois a prática.</p>
+      <p>14:00 às 18:00</p>
+    </section>
+
+    <section class="slide fill">
+      <h1>Tarde · Conceitos</h1>
+      <p class="highlight">Ainda não separamos as pastas.</p>
+      <p>Controller · Service · Repository · DI · log</p>
+    </section>
+
+    <section class="slide compact">
+      <h2>Palavras da tarde (decorar)</h2>
+      <div class="content">
+        <div class="split">
+          <div class="col">
+            <table>
+              <tr><th>Palavra</th><th>No InssApi de vocês</th></tr>
+              <tr><td>Controller</td><td>O arquivo que o Swagger chama</td></tr>
+              <tr><td>Service</td><td>As regras: NUIT 9 dígitos, Ana já existe?</td></tr>
+              <tr><td>Repository</td><td>Quem fala com o <code>inss.db</code></td></tr>
+              <tr><td>DI</td><td>O ASP.NET entrega o objeto pronto</td></tr>
+              <tr><td>Middleware</td><td>Rede de segurança de todos os erros</td></tr>
+              <tr><td>Log / correlação</td><td>Livro de ponto + número do processo</td></tr>
+            </table>
+          </div>
+          <aside class="lado">
+            <h3>Swagger</h3>
+            <p>Rotas <strong>iguais</strong> às da manhã (GET, POST, PUT, PATCH, DELETE).</p>
+            <p class="rodape">Só muda quem trabalha atrás.</p>
+          </aside>
+        </div>
+      </div>
+    </section>
+
+    <section class="slide compact">
+      <h2>1 — Hoje o controller faz tudo</h2>
+      <div class="content">
+        <div class="split">
+          <div class="col">
+            <p>Olhem o <code>ContribuintesController</code> de vocês agora:</p>
+            <ol>
+              <li>Lê o JSON do Swagger</li>
+              <li>Valida NUIT / nome</li>
+              <li>Pergunta ao <code>_db</code></li>
+              <li>Devolve 201 ou 400</li>
+            </ol>
+            <p>Funciona. Mas três empregos no mesmo arquivo. À tarde a gente <strong>separa</strong>.</p>
+          </div>
+          <aside class="lado">
+            <h3>Analogia</h3>
+            <p>O atendente não entra no arquivo sozinho.</p>
+            <p>Não decide a regra sozinho.</p>
+            <p class="rodape">Cada um no seu lugar.</p>
+          </aside>
+        </div>
+      </div>
+    </section>
+
+    <section class="slide compact">
+      <h2>2 — Três arquivos, três empregos</h2>
+      <div class="content">
+        <div class="split">
+          <div class="col">
+            <table>
+              <tr><th>Arquivo</th><th>Pergunta que responde</th></tr>
+              <tr><td>Controller</td><td>Qual status HTTP? 201 ou 400?</td></tr>
+              <tr><td>Service</td><td>Pode cadastrar esta Ana?</td></tr>
+              <tr><td>Repository</td><td>Como gravar / ler no <code>inss.db</code>?</td></tr>
+            </table>
+            <p>Isso é <strong>separação em camadas</strong>. O Swagger nem percebe.</p>
+          </div>
+          <aside class="lado">
+            <h3>Vocês vão criar</h3>
+            <p><code>Services\</code></p>
+            <p><code>Repositories\</code></p>
+            <p class="rodape">O controller de ontem fica só na porta HTTP.</p>
+          </aside>
+        </div>
+      </div>
+    </section>
+
+    <section class="slide compact">
+      <h2>3 — O POST da Ana, passo a passo</h2>
+      <div class="content">
+        <div class="split">
+          <div class="col">
+            <div class="tela">
+              <div class="tela-bar">Try it out no Swagger → POST contribuintes</div>
+              <div class="tela-body denso">1. Controller recebe { nuit, nome }
+2. Service: “9 dígitos? NUIT já existe?”
+3. Repository: Add + SaveChanges no inss.db
+4. Controller devolve 201 (ou 400 se o Service disse não)</div>
+            </div>
+          </div>
+          <aside class="lado">
+            <h3>Fixar</h3>
+            <p>Controller = porta.</p>
+            <p>Service = cérebro.</p>
+            <p>Repository = caderno.</p>
+            <p class="rodape">Não misturem os três.</p>
+          </aside>
+        </div>
+      </div>
+    </section>
+
+    <section class="slide compact">
+      <h2>4 — O que é injeção de dependência</h2>
+      <div class="content">
+        <div class="split">
+          <div class="col">
+            <p><strong>DI</strong> = vocês não fazem <code>new</code>. O ASP.NET <strong>entrega</strong> o objeto no construtor.</p>
+            <p>Ontem já era assim: <code>ContribuintesController(AppDbContext db)</code>.</p>
+            <p>Hoje o construtor pede o Service. O Service pede o Repository. O Repository pede o <code>AppDbContext</code>.</p>
+            <div class="tela">
+              <div class="tela-bar">Program.cs — a lista de “quem entrega o quê”</div>
+              <div class="tela-body denso">builder.Services.AddScoped&lt;<span class="t">IContribuinteRepository</span>, <span class="t">ContribuinteRepository</span>&gt;();
+builder.Services.AddScoped&lt;<span class="t">IContribuinteService</span>, <span class="t">ContribuinteService</span>&gt;();</div>
+            </div>
+          </div>
+          <aside class="lado">
+            <h3>A letra I</h3>
+            <p><code>IContribuinteService</code> = o contrato.</p>
+            <p>A classe de verdade vem depois da vírgula.</p>
+            <p class="rodape">Sem esta linha: unable to resolve.</p>
+          </aside>
+        </div>
+      </div>
+    </section>
+
+    <section class="slide compact">
+      <h2>5 — Ciclo de vida (quanto tempo vive)</h2>
+      <div class="content">
+        <div class="split">
+          <div class="col">
+            <p>Cada clique no Swagger é <strong>um pedido HTTP</strong>. O <code>AddScoped</code> cria Service + Repo + DbContext <strong>para aquele clique</strong> e joga fora no fim.</p>
+            <table>
+              <tr><th>Método</th><th>Quanto vive</th><th>No InssApi</th></tr>
+              <tr><td><code>AddScoped</code></td><td>1 Execute no Swagger</td><td>DbContext, Service, Repo</td></tr>
+              <tr><td><code>AddTransient</code></td><td>Toda vez que pedem</td><td>Raro hoje</td></tr>
+              <tr><td><code>AddSingleton</code></td><td>Enquanto a API está no F5</td><td>Não usem no banco</td></tr>
+            </table>
+          </div>
+          <aside class="lado">
+            <h3>Regra</h3>
+            <p>Tudo que toca <code>inss.db</code> = <strong>Scoped</strong>.</p>
+            <p class="rodape">Singleton + DbContext = disposed.</p>
+          </aside>
+        </div>
+      </div>
+    </section>
+
+    <section class="slide compact">
+      <h2>6 — O controller só fala HTTP</h2>
+      <div class="content">
+        <div class="split">
+          <div class="col">
+            <p>Não é “magro” de pobre. É <strong>só a porta</strong>: entra JSON, sai 201 ou 400. A regra foi para o Service.</p>
+            <table>
+              <tr><th>Ontem (misturado)</th><th>Agora (porta)</th></tr>
+              <tr><td><code>_db</code> + <code>if (Nuit)</code></td><td>Chama <code>_service.CriarAsync</code></td></tr>
+              <tr><td>Tudo num arquivo</td><td>Controller não conhece o EF</td></tr>
+            </table>
+          </div>
+          <aside class="lado">
+            <h3>No código</h3>
+            <p>Construtor recebe <code>IContribuinteService</code>.</p>
+            <p>Se o Service disser não → 400.</p>
+            <p class="rodape">Se disser sim → 201.</p>
+          </aside>
+        </div>
+      </div>
+    </section>
+
+    <section class="slide compact">
+      <h2>6 — O POST depois da separação</h2>
+      <div class="content">
+        <div class="split">
+          <div class="col">
+            <div class="tela">
+              <div class="tela-bar">Controllers/ContribuintesController.cs</div>
+              <div class="tela-body denso"><span class="k">public</span> <span class="m">ContribuintesController</span>(<span class="t">IContribuinteService</span> <span class="a">service</span>)
+    =&gt; _service = <span class="a">service</span>;
+
+[<span class="at">HttpPost</span>]
+<span class="k">public async</span> <span class="t">Task</span>&lt;<span class="t">IActionResult</span>&gt; <span class="m">Create</span>(
+    [<span class="at">FromBody</span>] <span class="t">CriarContribuinteRequest</span> <span class="a">req</span>,
+    <span class="t">CancellationToken</span> ct)
+{
+    <span class="k">var</span> (ok, erro, criado) = <span class="k">await</span> _service.CriarAsync(<span class="a">req</span>.Nuit, <span class="a">req</span>.Nome, ct);
+    <span class="k">if</span> (!ok) <span class="k">return</span> <span class="m">BadRequest</span>(erro);
+    <span class="k">return</span> <span class="m">CreatedAtAction</span>(<span class="k">nameof</span>(GetById), <span class="k">new</span> { id = criado!.Id }, criado);
+}</div>
+            </div>
+          </div>
+          <aside class="lado">
+            <h3>Leiam em voz alta</h3>
+            <p>“Recebi o formulário.”</p>
+            <p>“Perguntei ao Service.”</p>
+            <p>“Devolvi o status.”</p>
+            <p class="rodape">Não abriu o caderno.</p>
+          </aside>
+        </div>
+      </div>
+    </section>
+
+    <section class="slide compact">
+      <h2>7 — O que é middleware de erros</h2>
+      <div class="content">
+        <div class="split">
+          <div class="col">
+            <p><strong>Middleware</strong> = um portão no caminho de <strong>todo</strong> request. Este aqui pega exception que ninguém tratou.</p>
+            <p>O Swagger não vê stack. Vê: “Erro interno” + um número para achar no log.</p>
+            <div class="tela">
+              <div class="tela-bar">ErrosMiddleware — ideia</div>
+              <div class="tela-body denso"><span class="k">try</span> { <span class="k">await</span> _next(context); }
+<span class="k">catch</span> (<span class="t">Exception</span> <span class="a">ex</span>)
+{
+    _logger.LogError(<span class="a">ex</span>, <span class="s">"Falha. TraceId={TraceId}"</span>, context.TraceIdentifier);
+    <span class="c">// JSON 500: erro + correlacao</span>
+}</div>
+            </div>
+          </div>
+          <aside class="lado">
+            <h3>Onde liga</h3>
+            <p><code>app.UseMiddleware&lt;...&gt;()</code> no <code>Program.cs</code>.</p>
+            <p class="rodape">Um lugar só. Todos os endpoints.</p>
+          </aside>
+        </div>
+      </div>
+    </section>
+
+    <section class="slide compact">
+      <h2>8 — O que é log estruturado</h2>
+      <div class="content">
+        <div class="split">
+          <div class="col">
+            <p><strong>Log</strong> = livro de ponto. “Criei a Ana 123456789.” Não é <code>Console.WriteLine</code>.</p>
+            <p>Estruturado = o NUIT vai num campo <code>{Nuit}</code>, dá para procurar depois.</p>
+            <div class="term-bar">No Service, depois do SaveChanges</div>
+            <pre class="term vs">_logger.LogInformation("Contribuinte criado {Nuit}", n);
+_logger.LogWarning("NUIT duplicado {Nuit}", n);</pre>
+            <p>Onde ver: Visual Studio → <strong>Exibir → Saída</strong>.</p>
+          </div>
+          <aside class="lado">
+            <h3>Vocês fazem</h3>
+            <p>POST a Ana → aparece a linha.</p>
+            <p>POST de novo → Warning.</p>
+            <p class="rodape">O cidadão no Swagger não vê isso.</p>
+          </aside>
+        </div>
+      </div>
+    </section>
+
+    <section class="slide compact">
+      <h2>9 — O que é correlação</h2>
+      <div class="content">
+        <div class="split">
+          <div class="col">
+            <p><strong>Correlação</strong> = número do processo daquela visita. Um Execute no Swagger = um id.</p>
+            <p>Se o aluno diz “deu 500”, vocês procuram esse id no Output e acham <strong>só</strong> aquele clique — não o do colega do lado.</p>
+            <p>No ASP.NET o nome é <code>TraceIdentifier</code>. O middleware devolve no JSON 500 como <code>correlacao</code>.</p>
+          </div>
+          <aside class="lado">
+            <h3>Junto</h3>
+            <p>Log = o que aconteceu.</p>
+            <p>Correlação = de qual clique.</p>
+            <p class="rodape">Observabilidade = ver o posto por dentro.</p>
+          </aside>
+        </div>
+      </div>
+    </section>
+
+    <section class="slide fill">
+      <h1>Tarde · Prática</h1>
+      <p class="highlight">Organizamos o InssApi. Rotas iguais.</p>
+      <p>Pastas · DI · middleware · log</p>
+    </section>
+
+    <section class="slide compact">
+      <h2>Roteiro da tarde</h2>
+      <div class="content">
+        <div class="split">
+          <div class="col">
+            <ol>
+              <li>Pastas <code>Repositories</code>, <code>Services</code>, <code>Middleware</code></li>
+              <li>Interface + classe do Repository (ler e gravar)</li>
+              <li>Interface + classe do Service</li>
+              <li>Controller: GET, POST, PUT, PATCH, DELETE (sem <code>_db</code>)</li>
+              <li><code>AddScoped</code> no <code>Program.cs</code> (o <code>IgnoreCycles</code> de manhã fica)</li>
+              <li>Middleware + 1 log no criar</li>
+              <li>Pedido: os mesmos verbos, no projetor</li>
+              <li>Prova: Swagger igual ao da manhã + Output com log</li>
+            </ol>
+          </div>
+          <aside class="lado">
+            <h3>No projetor</h3>
+            <p>O que está no slide, eles copiam.</p>
+            <p class="rodape">Gabarito: C:\fiap_exemplo\InssApiTardeDia2</p>
+          </aside>
+        </div>
+      </div>
+    </section>
+
+    <section class="slide compact">
+      <h2>Tarde 1 — Três pastas novas</h2>
+      <div class="content">
+        <div class="split">
+          <div class="col">
+            <div class="vs-path">
+              <span class="chip">InssApi</span><span class="sep">›</span>
+              <span class="chip">Adicionar</span><span class="sep">›</span>
+              <span class="chip accent">Nova pasta</span>
+            </div>
+            <p>Criem <strong>três</strong>: <code>Repositories</code> · <code>Services</code> · <code>Middleware</code></p>
+            <div class="arvore">
+              <div class="bar">InssApi</div>
+              <ul>
+                <li class="indent pasta">Controllers</li>
+                <li class="indent pasta">Data</li>
+                <li class="indent pasta">Models</li>
+                <li class="indent pasta novo">Repositories</li>
+                <li class="indent pasta novo">Services</li>
+                <li class="indent pasta novo">Middleware</li>
+              </ul>
+            </div>
+          </div>
+          <aside class="lado">
+            <h3>Models e Data</h3>
+            <p>Ficam. Não renomeiem.</p>
+            <p class="rodape">Continuação do Dia 1.</p>
+          </aside>
+        </div>
+      </div>
+    </section>
+
+    <section class="slide compact">
+      <h2>Tarde 2 — Repository</h2>
+      <div class="content">
+        <div class="split">
+          <div class="col">
+            <p class="passo-limpo">Novo arquivo em <code>Repositories</code>. Copiem o ficheiro inteiro:</p>
+            <div class="tela">
+              <div class="tela-bar">Repositories/IContribuinteRepository.cs</div>
+              <div class="tela-body denso"><span class="k">namespace</span> InssApi.Repositories;
+<span class="k">public interface</span> <span class="t">IContribuinteRepository</span>
+{
+    <span class="t">Task</span>&lt;<span class="t">IReadOnlyList</span>&lt;<span class="t">Contribuinte</span>&gt;&gt; ListarAsync(<span class="t">CancellationToken</span> ct);
+    <span class="t">Task</span>&lt;<span class="t">Contribuinte</span>?&gt; ObterPorIdAsync(<span class="k">int</span> id, <span class="t">CancellationToken</span> ct);
+    <span class="t">Task</span>&lt;<span class="t">Contribuinte</span>?&gt; ObterPorNuitAsync(<span class="t">string</span> nuit, <span class="t">CancellationToken</span> ct);
+    <span class="t">Task</span>&lt;<span class="t">Contribuinte</span>?&gt; ObterComPedidosAsync(<span class="k">int</span> id, <span class="t">CancellationToken</span> ct);
+    <span class="t">Task</span> AdicionarAsync(<span class="t">Contribuinte</span> c, <span class="t">CancellationToken</span> ct);
+    <span class="k">void</span> Remover(<span class="t">Contribuinte</span> c);
+    <span class="t">Task</span> SalvarAsync(<span class="t">CancellationToken</span> ct);
+}</div>
+            </div>
+            <p>A classe recebe <code>AppDbContext</code>. <code>ObterComPedidosAsync</code> = o <code>Include</code> de manhã.</p>
+          </div>
+          <aside class="lado">
+            <h3>Só banco</h3>
+            <p>Nada de HTTP. Nada de “NUIT tem 9”.</p>
+            <p class="rodape">A classe no próximo slide.</p>
+          </aside>
+        </div>
+      </div>
+    </section>
+
+    <section class="slide compact">
+      <h2>Tarde 2 — Classe do Repository</h2>
+      <div class="content">
+        <div class="split">
+          <div class="col">
+            <div class="tela">
+              <div class="tela-bar">Repositories/ContribuinteRepository.cs</div>
+              <div class="tela-body denso"><span class="k">public class</span> <span class="t">ContribuinteRepository</span> : <span class="t">IContribuinteRepository</span>
+{
+    <span class="k">private readonly</span> <span class="t">AppDbContext</span> _db;
+    <span class="k">public</span> <span class="m">ContribuinteRepository</span>(<span class="t">AppDbContext</span> db) =&gt; _db = db;
+
+    <span class="k">public</span> <span class="t">Task</span>&lt;<span class="t">Contribuinte</span>?&gt; <span class="m">ObterPorIdAsync</span>(<span class="k">int</span> id, <span class="t">CancellationToken</span> ct)
+        =&gt; _db.Contribuintes.FirstOrDefaultAsync(c =&gt; c.Id == id, ct);
+    <span class="k">public</span> <span class="t">Task</span>&lt;<span class="t">Contribuinte</span>?&gt; <span class="m">ObterPorNuitAsync</span>(<span class="t">string</span> nuit, <span class="t">CancellationToken</span> ct)
+        =&gt; _db.Contribuintes.FirstOrDefaultAsync(c =&gt; c.Nuit == nuit, ct);
+    <span class="k">public async</span> <span class="t">Task</span>&lt;<span class="t">IReadOnlyList</span>&lt;<span class="t">Contribuinte</span>&gt;&gt; <span class="m">ListarAsync</span>(<span class="t">CancellationToken</span> ct)
+        =&gt; <span class="k">await</span> _db.Contribuintes.AsNoTracking().ToListAsync(ct);
+    <span class="k">public</span> <span class="t">Task</span>&lt;<span class="t">Contribuinte</span>?&gt; <span class="m">ObterComPedidosAsync</span>(<span class="k">int</span> id, <span class="t">CancellationToken</span> ct)
+        =&gt; _db.Contribuintes.AsNoTracking().Include(x =&gt; x.Pedidos)
+            .FirstOrDefaultAsync(x =&gt; x.Id == id, ct);
+    <span class="k">public</span> <span class="t">Task</span> <span class="m">AdicionarAsync</span>(<span class="t">Contribuinte</span> c, <span class="t">CancellationToken</span> ct)
+    { _db.Contribuintes.Add(c); <span class="k">return</span> <span class="t">Task</span>.CompletedTask; }
+    <span class="k">public void</span> <span class="m">Remover</span>(<span class="t">Contribuinte</span> c) =&gt; _db.Contribuintes.Remove(c);
+    <span class="k">public</span> <span class="t">Task</span> <span class="m">SalvarAsync</span>(<span class="t">CancellationToken</span> ct)
+        =&gt; _db.SaveChangesAsync(ct);
+}</div>
+            </div>
+          </div>
+          <aside class="lado">
+            <h3>Usings</h3>
+            <p><code>InssApi.Data</code> · <code>InssApi.Models</code></p>
+            <p><code>Microsoft.EntityFrameworkCore</code></p>
+            <p class="rodape">Namespace: <code>InssApi.Repositories</code></p>
+          </aside>
+        </div>
+      </div>
+    </section>
+
+    <section class="slide compact">
+      <h2>Tarde 3 — Service</h2>
+      <div class="content">
+        <div class="split">
+          <div class="col">
+            <p class="passo-limpo">Novo arquivo <code>Services/ContribuinteService.cs</code>. Classe + <code>CriarAsync</code>:</p>
+            <div class="tela">
+              <div class="tela-bar">Services/ContribuinteService.cs</div>
+              <div class="tela-body denso"><span class="k">public class</span> <span class="t">ContribuinteService</span> : <span class="t">IContribuinteService</span>
+{
+    <span class="k">private readonly</span> <span class="t">IContribuinteRepository</span> _repo;
+    <span class="k">private readonly</span> <span class="t">ILogger</span>&lt;<span class="t">ContribuinteService</span>&gt; _logger;
+    <span class="k">public</span> <span class="m">ContribuinteService</span>(<span class="t">IContribuinteRepository</span> repo, <span class="t">ILogger</span>&lt;<span class="t">ContribuinteService</span>&gt; logger)
+    { _repo = repo; _logger = logger; }
+
+    <span class="k">public async</span> <span class="t">Task</span>&lt;(<span class="k">bool</span> Ok, <span class="t">string</span>? Erro, <span class="t">Contribuinte</span>? Criado)&gt;
+        <span class="m">CriarAsync</span>(<span class="t">string</span> nuit, <span class="t">string</span> nome, <span class="t">CancellationToken</span> ct)
+    {
+        <span class="k">if</span> (<span class="t">string</span>.IsNullOrWhiteSpace(nuit) || nuit.Length != <span class="n">9</span>)
+            <span class="k">return</span> (false, <span class="s">"NUIT deve ter 9 dígitos."</span>, null);
+        <span class="k">if</span> (<span class="k">await</span> _repo.ObterPorNuitAsync(nuit, ct) <span class="k">is not null</span>)
+            <span class="k">return</span> (false, <span class="s">"NUIT já cadastrado."</span>, null);
+        <span class="k">var</span> c = <span class="k">new</span> <span class="t">Contribuinte</span> { Nuit = nuit.Trim(), Nome = nome.Trim() };
+        <span class="k">await</span> _repo.AdicionarAsync(c, ct);
+        <span class="k">await</span> _repo.SalvarAsync(ct);
+        _logger.LogInformation(<span class="s">"Contribuinte criado {Nuit}"</span>, c.Nuit);
+        <span class="k">return</span> (true, null, c);
+    }
+}</div>
+            </div>
+          </div>
+          <aside class="lado">
+            <h3>Também</h3>
+            <p>Ficheiro <code>IContribuinteService</code> com os mesmos métodos.</p>
+            <p>GET: <code>ListarAsync</code> / <code>ObterPorIdAsync</code> / <code>PedidosDoContribuinteAsync</code> passam ao repo.</p>
+            <p class="rodape">Sem <code>new</code>.</p>
+          </aside>
+        </div>
+      </div>
+    </section>
+
+    <section class="slide compact">
+      <h2>Tarde 3 — Service: PUT / PATCH / DELETE</h2>
+      <div class="content">
+        <div class="split">
+          <div class="col">
+            <p class="passo-limpo">No <strong>mesmo</strong> <code>ContribuinteService</code>, digitem estes três:</p>
+            <div class="tela">
+              <div class="tela-bar">ContribuinteService — o CRUD de ontem, agora aqui</div>
+              <div class="tela-body denso"><span class="k">public async</span> <span class="t">Task</span>&lt;(<span class="k">bool</span> Ok, <span class="t">string</span>? Erro, <span class="t">Contribuinte</span>? Atualizado)&gt;
+    <span class="m">AtualizarAsync</span>(<span class="k">int</span> id, <span class="t">string</span> nuit, <span class="t">string</span> nome, <span class="t">CancellationToken</span> ct)
+{
+    <span class="k">var</span> c = <span class="k">await</span> _repo.ObterPorIdAsync(id, ct);
+    <span class="k">if</span> (c <span class="k">is null</span>) <span class="k">return</span> (false, <span class="k">null</span>, <span class="k">null</span>);
+    c.Nuit = nuit.Trim(); c.Nome = nome.Trim();
+    <span class="k">await</span> _repo.SalvarAsync(ct);
+    <span class="k">return</span> (true, <span class="k">null</span>, c);
+}
+
+<span class="k">public async</span> <span class="t">Task</span>&lt;(<span class="k">bool</span> Ok, <span class="t">string</span>? Erro, <span class="t">Contribuinte</span>? Atualizado)&gt;
+    <span class="m">PatchStatusAsync</span>(<span class="k">int</span> id, <span class="t">string</span> status, <span class="t">CancellationToken</span> ct)
+{
+    <span class="k">var</span> c = <span class="k">await</span> _repo.ObterPorIdAsync(id, ct);
+    <span class="k">if</span> (c <span class="k">is null</span>) <span class="k">return</span> (false, <span class="k">null</span>, <span class="k">null</span>);
+    c.Status = status.Trim();
+    <span class="k">await</span> _repo.SalvarAsync(ct);
+    <span class="k">return</span> (true, <span class="k">null</span>, c);
+}
+
+<span class="k">public async</span> <span class="t">Task</span>&lt;<span class="k">bool</span>&gt; <span class="m">RemoverAsync</span>(<span class="k">int</span> id, <span class="t">CancellationToken</span> ct)
+{
+    <span class="k">var</span> c = <span class="k">await</span> _repo.ObterPorIdAsync(id, ct);
+    <span class="k">if</span> (c <span class="k">is null</span>) <span class="k">return false</span>;
+    _repo.Remover(c);
+    <span class="k">await</span> _repo.SalvarAsync(ct);
+    <span class="k">return true</span>;
+}</div>
+            </div>
+          </div>
+          <aside class="lado">
+            <h3>Interface</h3>
+            <p>Os mesmos nomes entram em <code>IContribuinteService</code>.</p>
+            <p class="rodape">null + null = 404 no controller.</p>
+          </aside>
+        </div>
+      </div>
+    </section>
+
+    <section class="slide compact">
+      <h2>Tarde 4 — Controller: GET</h2>
+      <div class="content">
+        <div class="split">
+          <div class="col">
+            <p class="passo-limpo">No <code>ContribuintesController</code>: apaguem o campo <code>_db</code>. Fica o Service:</p>
+            <div class="tela">
+              <div class="tela-bar">ContribuintesController — troquem o construtor</div>
+              <div class="tela-body denso"><span class="k">private readonly</span> <span class="t">IContribuinteService</span> _service;
+<span class="k">public</span> <span class="m">ContribuintesController</span>(<span class="t">IContribuinteService</span> <span class="a">service</span>)
+    =&gt; _service = <span class="a">service</span>;
+
+[<span class="at">HttpGet</span>]
+<span class="k">public async</span> <span class="t">Task</span>&lt;<span class="t">IActionResult</span>&gt; <span class="m">Get</span>(<span class="t">CancellationToken</span> ct)
+    =&gt; <span class="m">Ok</span>(<span class="k">await</span> _service.ListarAsync(ct));
+
+[<span class="at">HttpGet</span>(<span class="s">"{id:int}"</span>)]
+<span class="k">public async</span> <span class="t">Task</span>&lt;<span class="t">IActionResult</span>&gt; <span class="m">GetById</span>(<span class="k">int</span> id, <span class="t">CancellationToken</span> ct)
+{
+    <span class="k">var</span> c = <span class="k">await</span> _service.ObterPorIdAsync(id, ct);
+    <span class="k">return</span> c <span class="k">is null</span> ? <span class="m">NotFound</span>() : <span class="m">Ok</span>(c);
+}
+
+[<span class="at">HttpGet</span>(<span class="s">"{id:int}/pedidos"</span>)]
+<span class="k">public async</span> <span class="t">Task</span>&lt;<span class="t">IActionResult</span>&gt; <span class="m">PedidosDoContribuinte</span>(
+    <span class="k">int</span> id, <span class="t">CancellationToken</span> ct)
+{
+    <span class="k">var</span> pedidos = <span class="k">await</span> _service.PedidosDoContribuinteAsync(id, ct);
+    <span class="k">return</span> pedidos <span class="k">is null</span> ? <span class="m">NotFound</span>() : <span class="m">Ok</span>(pedidos);
+}</div>
+            </div>
+          </div>
+          <aside class="lado">
+            <h3>Using</h3>
+            <p><code>InssApi.Services</code></p>
+            <p class="rodape">POST no próximo. PUT a seguir.</p>
+          </aside>
+        </div>
+      </div>
+    </section>
+
+    <section class="slide compact">
+      <h2>Tarde 4 — Controller: POST</h2>
+      <div class="content">
+        <div class="split">
+          <div class="col">
+            <p class="passo-limpo">No <strong>mesmo</strong> controller — o POST que já viram no conceito:</p>
+            <div class="tela">
+              <div class="tela-bar">ContribuintesController — Create</div>
+              <div class="tela-body denso">[<span class="at">HttpPost</span>]
+<span class="k">public async</span> <span class="t">Task</span>&lt;<span class="t">IActionResult</span>&gt; <span class="m">Create</span>(
+    [<span class="at">FromBody</span>] <span class="t">CriarContribuinteRequest</span> <span class="a">req</span>,
+    <span class="t">CancellationToken</span> ct)
+{
+    <span class="k">var</span> (ok, erro, criado) = <span class="k">await</span> _service.CriarAsync(
+        <span class="a">req</span>.Nuit, <span class="a">req</span>.Nome, ct);
+    <span class="k">if</span> (!ok) <span class="k">return</span> <span class="m">BadRequest</span>(erro);
+    <span class="k">return</span> <span class="m">CreatedAtAction</span>(<span class="k">nameof</span>(GetById),
+        <span class="k">new</span> { id = criado!.Id }, criado);
+}</div>
+            </div>
+          </div>
+          <aside class="lado">
+            <h3>Leiam</h3>
+            <p>“Recebi o formulário.”</p>
+            <p>“Perguntei ao Service.”</p>
+            <p>“Devolvi o status.”</p>
+            <p class="rodape"><code>nameof(GetById)</code></p>
+          </aside>
+        </div>
+      </div>
+    </section>
+
+    <section class="slide compact">
+      <h2>Tarde 4 — Controller: PUT / PATCH / DELETE</h2>
+      <div class="content">
+        <div class="split">
+          <div class="col">
+            <p class="passo-limpo">Ainda no mesmo arquivo. Os verbos de ontem, agora pelo Service:</p>
+            <div class="tela">
+              <div class="tela-bar">ContribuintesController — Update / Patch / Delete</div>
+              <div class="tela-body denso">[<span class="at">HttpPut</span>(<span class="s">"{id:int}"</span>)]
+<span class="k">public async</span> <span class="t">Task</span>&lt;<span class="t">IActionResult</span>&gt; <span class="m">Update</span>(
+    <span class="k">int</span> id, [<span class="at">FromBody</span>] <span class="t">CriarContribuinteRequest</span> <span class="a">req</span>,
+    <span class="t">CancellationToken</span> ct)
+{
+    <span class="k">var</span> (ok, erro, atualizado) = <span class="k">await</span> _service.AtualizarAsync(
+        id, <span class="a">req</span>.Nuit, <span class="a">req</span>.Nome, ct);
+    <span class="k">if</span> (atualizado <span class="k">is null</span> &amp;&amp; erro <span class="k">is null</span>) <span class="k">return</span> <span class="m">NotFound</span>();
+    <span class="k">if</span> (!ok) <span class="k">return</span> <span class="m">BadRequest</span>(erro);
+    <span class="k">return</span> <span class="m">Ok</span>(atualizado);
+}
+
+[<span class="at">HttpPatch</span>(<span class="s">"{id:int}/status"</span>)]
+<span class="k">public async</span> <span class="t">Task</span>&lt;<span class="t">IActionResult</span>&gt; <span class="m">PatchStatus</span>(
+    <span class="k">int</span> id, [<span class="at">FromBody</span>] <span class="t">string</span> status, <span class="t">CancellationToken</span> ct)
+{
+    <span class="k">var</span> (ok, erro, atualizado) = <span class="k">await</span> _service.PatchStatusAsync(id, status, ct);
+    <span class="k">if</span> (atualizado <span class="k">is null</span> &amp;&amp; erro <span class="k">is null</span>) <span class="k">return</span> <span class="m">NotFound</span>();
+    <span class="k">if</span> (!ok) <span class="k">return</span> <span class="m">BadRequest</span>(erro);
+    <span class="k">return</span> <span class="m">Ok</span>(atualizado);
+}
+
+[<span class="at">HttpDelete</span>(<span class="s">"{id:int}"</span>)]
+<span class="k">public async</span> <span class="t">Task</span>&lt;<span class="t">IActionResult</span>&gt; <span class="m">Delete</span>(<span class="k">int</span> id, <span class="t">CancellationToken</span> ct)
+    =&gt; <span class="k">await</span> _service.RemoverAsync(id, ct) ? <span class="m">NoContent</span>() : <span class="m">NotFound</span>();</div>
+            </div>
+          </div>
+          <aside class="lado">
+            <h3>Swagger</h3>
+            <p>PUT, PATCH e DELETE continuam iguais aos de ontem.</p>
+            <p class="rodape">Copiem. Não inventem.</p>
+          </aside>
+        </div>
+      </div>
+    </section>
+
+    <section class="slide compact">
+      <h2>Tarde 5 — Program.cs (DI)</h2>
+      <div class="content">
+        <div class="split">
+          <div class="col">
+            <p class="passo-limpo">No <code>Program.cs</code> que já têm. O <code>IgnoreCycles</code> <strong>não se apaga</strong>.</p>
+            <div class="tela">
+              <div class="tela-bar">Program.cs — onde encaixar</div>
+              <div class="tela-body denso"><span class="c">// já têm: AddControllers + IgnoreCycles + AddDbContext</span>
+<span class="mark">builder.Services.AddScoped&lt;<span class="t">IContribuinteRepository</span>, <span class="t">ContribuinteRepository</span>&gt;();</span>
+<span class="mark">builder.Services.AddScoped&lt;<span class="t">IContribuinteService</span>, <span class="t">ContribuinteService</span>&gt;();</span>
+
+<span class="k">var</span> app = builder.Build();
+<span class="mark">app.UseMiddleware&lt;<span class="t">ErrosMiddleware</span>&gt;();</span>  <span class="c">// antes do Swagger</span></div>
+            </div>
+          </div>
+          <aside class="lado">
+            <h3>Usings</h3>
+            <p><code>InssApi.Repositories</code></p>
+            <p><code>InssApi.Services</code></p>
+            <p><code>InssApi.Middleware</code></p>
+            <p class="rodape">Sem AddScoped = unable to resolve.</p>
+          </aside>
+        </div>
+      </div>
+    </section>
+
+    <section class="slide compact">
+      <h2>Tarde 6 — ErrosMiddleware</h2>
+      <div class="content">
+        <div class="split">
+          <div class="col">
+            <p class="passo-limpo">Novo arquivo em <code>Middleware</code> — copiem:</p>
+            <div class="tela">
+              <div class="tela-bar">Middleware/ErrosMiddleware.cs</div>
+              <div class="tela-body denso"><span class="k">namespace</span> InssApi.Middleware;
+
+<span class="k">public class</span> <span class="t">ErrosMiddleware</span>
+{
+    <span class="k">private readonly</span> <span class="t">RequestDelegate</span> _next;
+    <span class="k">private readonly</span> <span class="t">ILogger</span>&lt;<span class="t">ErrosMiddleware</span>&gt; _logger;
+
+    <span class="k">public</span> <span class="m">ErrosMiddleware</span>(<span class="t">RequestDelegate</span> next, <span class="t">ILogger</span>&lt;<span class="t">ErrosMiddleware</span>&gt; logger)
+    { _next = next; _logger = logger; }
+
+    <span class="k">public async</span> <span class="t">Task</span> <span class="m">InvokeAsync</span>(<span class="t">HttpContext</span> context)
+    {
+        <span class="k">try</span> { <span class="k">await</span> _next(context); }
+        <span class="k">catch</span> (<span class="t">Exception</span> ex) {
+            _logger.LogError(ex, <span class="s">"Falha. TraceId={TraceId}"</span>, context.TraceIdentifier);
+            context.Response.StatusCode = <span class="n">500</span>;
+            <span class="k">await</span> context.Response.WriteAsJsonAsync(<span class="k">new</span> {
+                erro = <span class="s">"Erro interno. Tente novamente."</span>,
+                correlacao = context.TraceIdentifier });
+        }
+    }
+}</div>
+            </div>
+          </div>
+          <aside class="lado">
+            <h3>Swagger</h3>
+            <p>Vê <code>erro</code> + <code>correlacao</code>.</p>
+            <p class="rodape">O stack fica no Output.</p>
+          </aside>
+        </div>
+      </div>
+    </section>
+
+    <section class="slide compact">
+      <h2>Tarde 7 — Pedido: Repository</h2>
+      <div class="content">
+        <div class="split">
+          <div class="col">
+            <p class="passo-limpo">Novo <code>PedidoRepository</code>. Começa igual ao Contribuinte; o que muda:</p>
+            <div class="tela">
+              <div class="tela-bar">Repositories/PedidoRepository.cs</div>
+              <div class="tela-body denso"><span class="k">public class</span> <span class="t">PedidoRepository</span> : <span class="t">IPedidoRepository</span>
+{
+    <span class="k">private readonly</span> <span class="t">AppDbContext</span> _db;
+    <span class="k">private</span> <span class="t">IDbContextTransaction</span>? _tx;
+    <span class="k">public</span> <span class="m">PedidoRepository</span>(<span class="t">AppDbContext</span> db) =&gt; _db = db;
+
+    <span class="k">public</span> <span class="t">IQueryable</span>&lt;<span class="t">PedidoBeneficio</span>&gt; <span class="m">Consulta</span>()
+        =&gt; _db.Pedidos.AsNoTracking().Include(p =&gt; p.Contribuinte);
+
+    <span class="k">public async</span> <span class="t">Task</span> <span class="m">BeginTransactionAsync</span>(<span class="t">CancellationToken</span> ct)
+        =&gt; _tx = <span class="k">await</span> _db.Database.BeginTransactionAsync(ct);
+    <span class="k">public async</span> <span class="t">Task</span> <span class="m">CommitAsync</span>(<span class="t">CancellationToken</span> ct)
+    { <span class="k">if</span> (_tx <span class="k">is not null</span>) <span class="k">await</span> _tx.CommitAsync(ct); }
+    <span class="k">public async</span> <span class="t">Task</span> <span class="m">RollbackAsync</span>(<span class="t">CancellationToken</span> ct)
+    { <span class="k">if</span> (_tx <span class="k">is not null</span>) <span class="k">await</span> _tx.RollbackAsync(ct); }
+
+    <span class="c">// ObterPorId, Adicionar, Remover, Salvar — iguais ao Contribuinte</span>
+}</div>
+            </div>
+          </div>
+          <aside class="lado">
+            <h3>O resto</h3>
+            <p><code>ObterPorId</code> · <code>Adicionar</code> · <code>Remover</code> · <code>Salvar</code> — iguais ao Contribuinte.</p>
+            <p class="rodape">Campo: <code>IDbContextTransaction? _tx</code></p>
+          </aside>
+        </div>
+      </div>
+    </section>
+
+    <section class="slide compact">
+      <h2>Tarde 7 — PedidosController: GET e POST</h2>
+      <div class="content">
+        <div class="split">
+          <div class="col">
+            <p class="passo-limpo">No <code>PedidosController</code>: apaguem o <code>_db</code>. Digitem o construtor + GET + POST:</p>
+            <div class="tela">
+              <div class="tela-bar">PedidosController — troquem o construtor</div>
+              <div class="tela-body denso"><span class="k">private readonly</span> <span class="t">IPedidoService</span> _service;
+<span class="k">public</span> <span class="m">PedidosController</span>(<span class="t">IPedidoService</span> service) =&gt; _service = service;
+
+[<span class="at">HttpGet</span>]
+<span class="k">public async</span> <span class="t">Task</span>&lt;<span class="t">IActionResult</span>&gt; <span class="m">Listar</span>(
+    [<span class="at">FromQuery</span>] <span class="k">int</span> pagina = <span class="n">1</span>,
+    [<span class="at">FromQuery</span>] <span class="k">int</span> tamanho = <span class="n">10</span>,
+    <span class="t">CancellationToken</span> ct = <span class="k">default</span>)
+    =&gt; <span class="m">Ok</span>(<span class="k">await</span> _service.ListarAsync(pagina, tamanho, ct));
+
+[<span class="at">HttpGet</span>(<span class="s">"{id:int}"</span>)]
+<span class="k">public async</span> <span class="t">Task</span>&lt;<span class="t">IActionResult</span>&gt; <span class="m">GetById</span>(<span class="k">int</span> id, <span class="t">CancellationToken</span> ct)
+{
+    <span class="k">var</span> p = <span class="k">await</span> _service.ObterPorIdAsync(id, ct);
+    <span class="k">return</span> p <span class="k">is null</span> ? <span class="m">NotFound</span>() : <span class="m">Ok</span>(p);
+}
+
+[<span class="at">HttpPost</span>]
+<span class="k">public async</span> <span class="t">Task</span>&lt;<span class="t">IActionResult</span>&gt; <span class="m">Create</span>(
+    [<span class="at">FromBody</span>] <span class="t">CriarPedidoRequest</span> <span class="a">req</span>,
+    <span class="t">CancellationToken</span> ct)
+{
+    <span class="k">var</span> (ok, erro, criado) = <span class="k">await</span> _service.CriarAsync(
+        <span class="a">req</span>.ContribuinteId, <span class="a">req</span>.Tipo, ct);
+    <span class="k">if</span> (!ok) <span class="k">return</span> <span class="m">BadRequest</span>(erro);
+    <span class="k">return</span> <span class="m">CreatedAtAction</span>(<span class="k">nameof</span>(GetById),
+        <span class="k">new</span> { id = criado!.Id }, criado);
+}</div>
+            </div>
+          </div>
+          <aside class="lado">
+            <h3>Service</h3>
+            <p><code>ListarAsync</code> = o Skip/Take de manhã.</p>
+            <p><code>CriarAsync</code> = existe? + transação.</p>
+            <p class="rodape">Construtor: <code>IPedidoService</code></p>
+          </aside>
+        </div>
+      </div>
+    </section>
+
+    <section class="slide compact">
+      <h2>Tarde 7 — PedidosController: PUT / PATCH / DELETE</h2>
+      <div class="content">
+        <div class="split">
+          <div class="col">
+            <p class="passo-limpo">Iguais ao Contribuinte — só mudam os argumentos:</p>
+            <div class="tela">
+              <div class="tela-bar">PedidosController — Update / Patch / Delete</div>
+              <div class="tela-body denso">[<span class="at">HttpPut</span>(<span class="s">"{id:int}"</span>)]
+<span class="k">public async</span> <span class="t">Task</span>&lt;<span class="t">IActionResult</span>&gt; <span class="m">Update</span>(
+    <span class="k">int</span> id, [<span class="at">FromBody</span>] <span class="t">CriarPedidoRequest</span> <span class="a">req</span>,
+    <span class="t">CancellationToken</span> ct)
+{
+    <span class="k">var</span> (ok, erro, atualizado) = <span class="k">await</span> _service.AtualizarAsync(
+        id, <span class="a">req</span>.ContribuinteId, <span class="a">req</span>.Tipo, ct);
+    <span class="k">if</span> (atualizado <span class="k">is null</span> &amp;&amp; erro <span class="k">is null</span>) <span class="k">return</span> <span class="m">NotFound</span>();
+    <span class="k">if</span> (!ok) <span class="k">return</span> <span class="m">BadRequest</span>(erro);
+    <span class="k">return</span> <span class="m">Ok</span>(atualizado);
+}
+
+[<span class="at">HttpPatch</span>(<span class="s">"{id:int}/status"</span>)]
+<span class="k">public async</span> <span class="t">Task</span>&lt;<span class="t">IActionResult</span>&gt; <span class="m">PatchStatus</span>(
+    <span class="k">int</span> id, [<span class="at">FromBody</span>] <span class="t">string</span> status, <span class="t">CancellationToken</span> ct)
+{
+    <span class="k">var</span> (ok, erro, atualizado) = <span class="k">await</span> _service.PatchStatusAsync(id, status, ct);
+    <span class="k">if</span> (atualizado <span class="k">is null</span> &amp;&amp; erro <span class="k">is null</span>) <span class="k">return</span> <span class="m">NotFound</span>();
+    <span class="k">if</span> (!ok) <span class="k">return</span> <span class="m">BadRequest</span>(erro);
+    <span class="k">return</span> <span class="m">Ok</span>(atualizado);
+}
+
+[<span class="at">HttpDelete</span>(<span class="s">"{id:int}"</span>)]
+<span class="k">public async</span> <span class="t">Task</span>&lt;<span class="t">IActionResult</span>&gt; <span class="m">Delete</span>(<span class="k">int</span> id, <span class="t">CancellationToken</span> ct)
+    =&gt; <span class="k">await</span> _service.RemoverAsync(id, ct) ? <span class="m">NoContent</span>() : <span class="m">NotFound</span>();</div>
+            </div>
+          </div>
+          <aside class="lado">
+            <h3>Program.cs</h3>
+            <p>A seguir aos Scoped do Contribuinte:</p>
+            <p><code>AddScoped&lt;IPedidoRepository, PedidoRepository&gt;();</code></p>
+            <p><code>AddScoped&lt;IPedidoService, PedidoService&gt;();</code></p>
+            <p class="rodape">GET <code>{id}</code> = <code>GetById</code> pelo Service.</p>
+          </aside>
+        </div>
+      </div>
+    </section>
+
+    <section class="slide compact">
+      <h2>Tarde — Prova</h2>
+      <div class="content">
+        <div class="split">
+          <div class="col">
+            <ol>
+              <li>F5 → Swagger: as mesmas rotas da manhã (GET, POST, PUT, PATCH, DELETE)</li>
+              <li>GET <code>/{id}/pedidos</code> e GET <code>/pedidos?pagina=1</code> continuam a funcionar</li>
+              <li>POST a Ana de novo → 400 (agora no Service)</li>
+              <li>Exibir → Saída: linha “Contribuinte criado”</li>
+              <li>Controller <strong>não</strong> tem <code>AppDbContext</code></li>
+            </ol>
+          </div>
+          <aside class="lado">
+            <h3>Pronto quando</h3>
+            <p>Controller só HTTP. Caderno no Repository. Livro de ponto no log.</p>
+            <p class="rodape">Rotas iguais. Por trás, organizado.</p>
+          </aside>
+        </div>
+      </div>
+    </section>
+
+    <section class="slide compact mapa-final">
+      <h2>Mapa final do Dia 2</h2>
+      <div class="content">
+        <div class="split">
+          <div class="col">
+            <div class="arvore">
+              <div class="bar">InssApi</div>
+              <ul>
+                <li class="indent pasta">Controllers</li>
+                <li class="indent pasta">Data</li>
+                <li class="indent pasta">Models</li>
+                <li class="indent pasta">Migrations</li>
+                <li class="indent pasta novo">Repositories</li>
+                <li class="indent pasta novo">Services</li>
+                <li class="indent pasta novo">Middleware</li>
+                <li class="indent arq">inss.db</li>
+                <li class="indent cs">Program.cs</li>
+              </ul>
+            </div>
+          </div>
+          <aside class="lado">
+            <h3>Checklist</h3>
+            <p>✓ Relação + LINQ + página + <code>IgnoreCycles</code></p>
+            <p>✓ async + 400 + CRUD de ontem</p>
+            <p>✓ Camadas + Scoped</p>
+            <p>✓ Middleware + log + TraceId</p>
+            <p class="rodape">Um projeto desde o Dia 1.</p>
+          </aside>
+        </div>
+      </div>
+    </section>
+
+    <section class="slide compact">
+      <h2>Checklist do dia</h2>
+      <div class="content">
+        <div class="split">
+          <div class="col">
+            <div class="cards dois">
+              <div class="card">
+                <h3>Manhã M7</h3>
+                <p>Pedidos da Ana · nome no JSON · <code>?pagina=</code> · transação · async</p>
+              </div>
+              <div class="card">
+                <h3>Tarde M8</h3>
+                <p>Controller só HTTP · Service · Repo · DI · 500 amigável · log</p>
+              </div>
+            </div>
+          </div>
+          <aside class="lado">
+            <h3>Fio dos 2 dias</h3>
+            <p>M5 — o balcão atende.</p>
+            <p>M6 — o arquivo não apaga.</p>
+            <p>M7 — as fichas se ligam.</p>
+            <p>M8 — o posto se organiza.</p>
+          </aside>
+        </div>
+      </div>
+    </section>
+
+    <section class="slide compact">
+      <h2>Se der errado</h2>
+      <div class="content">
+        <div class="split">
+          <div class="col">
+            <table>
+              <tr><th>Problema</th><th>Façam isso</th></tr>
+              <tr><td>Nome do contribuinte null</td><td>Faltou <code>Include</code> ou migration</td></tr>
+              <tr><td>GET pedidos → 500 / ciclo</td><td>Faltou <code>IgnoreCycles</code> no <code>Program.cs</code></td></tr>
+              <tr><td>Página vazia</td><td><code>pagina</code> começa em 1 · Skip</td></tr>
+              <tr><td>Unable to resolve service</td><td>Faltou <code>AddScoped</code></td></tr>
+              <tr><td>DbContext disposed</td><td>Não usem Singleton no repo</td></tr>
+              <tr><td>Controller ainda tem _db</td><td>Tirem e injetem o Service</td></tr>
+              <tr><td>DELETE Ana → 500</td><td><code>Restrict</code>: ela ainda tem pedidos</td></tr>
+              <tr><td>201 aponta URL errada</td><td><code>nameof(GetById)</code>, não <code>nameof(Get)</code></td></tr>
+            </table>
+          </div>
+          <aside class="lado">
+            <h3>Ordem</h3>
+            <p>Models → Fluent → update → Include → DI no fim.</p>
+            <p class="rodape">Pular o update é o erro da manhã.</p>
+          </aside>
+        </div>
+      </div>
+    </section>
+
+    <section class="slide compact">
+      <h2>O que ficou destes dois dias</h2>
+      <div class="content">
+        <div class="split">
+          <div class="col">
+            <p>Um único projeto: <code>InssApi</code>. Contribuintes e pedidos no Swagger.</p>
+            <p>Memória → arquivo → relação → camadas → log.</p>
+          </div>
+          <aside class="lado">
+            <h3>Portal</h3>
+            <p>O balcão é o mesmo.</p>
+            <p class="rodape">Por trás, um posto de verdade.</p>
+          </aside>
+        </div>
+      </div>
+    </section>
+
+    <section class="slide fill">
+      <h1>Fim do dia</h1>
+      <p class="highlight">M7 + M8</p>
+      <div class="callout green">Mesmo InssApi. Pedidos da Ana. Posto organizado. Log no Output.</div>
+      <p>Profº Fernando Lopes Cardoso Ferreira</p>
+    </section>
+
+  </div>
+
+  <div class="nav-bar">
+    <button type="button" id="prev" disabled>← Anterior</button>
+    <span class="slide-counter"><span id="cur">1</span> / <span id="total">1</span></span>
+    <button type="button" id="next">Próximo →</button>
+  </div>
+
+  <script>
+    const slides = [...document.querySelectorAll('.slide')];
+    const total = slides.length;
+    let i = 0;
+    document.getElementById('total').textContent = total;
+    function show(n) {
+      i = Math.max(0, Math.min(total - 1, n));
+      slides.forEach((s, idx) => s.classList.toggle('active', idx === i));
+      document.getElementById('cur').textContent = i + 1;
+      document.getElementById('prev').disabled = i === 0;
+      document.getElementById('next').disabled = i === total - 1;
+      document.getElementById('progress').style.width = ((i + 1) / total * 100) + '%';
+    }
+    document.getElementById('prev').onclick = () => show(i - 1);
+    document.getElementById('next').onclick = () => show(i + 1);
+    document.addEventListener('keydown', (e) => {
+      if (e.target.matches('input, textarea')) return;
+      if (['ArrowRight', 'PageDown', ' ', 'Enter'].includes(e.key)) { e.preventDefault(); show(i + 1); }
+      if (['ArrowLeft', 'PageUp', 'Backspace'].includes(e.key)) { e.preventDefault(); show(i - 1); }
+      if (e.key === 'Home') show(0);
+      if (e.key === 'End') show(total - 1);
+    });
+    show(0);
+  </script>
+</body>
+</html>

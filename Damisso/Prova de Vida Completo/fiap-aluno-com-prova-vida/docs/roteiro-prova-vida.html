@@ -1,0 +1,459 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Prova de Vida — Implementação passo a passo | FIAP × INSS</title>
+  <style>
+    :root {
+      --green: #006233; --green-dark: #004d28; --green-soft: #e8f5ee;
+      --gold: #c9a227; --gold-soft: #fff8e1; --red: #ce1126;
+      --blue: #0d47a1; --onde: #0b3d91;
+    }
+    * { box-sizing: border-box; }
+    body {
+      font-family: 'Segoe UI', system-ui, sans-serif;
+      line-height: 1.45; max-width: 1000px; margin: 0 auto;
+      padding: 0 1.25rem 3.5rem; color: #111; font-weight: 700; font-size: 1.12rem;
+    }
+    .flag {
+      height: 10px; margin: 0 -1.25rem 1.25rem;
+      background: linear-gradient(90deg,#006233 0 25%,#111 25% 50%,#fcd116 50% 75%,#ce1126 75% 100%);
+    }
+    h1 { color: var(--green); border-bottom: 4px solid var(--gold); padding-bottom: .5rem; font-size: 1.95rem; }
+    h2 { color: var(--green); margin-top: 2.1rem; font-size: 1.45rem; border-bottom: 2px solid var(--gold); padding-bottom: .25rem; }
+    h3 { color: var(--green-dark); margin: 1.2rem 0 .45rem; font-size: 1.15rem; }
+    code, pre { font-family: Consolas, 'Courier New', monospace; }
+    code { background: #111; color: #e8f5ee; padding: .12rem .35rem; border-radius: 4px; font-size: .92em; }
+    pre {
+      background: #0c0c0c; color: #ccc; padding: .9rem 1rem; overflow-x: auto;
+      border-radius: 8px; border: 2px solid #333; line-height: 1.4; font-size: .9rem;
+    }
+    .onde,.digite,.aparece {
+      display: inline-block; font-weight: 900; padding: .12rem .45rem; border-radius: 4px; margin: .15rem .25rem .15rem 0;
+    }
+    .onde { background: var(--onde); color: #fff; }
+    .digite { background: #111; color: #7dffa8; }
+    .aparece { background: #1a3a2a; color: #b8f0c8; }
+    .passo {
+      background: #f5f7fb; border-left: 6px solid var(--green);
+      padding: 1rem 1.2rem; margin: 1.1rem 0; border-radius: 0 10px 10px 0;
+    }
+    .passo.impl { border-left-color: var(--blue); background: #f0f4fb; }
+    .aviso { background: #fdecea; border-left: 6px solid var(--red); padding: .75rem 1rem; margin: 1rem 0; border-radius: 0 8px 8px 0; }
+    .todo { background: var(--gold-soft); border-left: 6px solid var(--gold); padding: .75rem 1rem; margin: 1rem 0; border-radius: 0 8px 8px 0; }
+    .ok { background: var(--green-soft); border-left: 6px solid var(--green); padding: .75rem 1rem; margin: 1rem 0; border-radius: 0 8px 8px 0; }
+    table { border-collapse: collapse; width: 100%; margin: 1rem 0; }
+    th, td { border: 2px solid #ccc; padding: .45rem .65rem; text-align: left; vertical-align: top; }
+    th { background: var(--green); color: #fff; }
+    nav {
+      background: var(--green-soft); padding: 1rem 1.2rem; margin-bottom: 1.4rem;
+      border-radius: 8px; border: 2px solid #b7dfc4; columns: 2; column-gap: 1.5rem;
+    }
+    nav strong { display: block; margin-bottom: .4rem; break-after: avoid; }
+    nav a { display: block; margin: .28rem 0; color: var(--green); font-weight: 800; text-decoration: none; break-inside: avoid; }
+    nav a:hover { text-decoration: underline; }
+    .links { display: flex; flex-wrap: wrap; gap: .65rem; margin: 1rem 0; }
+    .links a {
+      background: var(--blue); color: #fff; text-decoration: none;
+      padding: .5rem .9rem; border-radius: 8px; font-weight: 800;
+    }
+    .links a.gold { background: var(--gold); color: #111; }
+    .links a.green { background: var(--green); }
+    figure.shot {
+      margin: 1rem 0; background: #fff; border: 3px solid #c5cdd8;
+      border-radius: 12px; overflow: hidden; box-shadow: 0 8px 24px rgba(0,0,0,.07);
+    }
+    figure.shot img {
+      display: block; width: 100%; max-height: 480px; object-fit: contain; background: #f4f6f8;
+    }
+    figure.shot.phone img { max-height: 560px; }
+    figcaption {
+      padding: .7rem 1rem; font-size: .98rem; background: #f0f3f8;
+      border-top: 2px solid #c5cdd8; color: #222;
+    }
+    .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
+    @media (max-width: 820px) {
+      nav { columns: 1; }
+      .grid-2 { grid-template-columns: 1fr; }
+      figure.shot img { max-height: none; }
+    }
+    .badge {
+      display: inline-block; background: var(--red); color: #fff;
+      font-size: .8rem; padding: .15rem .5rem; border-radius: 5px; margin-right: .35rem;
+    }
+    .badge.new { background: var(--blue); }
+    .badge.exist { background: #555; }
+    ul.check li { margin-bottom: .35rem; }
+  </style>
+</head>
+<body>
+  <div class="flag"></div>
+  <h1>Prova de Vida — do desenho da turma ao código</h1>
+  <p>
+    Este roteiro amarra o <strong>conceito que os alunos desenharam</strong>
+    (FRONT · CONTRIBUINTE · BENEFÍCIOS · DADOS BIOMÉTRICOS · PROVA DE VIDA · MOBILE · ponte GUID)
+    com o que foi <strong>implementado a mais</strong> no pacote
+    <code>fiap-aluno-com-prova-vida</code>.
+  </p>
+
+  <div class="links">
+    <a class="gold" href="slides-prova-vida.html">Slides (projetor)</a>
+    <a class="green" href="prova-vida-webcam.html">Webcam</a>
+    <a href="roteiro-pratico-alunos.html">Roteiro Dia 1 (sem PV)</a>
+  </div>
+
+  <div class="ok">
+    <strong>Duas pastas no pen drive:</strong><br/>
+    <code>PARA-PENDRIVE\fiap-aluno-sem-prova-vida</code> — o que a turma fez até agora (FRONT + CONTRIBUINTE + BENEFÍCIOS)<br/>
+    <code>PARA-PENDRIVE\fiap-aluno-com-prova-vida</code> — + DADOS BIOMÉTRICOS + PROVA DE VIDA + MOBILE
+  </div>
+
+  <div class="aviso">
+    O PDF/proposta da turma não está no repositório — usamos o <strong>rascunho fotografado</strong>
+    (mesma arquitetura do chat) como referência oficial do conceito.
+  </div>
+
+  <nav>
+    <strong>Índice</strong>
+    <a href="#conceito">0 — Conceito da turma (imagem)</a>
+    <a href="#mapa">0b — Mapa: desenho → código</a>
+    <a href="#parte-a">A — O que mudou (antes × depois)</a>
+    <a href="#parte-b">B — O que foi implementado (código)</a>
+    <a href="#i1">I1 — Perfil Pensionista</a>
+    <a href="#i2">I2 — Microsserviço ProvaVida</a>
+    <a href="#i3">I3 — Domínio e match 72%</a>
+    <a href="#i4">I4 — Cadastrar / Consultar / Renovar</a>
+    <a href="#i5">I5 — Webcam + MediaPipe</a>
+    <a href="#i6">I6 — App mobile Expo</a>
+    <a href="#i7">I7 — Liveness 3 poses</a>
+    <a href="#i8">I8 — CORS e 0.0.0.0</a>
+    <a href="#i9">I9 — Polyfill face-api + APK</a>
+    <a href="#parte-c">C — Como rodar (aluno)</a>
+    <a href="#parte-d">D — Problemas com print</a>
+    <a href="#nuits">NUITs · checklist</a>
+  </nav>
+
+  <!-- ========== 0 CONCEITO ========== -->
+  <h2 id="conceito">0 — Conceito da turma (o desenho)</h2>
+  <p>
+    No rascunho, o <strong>FRONT</strong> fala com <strong>CONTRIBUINTE</strong> e <strong>BENEFÍCIOS</strong>.
+    A Prova de Vida é outro fluxo: o <strong>MOBILE</strong> alimenta
+    <strong>DADOS BIOMÉTRICOS</strong> e <strong>PROVA DE VIDA</strong>, ligados ao contribuinte pelo <strong>GUID</strong>.
+  </p>
+
+  <div class="grid-2">
+    <figure class="shot">
+      <img src="img/prova-vida/conceito-alunos-rascunho.jpg" alt="Rascunho à mão dos alunos — arquitetura Prova de Vida" />
+      <figcaption>
+        <strong>Figura 0a — Rascunho da turma.</strong>
+        FRONT · CONTRIBUINTE · BENEFÍCIOS · DADOS BIOMÉTRICOS (GUID) · PROVA DE VIDA · MOBILE.
+      </figcaption>
+    </figure>
+    <figure class="shot">
+      <img src="img/prova-vida/conceito-alunos-implementado.png" alt="Mesmo desenho com portas e projetos reais" />
+      <figcaption>
+        <strong>Figura 0b — Mesmo desenho, com o que rodamos.</strong>
+        Cada caixa do papel ganhou porta, pasta e responsabilidade no código.
+      </figcaption>
+    </figure>
+  </div>
+
+  <h2 id="mapa">0b — Mapa: caixa do desenho → o que foi implementado</h2>
+  <table>
+    <tr>
+      <th>No desenho / PDF da turma</th>
+      <th>Já existia? (sem PV)</th>
+      <th>O que implementamos a mais</th>
+    </tr>
+    <tr>
+      <td><strong>FRONT</strong></td>
+      <td>Sim — portal React <code>:5173</code></td>
+      <td>Continua (aula de PV não exige). Webcam em <code>:5180</code> é front extra de demo.</td>
+    </tr>
+    <tr>
+      <td><strong>CONTRIBUINTE</strong></td>
+      <td>Sim — API <code>:5001</code></td>
+      <td><span class="badge new">+</span> perfil <strong>Pensionista</strong> · endpoints <code>/pensionistas</code> · seed NUIT 30040050x</td>
+    </tr>
+    <tr>
+      <td><strong>BENEFÍCIOS</strong></td>
+      <td>Sim — API <code>:5002</code></td>
+      <td>Sem mudança obrigatória para PV (fica no desenho completo do sistema).</td>
+    </tr>
+    <tr>
+      <td><strong>DADOS BIOMÉTRICOS</strong> ← seta <strong>GUID</strong></td>
+      <td>Não</td>
+      <td><span class="badge new">NOVO</span> <code>PerfilBiometrico</code> · embedding 128D · ponte por GUID (sem JOIN entre bancos) · <strong>não grava foto</strong></td>
+    </tr>
+    <tr>
+      <td><strong>PROVA DE VIDA</strong></td>
+      <td>Não</td>
+      <td><span class="badge new">NOVO</span> microsserviço <code>ProvaVida.*</code> <code>:5003</code> · Cadastrar / Consultar / Renovar · match ≥ 72% · validade 12 meses</td>
+    </tr>
+    <tr>
+      <td><strong>MOBILE</strong> (círculos)</td>
+      <td>Não</td>
+      <td><span class="badge new">NOVO</span> <code>projeto/app-mobile</code> · APK Expo · liveness 3 poses · (alternativa: webcam no PC)</td>
+    </tr>
+  </table>
+
+  <div class="ok">
+    <strong>Em uma frase:</strong> o papel da turma pediu biométrica + prova de vida + mobile ligados por GUID;
+    o código entregou exatamente isso em cima do FRONT/CONTRIBUINTE/BENEFÍCIOS que já existiam.
+  </div>
+
+  <!-- ========== A ========== -->
+  <h2 id="parte-a">A — Antes × depois</h2>
+  <p>
+    Até a Prova de Vida, o pacote do aluno tinha portal React + 2 APIs
+    (as caixas de cima do desenho).
+    A feature nova acrescenta as caixas de baixo: <strong>DADOS BIOMÉTRICOS</strong>,
+    <strong>PROVA DE VIDA</strong> e <strong>MOBILE</strong>.
+  </p>
+  <figure class="shot">
+    <img src="img/prova-vida/diagrama-antes-depois.png" alt="Diagrama antes e depois da Prova de Vida" />
+    <figcaption>
+      <strong>Figura A1 — Antes × depois.</strong>
+      Esquerda: portal + Contribuintes/Benefícios. Direita: entra ProvaVida :5003,
+      app Android e webcam, com banco <code>inss_prova_vida</code>.
+    </figcaption>
+  </figure>
+
+  <figure class="shot">
+    <img src="img/prova-vida/diagrama-pastas-implementacao.png" alt="Pastas que foram adicionadas" />
+    <figcaption>
+      <strong>Figura A2 — Pastas.</strong>
+      <span class="badge exist">Já existia</span> Contribuintes, Benefícios, portal.
+      <span class="badge new">Foi adicionado</span> ProvaVida.* · app-mobile · webcam · perfil Pensionista.
+    </figcaption>
+  </figure>
+
+  <table>
+    <tr><th>Item</th><th>sem-prova-vida</th><th>com-prova-vida</th></tr>
+    <tr><td>Contribuintes :5001</td><td>Sim</td><td>Sim (+ perfil Pensionista)</td></tr>
+    <tr><td>Benefícios :5002</td><td>Sim</td><td>Sim (aula PV não exige)</td></tr>
+    <tr><td>Portal :5173</td><td>Sim</td><td>Sim (aula PV não exige)</td></tr>
+    <tr><td>ProvaVida :5003</td><td>Não</td><td><strong>Sim</strong></td></tr>
+    <tr><td>app-mobile / APK</td><td>Não</td><td><strong>Sim</strong></td></tr>
+    <tr><td>Webcam :5180</td><td>Não</td><td><strong>Sim</strong></td></tr>
+  </table>
+
+  <!-- ========== B ========== -->
+  <h2 id="parte-b">B — Passo a passo do que foi implementado</h2>
+  <p>
+    Ordem real da construção da feature (não é só “como ligar” — é
+    <strong>o que o código ganhou</strong>).
+  </p>
+
+  <div class="passo impl" id="i1">
+    <h3><span class="badge new">I1</span> Perfil Pensionista em Contribuintes</h3>
+    <ul>
+      <li>Enum <code>PerfilContribuinte</code> (ex.: Pensionista)</li>
+      <li>Endpoint <code>/api/contribuintes/pensionistas</code> e <code>.../por-nuit/{nuit}</code></li>
+      <li>Seed com NUITs <code>300400501</code>…<code>300400504</code></li>
+      <li>Migration <code>AddPerfilContribuinte</code></li>
+    </ul>
+    <p><span class="aparece">POR QUÊ</span> Prova de Vida é só para aposentados/pensionistas — NUIT de trabalhador deve falhar.</p>
+  </div>
+
+  <div class="passo impl" id="i2">
+    <h3><span class="badge new">I2</span> Microsserviço ProvaVida (camadas)</h3>
+    <p>Projetos novos em <code>projeto\api\src\</code>:</p>
+    <ul>
+      <li><code>ProvaVida.Api</code> — controllers, CORS, porta :5003</li>
+      <li><code>ProvaVida.Application</code> — serviços, DTOs, mapper</li>
+      <li><code>ProvaVida.Domain</code> — entidades, enums, regras</li>
+      <li><code>ProvaVida.Infrastructure</code> — EF Core, repositórios, HttpClient → :5001</li>
+    </ul>
+    <figure class="shot">
+      <img src="img/prova-vida/diagrama-camadas-provavida.png" alt="Camadas do microsserviço Prova de Vida" />
+      <figcaption>
+        <strong>Figura B1 — DDD em camadas.</strong>
+        Api → Application → Domain → Infrastructure → Postgres <code>inss_prova_vida</code>.
+        HttpClient consulta Contribuintes por NUIT/GUID (sem JOIN entre bancos).
+      </figcaption>
+    </figure>
+    <pre>docker/postgres-init → cria também inss_prova_vida
+dotnet ef migrations → InitialCreate + PerfilBiometrico + FaceEmbedding</pre>
+  </div>
+
+  <div class="passo impl" id="i3">
+    <h3><span class="badge new">I3</span> Domínio: identidade sem gravar foto</h3>
+    <ul>
+      <li><code>PerfilBiometrico</code> — ContribuinteId (GUID) + NUIT + FaceEmbeddingJson</li>
+      <li><code>RegistroProvaVida</code> — histórico + status + validade</li>
+      <li><code>ComparadorFacial</code> — similaridade cosseno · limiar <strong>≥ 72%</strong></li>
+      <li><code>ValidadeProvaVida</code> — 12 meses</li>
+    </ul>
+    <figure class="shot">
+      <img src="img/prova-vida/diagrama-nuit-guid-embedding.png" alt="NUIT para GUID para embedding" />
+      <figcaption>
+        <strong>Figura B2 — Ponte por GUID.</strong>
+        NUIT → Contribuintes → GUID → template 128D. O banco <strong>não</strong> guarda JPEG/PNG.
+      </figcaption>
+    </figure>
+  </div>
+
+  <div class="passo impl" id="i4">
+    <h3><span class="badge new">I4</span> Três operações de negócio</h3>
+    <figure class="shot">
+      <img src="img/prova-vida/diagrama-fluxo-operacoes.png" alt="Fluxos Cadastrar Consultar Renovar" />
+      <figcaption>
+        <strong>Figura B3 — Cadastrar · Consultar · Renovar.</strong>
+        Consultar com prova válida autentica e <em>não</em> empurra a validade.
+      </figcaption>
+    </figure>
+    <table>
+      <tr><th>Operação</th><th>Quando</th><th>Efeito</th></tr>
+      <tr><td>Cadastrar</td><td>Sem perfil biométrico</td><td>Cria template + validade</td></tr>
+      <tr><td>Consultar</td><td>Prova válida</td><td>Match · sem renovar</td></tr>
+      <tr><td>Renovar</td><td>Expirada</td><td>Match · +12 meses</td></tr>
+    </table>
+  </div>
+
+  <div class="passo impl" id="i5">
+    <h3><span class="badge new">I5</span> Webcam no PC (docs)</h3>
+    <ul>
+      <li>Arquivo <code>docs/prova-vida-webcam.html</code></li>
+      <li>Liveness: MediaPipe · embedding: face-api 128D</li>
+      <li>Servir em <code>:5180</code> (CORS precisa liberar essa origem)</li>
+    </ul>
+    <pre>cd docs
+npx --yes serve . -p 5180 --no-clipboard
+# http://localhost:5180/prova-vida-webcam.html</pre>
+  </div>
+
+  <div class="passo impl" id="i6">
+    <h3><span class="badge new">I6</span> App mobile (Expo)</h3>
+    <ul>
+      <li>Pasta <code>projeto/app-mobile</code> — Home · Liveness · Success</li>
+      <li><code>app.json</code> → <code>extra.contribuintesApiUrl</code> / <code>provaVidaApiUrl</code></li>
+      <li>EAS Build profile <code>preview</code> → APK Android</li>
+      <li>Cleartext HTTP liberado (lab local)</li>
+    </ul>
+    <figure class="shot">
+      <img src="img/prova-vida/eas-install-qr.jpg" alt="QR Expo para instalar APK" />
+      <figcaption>
+        <strong>Figura B4 — Instalar APK.</strong>
+        Expo → Install on a test device · versão <strong>1.0.1+</strong>.
+      </figcaption>
+    </figure>
+  </div>
+
+  <div class="passo impl" id="i7">
+    <h3><span class="badge new">I7</span> Liveness didático (3 poses)</h3>
+    <figure class="shot">
+      <img src="img/prova-vida/diagrama-liveness-3-poses.png" alt="Três poses de liveness" />
+      <figcaption>
+        <strong>Figura B5 — Liveness.</strong>
+        Frente → esquerda → direita. Em produção: TODO FaceTec / iProov / AWS.
+      </figcaption>
+    </figure>
+    <figure class="shot phone">
+      <img src="img/prova-vida/app-liveness-passo2.jpg" alt="App no celular passo 2" />
+      <figcaption>
+        <strong>Figura B6 — App real.</strong>
+        Consultar · António · Passo 2/3 · virar à esquerda · match ≥ 72%.
+      </figcaption>
+    </figure>
+  </div>
+
+  <div class="passo impl" id="i8">
+    <h3><span class="badge new">I8</span> Rede: CORS + bind 0.0.0.0</h3>
+    <ul>
+      <li>Celular não alcança só <code>localhost</code> do PC → APIs em <code>http://0.0.0.0:5001|5003</code></li>
+      <li>Webcam :5180 precisa de CORS na API Contribuintes</li>
+    </ul>
+    <figure class="shot">
+      <img src="img/prova-vida/webcam-cors-erro.png" alt="Erro CORS na webcam" />
+      <figcaption>
+        <strong>Figura B7 — Sintoma CORS.</strong>
+        Failed to fetch + Network “CORS error”. Correção: AllowAnyOrigin (demo) + reiniciar API.
+      </figcaption>
+    </figure>
+  </div>
+
+  <div class="passo impl" id="i9">
+    <h3><span class="badge new">I9</span> Polyfill face-api no React Native</h3>
+    <ul>
+      <li><code>src/polyfills/rnFaceEnv.ts</code> — Canvas/Image/ImageData fake</li>
+      <li><code>faceapi.env.setEnv(...)</code> no load do módulo</li>
+      <li><code>metro.config.js</code> força bundle browser ESM (não o entry Node)</li>
+    </ul>
+    <figure class="shot phone">
+      <img src="img/prova-vida/apk-getenv-erro.png" alt="Erro getEnv no APK antigo" />
+      <figcaption>
+        <strong>Figura B8 — APK antigo.</strong>
+        <code>getEnv - environment is not defined</code> → instalar APK 1.0.1+.
+      </figcaption>
+    </figure>
+  </div>
+
+  <!-- ========== C ========== -->
+  <h2 id="parte-c">C — Como o aluno roda (depois de implementar)</h2>
+
+  <div class="passo" id="run1">
+    <h3>1 — Docker</h3>
+    <pre>cd C:\fiap-aluno-com-prova-vida\projeto\api
+docker compose up -d
+docker compose ps</pre>
+  </div>
+
+  <div class="passo" id="run2">
+    <h3>2 — Duas APIs (terminais abertos)</h3>
+    <pre># Terminal A
+$env:ASPNETCORE_ENVIRONMENT="Development"
+dotnet run --project src\Contribuintes.Api --no-launch-profile --urls http://0.0.0.0:5001
+
+# Terminal B
+$env:ASPNETCORE_ENVIRONMENT="Development"
+dotnet run --project src\ProvaVida.Api --no-launch-profile --urls http://0.0.0.0:5003</pre>
+  </div>
+
+  <div class="passo" id="run3">
+    <h3>3 — Webcam ou APK</h3>
+    <pre>cd C:\fiap-aluno-com-prova-vida\docs
+npx --yes serve . -p 5180 --no-clipboard
+# http://localhost:5180/prova-vida-webcam.html · NUIT 300400504</pre>
+    <p>No celular: APK 1.0.1+ · mesma Wi‑Fi · IP do PC no <code>app.json</code>.</p>
+  </div>
+
+  <!-- ========== D ========== -->
+  <h2 id="parte-d">D — Problemas (resumo)</h2>
+  <table>
+    <tr><th>Sintoma</th><th>Causa típica</th><th>Ação</th></tr>
+    <tr><td>Failed to fetch / CORS</td><td>API sem Allow-Origin p/ :5180</td><td>Reiniciar Contribuintes (demo CORS)</td></tr>
+    <tr><td>getEnv…</td><td>APK &lt; 1.0.1</td><td>Instalar APK novo</td></tr>
+    <tr><td>App sem conexão</td><td>localhost no celular / Wi‑Fi diferente</td><td>0.0.0.0 + IP LAN</td></tr>
+    <tr><td>Match &lt; 72%</td><td>Outra pessoa / cadastro ruim</td><td>Recadastrar</td></tr>
+    <tr><td>NUIT trabalhador</td><td>Não é pensionista</td><td>Usar 30040050x</td></tr>
+  </table>
+
+  <h2 id="nuits">NUITs · checklist final</h2>
+  <table>
+    <tr><th>NUIT</th><th>Nome</th></tr>
+    <tr><td>300400504</td><td>António Idoso Sitoe (principal)</td></tr>
+    <tr><td>300400501</td><td>Maria Aposentada Chissano</td></tr>
+    <tr><td>300400502</td><td>João Reformado Mabote</td></tr>
+    <tr><td>300400503</td><td>Teresa Viúva Nhamussua</td></tr>
+  </table>
+
+  <ul class="check">
+    <li>[ ] Pacote <code>fiap-aluno-com-prova-vida</code> no HD</li>
+    <li>[ ] Docker healthy</li>
+    <li>[ ] :5001 e :5003 no ar</li>
+    <li>[ ] Webcam ou APK completa 3 poses</li>
+    <li>[ ] Entendeu: sem foto no banco · GUID · 72%</li>
+  </ul>
+
+  <div class="todo">
+    <strong>TODO produção:</strong> SDK liveness pago · APIs na nuvem · iOS · bloqueio de benefício se prova expirada.
+  </div>
+
+  <p style="margin-top:1.5rem;color:#444">
+    Slides: <a href="slides-prova-vida.html"><strong>slides-prova-vida.html</strong></a>
+    · Regenerar pen drive: <code>.\scripts\montar-fiap-aluno-com-prova-vida.ps1</code>
+  </p>
+</body>
+</html>

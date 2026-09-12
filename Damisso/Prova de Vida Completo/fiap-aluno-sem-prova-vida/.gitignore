@@ -1,0 +1,10 @@
+node_modules
+dist
+*.db
+*.db-shm
+*.db-wal
+bin
+obj
+.vs
+TestResults
+playwright-report

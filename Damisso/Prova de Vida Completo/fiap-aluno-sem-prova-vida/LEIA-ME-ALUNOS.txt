@@ -1,0 +1,39 @@
+﻿================================================================================
+  LEIA-ME — pacote alunos · INSS Mocambique · FIAP
+================================================================================
+
+Comece por este arquivo:
+  PASSO-A-PASSO.txt
+
+Resumo rapido:
+  1) Copie esta pasta para o HD (ex.: C:\fiap-aluno) — nao use o pen drive
+  2) Verifique: dotnet, node, npm, docker, git
+  3) Docker Desktop aberto
+  4) projeto\api → docker compose up -d
+  5) Duas APIs: Contribuintes (:5001) e Beneficios (:5002)
+  6) projeto\app → copy .env.example .env → npm install → npm run dev
+  7) http://localhost:5173 · login admin / 123
+
+Pastas:
+  projeto\api   → Visual Studio (InssModernizacao.slnx)
+  projeto\app   → VS Code + npm
+  docs\         → slides no browser
+
+Detalhes tecnicos: README.md
+================================================================================
+
+--------------------------------------------------------------------------------
+  NOVO — Testes + Nuvem (aula seguinte)
+  docs\slides-testes-nuvem.html
+  docs\roteiro-testes-nuvem.html
+  Na pasta api:  dotnet test --filter "FullyQualifiedName~UnitTests"
+  Nuvem: https://fiap-kappa.vercel.app  (admin / 123)
+  Antes: acordar https://fiap-xm3c.onrender.com e https://inss-beneficios.onrender.com
+--------------------------------------------------------------------------------
+
+--------------------------------------------------------------------------------
+  Testes + SUBIR O SEU PROJETO NA NUVEM
+  docs\slides-testes-nuvem.html
+  docs\roteiro-testes-nuvem.html   (B0 contas → B1 GitHub → B2 Neon → B3 Render → B4 Vercel → B5 CORS → B6 testar)
+  Ordem: dotnet test no PC · depois cada um publica a propria URL (nao so a do professor)
+--------------------------------------------------------------------------------

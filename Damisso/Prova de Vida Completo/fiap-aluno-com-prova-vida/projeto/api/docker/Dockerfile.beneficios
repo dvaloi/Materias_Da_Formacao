@@ -1,0 +1,17 @@
+FROM mcr.microsoft.com/dotnet/sdk:10.0 AS build
+WORKDIR /src
+
+COPY src/Beneficios.Domain/Beneficios.Domain.csproj src/Beneficios.Domain/
+COPY src/Beneficios.Application/Beneficios.Application.csproj src/Beneficios.Application/
+COPY src/Beneficios.Infrastructure/Beneficios.Infrastructure.csproj src/Beneficios.Infrastructure/
+COPY src/Beneficios.Api/Beneficios.Api.csproj src/Beneficios.Api/
+RUN dotnet restore src/Beneficios.Api/Beneficios.Api.csproj
+
+COPY src/ src/
+RUN dotnet publish src/Beneficios.Api/Beneficios.Api.csproj -c Release -o /app/publish /p:UseAppHost=false
+
+FROM mcr.microsoft.com/dotnet/aspnet:10.0
+WORKDIR /app
+COPY --from=build /app/publish .
+EXPOSE 8080
+ENTRYPOINT ["dotnet", "Beneficios.Api.dll"]

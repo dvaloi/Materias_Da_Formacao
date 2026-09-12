@@ -1,0 +1,2177 @@
+﻿<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Roteiro prático — Alunos | FIAP × INSS Moçambique</title>
+  <style>
+    :root {
+      --green: #006233;
+      --green-dark: #004d28;
+      --green-soft: #e8f5ee;
+      --gold: #c9a227;
+      --gold-soft: #fff8e1;
+      --red: #ce1126;
+      --border: #94a3b8;
+      --text: #111;
+      --onde: #0b3d91;
+      --onde-soft: #e8f0fe;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: 'Segoe UI', system-ui, sans-serif;
+      background: #fff;
+      color: var(--text);
+      line-height: 1.4;
+      font-size: clamp(1.35rem, 2.1vw, 1.85rem);
+      font-weight: 700;
+    }
+    .flag {
+      height: 12px;
+      background: linear-gradient(90deg,
+        #006233 0 25%, #111 25% 50%, #fcd116 50% 75%, #ce1126 75% 100%);
+    }
+    .wrap {
+      max-width: none;
+      width: 100%;
+      margin: 0;
+      padding: 1.25rem 3.5vw 3rem;
+    }
+    h1 {
+      color: var(--green);
+      font-size: clamp(2.4rem, 4.5vw, 3.4rem);
+      font-weight: 900;
+      margin: 0.75rem 0 0.4rem;
+    }
+    .sub { font-size: clamp(1.25rem, 2vw, 1.55rem); margin-bottom: 1.1rem; color: #222; font-weight: 700; }
+    h2 {
+      color: var(--green);
+      font-size: clamp(1.9rem, 3.2vw, 2.5rem);
+      font-weight: 900;
+      border-bottom: 5px solid var(--gold);
+      padding-bottom: 0.4rem;
+      margin: 2.25rem 0 1rem;
+    }
+    h3 {
+      color: var(--green-dark);
+      font-size: clamp(1.45rem, 2.4vw, 1.85rem);
+      font-weight: 800;
+      margin: 1.5rem 0 0.65rem;
+    }
+    h4 {
+      font-size: clamp(1.2rem, 1.9vw, 1.45rem);
+      font-weight: 900;
+      margin: 1rem 0 0.45rem;
+      color: #111;
+    }
+    p, li { margin-bottom: 0.65rem; }
+    ul, ol { padding-left: 1.5rem; }
+    strong { font-weight: 900; }
+    code, .cmd {
+      font-family: Consolas, 'Courier New', monospace;
+      background: #111;
+      color: #e8f5ee;
+      padding: 0.15rem 0.5rem;
+      border-radius: 5px;
+      font-size: 0.95em;
+      font-weight: 700;
+    }
+    pre.cmd {
+      display: block;
+      padding: 1.15rem 1.35rem;
+      border-radius: 12px;
+      overflow-x: auto;
+      margin: 0.75rem 0 1.15rem;
+      line-height: 1.55;
+      white-space: pre-wrap;
+      word-break: break-word;
+      font-size: clamp(1.25rem, 2vw, 1.65rem);
+    }
+    pre.term {
+      display: block;
+      background: #0c0c0c;
+      color: #cccccc;
+      border: 3px solid #333;
+      border-radius: 10px;
+      padding: 1rem 1.2rem;
+      margin: 0.5rem 0 1.25rem;
+      overflow-x: auto;
+      line-height: 1.45;
+      white-space: pre;
+      font-family: Consolas, 'Courier New', monospace;
+      font-size: clamp(0.95rem, 1.5vw, 1.2rem);
+      font-weight: 600;
+    }
+    pre.term .ps { color: #3ecf8e; }
+    pre.term .sql { color: #6cb6ff; }
+    pre.term .out { color: #e8e8e8; }
+    .onde {
+      display: inline-block;
+      background: var(--onde);
+      color: #e8f0fe;
+      font-weight: 900;
+      font-size: 0.8em;
+      padding: 0.15rem 0.55rem;
+      border-radius: 4px;
+      margin: 0.25rem 0.35rem 0.35rem 0;
+      letter-spacing: 0.02em;
+    }
+    .digite {
+      display: inline-block;
+      background: #111;
+      color: #7dffa8;
+      font-weight: 900;
+      font-size: 0.8em;
+      padding: 0.15rem 0.55rem;
+      border-radius: 4px;
+      margin: 0.25rem 0.35rem 0.35rem 0;
+      letter-spacing: 0.02em;
+    }
+    .aparece {
+      display: inline-block;
+      background: #1a3a2a;
+      color: #b8f0c8;
+      font-weight: 900;
+      font-size: 0.8em;
+      padding: 0.15rem 0.55rem;
+      border-radius: 4px;
+      margin: 0.35rem 0.35rem 0.25rem 0;
+    }
+    .legenda-passos {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.65rem 1.5rem;
+      align-items: center;
+      background: var(--green-soft);
+      border: 3px solid var(--green);
+      border-radius: 12px;
+      padding: 0.9rem 1.25rem;
+      margin: 1rem 0 1.35rem;
+      font-size: 0.95em;
+    }
+    .legenda-passos span { white-space: nowrap; }
+    .dados {
+      display: inline-block;
+      background: var(--gold-soft);
+      border: 3px solid var(--gold);
+      border-radius: 8px;
+      padding: 0.45rem 0.85rem;
+      margin: 0.4rem 0 0.75rem;
+      font-weight: 900;
+    }
+    .mermaid {
+      background: #fff;
+      border: 3px solid var(--green);
+      border-radius: 14px;
+      padding: 1.25rem 1rem;
+      margin: 1rem 0 1.35rem;
+      overflow-x: auto;
+      text-align: center;
+      font-size: 1rem;
+      font-weight: 600;
+      white-space: pre-wrap;
+    }
+    .guid-diagram {
+      display: grid;
+      grid-template-columns: 1fr auto 1fr;
+      gap: 0.75rem 1rem;
+      align-items: stretch;
+      margin: 1rem 0 1.35rem;
+      padding: 1.1rem;
+      background: #f8faf9;
+      border: 3px solid var(--green);
+      border-radius: 14px;
+    }
+    .guid-db {
+      border: 3px solid var(--border);
+      border-radius: 12px;
+      padding: 0.85rem 1rem;
+      background: #fff;
+    }
+    .guid-db.db1 { border-color: var(--green); background: var(--green-soft); }
+    .guid-db.db2 { border-color: var(--gold); background: var(--gold-soft); }
+    .guid-db h4 { margin: 0 0 0.5rem; font-size: 1.05em; color: var(--green-dark); }
+    .guid-db table { font-size: 0.85em; margin: 0.4rem 0; }
+    .guid-db th { background: #333; font-size: 0.9em; padding: 0.4rem 0.5rem; }
+    .guid-db td { padding: 0.4rem 0.5rem; font-family: Consolas, monospace; font-weight: 700; }
+    .guid-db .hl {
+      background: #fff3b0;
+      outline: 3px solid var(--gold);
+      font-weight: 900;
+    }
+    .guid-bridge {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 0.35rem;
+      font-weight: 900;
+      color: var(--red);
+      text-align: center;
+      min-width: 7rem;
+    }
+    .guid-bridge .arrow { font-size: 2rem; line-height: 1; }
+    .guid-bridge small { color: #333; font-size: 0.85em; font-weight: 800; }
+    .guid-rules li { margin-bottom: 0.45rem; }
+    @media (max-width: 900px) {
+      .guid-diagram { grid-template-columns: 1fr; }
+      .guid-bridge { flex-direction: row; min-width: 0; }
+      .guid-bridge .arrow { transform: rotate(90deg); }
+    }
+    .box {
+      background: #fff;
+      border: 3px solid var(--border);
+      border-left: 10px solid var(--green);
+      border-radius: 14px;
+      padding: 1.25rem 1.5rem;
+      margin: 1rem 0;
+      font-size: 1.05em;
+    }
+    .box.gold { border-left-color: var(--gold); background: var(--gold-soft); }
+    .box.red { border-left-color: var(--red); background: #fdecea; }
+    .box.onde-box { border-left-color: var(--onde); background: var(--onde-soft); }
+    .mod {
+      display: inline-block;
+      background: var(--red);
+      color: #fff;
+      font-weight: 900;
+      font-size: 0.75em;
+      padding: 0.15rem 0.5rem;
+      border-radius: 5px;
+      margin-right: 0.35rem;
+      vertical-align: middle;
+    }
+    .step-num {
+      display: inline-block;
+      background: var(--green);
+      color: #fff;
+      font-weight: 900;
+      padding: 0.25rem 0.65rem;
+      border-radius: 6px;
+      margin-right: 0.4rem;
+      font-size: 0.95em;
+    }
+    .caso {
+      background: #f8faf9;
+      border: 3px solid var(--green);
+      border-radius: 12px;
+      padding: 1rem 1.25rem;
+      margin: 0.85rem 0 1.1rem;
+    }
+    .caso .tag {
+      display: inline-block;
+      background: var(--green);
+      color: #fff;
+      font-weight: 900;
+      font-size: 0.85em;
+      padding: 0.2rem 0.55rem;
+      border-radius: 4px;
+      margin-bottom: 0.5rem;
+    }
+    .caso.fail { border-color: var(--red); }
+    .caso.fail .tag { background: var(--red); }
+    .caso.ok .tag { background: var(--green); }
+    .check { list-style: none; padding-left: 0; }
+    .check li {
+      padding: 0.55rem 0 0.55rem 2.1rem;
+      position: relative;
+      border-bottom: 1px solid #e0e5e2;
+    }
+    .check li::before {
+      content: "☐";
+      position: absolute;
+      left: 0;
+      font-size: 1.4rem;
+    }
+    .check-visual li {
+      padding: 0.75rem 0 0.75rem 2.3rem;
+      font-size: 1.05em;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 0.85rem 0 1.35rem;
+      font-size: clamp(1.15rem, 1.8vw, 1.45rem);
+      background: #fff;
+    }
+    th, td {
+      border: 2px solid var(--border);
+      padding: 0.75rem 0.9rem;
+      text-align: left;
+      vertical-align: top;
+    }
+    th { background: var(--green); color: #fff; font-weight: 900; }
+    nav.toc {
+      background: var(--green-soft);
+      border: 3px solid var(--green);
+      border-radius: 14px;
+      padding: 1.15rem 1.5rem;
+      margin: 1.1rem 0;
+    }
+    nav.toc a {
+      display: block;
+      color: var(--green-dark);
+      font-weight: 800;
+      text-decoration: none;
+      padding: 0.4rem 0;
+      font-size: 1.05em;
+    }
+    nav.toc a:hover { text-decoration: underline; }
+    .toc-title { font-weight: 900; color: var(--green); margin-bottom: 0.5rem; font-size: 1.15em; }
+    footer {
+      margin-top: 2.5rem;
+      padding-top: 1rem;
+      border-top: 2px solid var(--border);
+      font-size: 1rem;
+      color: #444;
+    }
+    @media print {
+      body { background: #fff; font-size: 11pt; }
+      .box, .caso, nav.toc { break-inside: avoid; }
+    }
+  </style>
+</head>
+<body>
+  <div class="flag"></div>
+  <div class="wrap">
+    <h1>Roteiro prático — o que vocês vão fazer</h1>
+    <p class="sub">FIAP · G1 Full-Stack · INSS Moçambique · 25–26/08/2026</p>
+
+    <div class="box red" style="font-size:1.15em">
+      <strong>Projetor / cliqueiro (recomendado na aula)</strong><br/>
+      Abra o deck de slides e avance com setas · PageDown · controle remoto · F11:<br/>
+      <a href="slides-roteiro-aluno.html" target="_blank" rel="noopener"
+         style="display:inline-block;margin-top:.65rem;background:#006233;color:#fff;padding:.75rem 1.35rem;border-radius:10px;text-decoration:none;font-weight:900">
+        Abrir slides-roteiro-aluno.html (124 slides)
+      </a>
+      <br/><small style="font-weight:700">Esta página HTML continua como referência para ler/colar no PC. Na sala, use os <strong>slides</strong>.</small>
+    </div>
+
+    <div class="box gold">
+      <strong>Como vamos trabalhar</strong>
+      <ol>
+        <li>Vocês acompanham este roteiro e <strong>digitam na própria máquina</strong>.</li>
+        <li>O projeto é a pasta/ZIP que eu passar — <strong>não criamos do zero</strong>.</li>
+        <li><strong>Tudo local primeiro</strong> (Docker + APIs + portal no seu PC).</li>
+        <li><strong>Nuvem depois</strong> — só quando eu liberar (mesmo caminho: Vercel + Render + Neon).</li>
+        <li>Login local: <code>admin</code> / <code>123</code> · Portal: <code>http://localhost:5173</code></li>
+      </ol>
+    </div>
+
+    <div class="legenda-passos">
+      <strong>Em todo exercício:</strong>
+      <span><span class="onde">ONDE</span> PowerShell / Chrome / VS / Network</span>
+      <span><span class="digite">DIGITAM / FAZEM</span> comando ou clique</span>
+      <span><span class="aparece">APARECE / DEVEM VER</span> saída real</span>
+    </div>
+
+    <div class="box red">
+      <strong>Regra de ouro</strong><br/>
+      Não comecem pela nuvem. Primeiro ambiente e práticas <strong>no localhost</strong>.
+      Deploy na nuvem é a <strong>última etapa</strong> (Parte 9).
+    </div>
+
+    <nav class="toc">
+      <div class="toc-title">Índice</div>
+      <a href="slides-roteiro-aluno.html" target="_blank" rel="noopener"><strong>★ Slides da aula (projetor / cliqueiro)</strong></a>
+      <a href="slides-guid-bancos.html" target="_blank" rel="noopener">↳ Só GUID / dois bancos (deck curto)</a>
+      <a href="roteiro-prova-vida.html" target="_blank" rel="noopener"><strong>★ Aula mobile — Prova de Vida (app + API :5003)</strong></a>
+      <a href="#parte0">Mapa do que vamos praticar</a>
+      <a href="#parte1">Parte 1 — Pasta e ferramentas</a>
+      <a href="#parte2">Parte 2 — Subir banco, APIs e portal</a>
+      <a href="#parte2b">Parte 2b — Dois bancos no Docker (API pode estar parada)</a>
+      <a href="#guid-relacao">↳ GUID: como os dois bancos se relacionam</a>
+      <a href="#parte3">Parte 3 — Práticas M13 (forms, rotas, API)</a>
+      <a href="#parte4">Parte 4 — Práticas M14 (auth, JWT, UI)</a>
+      <a href="#parte5-debug">Parte 5 — Debug da API no Visual Studio</a>
+      <a href="#parte5">Parte 6 — Domain no Visual Studio</a>
+      <a href="#parte6">Parte 7 — Casos de teste (checklist)</a>
+      <a href="#parte7">Parte 8 — Dia 2 (testes + CI) · local</a>
+      <a href="#problemas">Problemas comuns (local)</a>
+      <a href="#parte8">Parte 9 — ÚLTIMO: subir na nuvem</a>
+    </nav>
+
+    <div class="box">
+      <strong>Antes de começar</strong><br/>
+      Esperem eu passar o projeto. Pasta no HD, por exemplo <code>C:\fiap-aluno</code>.
+      Se o caminho for outro, troquem nos comandos.
+    </div>
+
+    <!-- ===== MAPA ===== -->
+    <h2 id="parte0">Mapa do que vamos praticar</h2>
+    <table>
+      <tr><th>Etapa</th><th>Onde</th><th>Quando</th></tr>
+      <tr>
+        <td>Subir + caminho feliz + Network 200</td>
+        <td><strong>Local</strong> (localhost)</td>
+        <td><strong>Agora</strong> — Partes 1–2 + P0</td>
+      </tr>
+      <tr>
+        <td>Práticas M13/M14 + Domain</td>
+        <td><strong>Local</strong></td>
+        <td>Em seguida — Partes 3 a 6</td>
+      </tr>
+      <tr>
+        <td>Testes + CI</td>
+        <td><strong>Local</strong> (+ GitHub Actions)</td>
+        <td>Dia 2 — Parte 8</td>
+      </tr>
+      <tr>
+        <td>Publicar na nuvem (último)</td>
+        <td>GitHub + Neon + Render + Vercel</td>
+        <td><strong>Parte 9 — só no final</strong></td>
+      </tr>
+    </table>
+
+    <table>
+      <tr><th>Módulo</th><th>Vocês praticam</th><th>Onde</th></tr>
+      <tr>
+        <td><span class="mod">M13</span></td>
+        <td>Formulário, validação, rotas, estados, HTTP, Network</td>
+        <td>Portal + VS Code (<code>projeto\app</code>)</td>
+      </tr>
+      <tr>
+        <td><span class="mod">M14</span></td>
+        <td>Login JWT, Context, rota protegida, UI, pedido de benefício</td>
+        <td>Portal + DevTools</td>
+      </tr>
+      <tr>
+        <td>DDD</td>
+        <td>Ver a mesma regra (NUIT, 3%) no Domain</td>
+        <td>Visual Studio (<code>projeto\api</code>)</td>
+      </tr>
+      <tr>
+        <td><span class="mod">M15</span>/<span class="mod">M16</span></td>
+        <td>Rodar testes + olhar CI (dia 2)</td>
+        <td><code>dotnet test</code> · GitHub Actions</td>
+      </tr>
+    </table>
+
+    <!-- ===== PASTA ===== -->
+    <h2 id="parte1">Parte 1 — Pasta e ferramentas</h2>
+
+    <div class="caso ok">
+      <div class="tag">PASSO 1 — Colocar a pasta</div>
+      <div class="onde">ONDE — Explorador de Arquivos / HD</div>
+      <div class="digite">FAZEM ISTO</div>
+      <p>Copiem a pasta do projeto para o HD, por exemplo:</p>
+      <pre class="term"><span class="out">C:\fiap-aluno</span></pre>
+      <div class="aparece">VOCÊS DEVEM VER</div>
+      <ul>
+        <li><code>projeto\api</code> — .NET · Visual Studio · <code>InssModernizacao.slnx</code></li>
+        <li><code>projeto\app</code> — React · VS Code</li>
+      </ul>
+    </div>
+
+    <div class="caso ok">
+      <div class="tag">PASSO 2 — Abrir o PowerShell na pasta</div>
+      <div class="onde">ONDE — Windows PowerShell</div>
+      <div class="digite">DIGITAM ISTO</div>
+      <pre class="term"><span class="ps">PS C:\Users\...&gt;</span> cd C:\fiap-aluno</pre>
+      <div class="aparece">APARECE ISTO</div>
+      <pre class="term"><span class="ps">PS C:\fiap-aluno&gt;</span></pre>
+    </div>
+
+    <div class="caso ok">
+      <div class="tag">PASSO 3 — Verificar ferramentas</div>
+      <div class="onde">ONDE — PowerShell em <code>C:\fiap-aluno</code></div>
+      <p>Digitem <strong>um de cada vez</strong>:</p>
+      <div class="digite">DIGITAM ISTO</div>
+      <pre class="term"><span class="ps">PS C:\fiap-aluno&gt;</span> dotnet --version
+<span class="ps">PS C:\fiap-aluno&gt;</span> node --version
+<span class="ps">PS C:\fiap-aluno&gt;</span> npm --version
+<span class="ps">PS C:\fiap-aluno&gt;</span> docker --version
+<span class="ps">PS C:\fiap-aluno&gt;</span> git --version</pre>
+      <div class="aparece">APARECE ISTO (números podem variar)</div>
+      <pre class="term"><span class="out">9.0.xxx
+v22.x.x
+10.x.x
+Docker version 28.x.x
+git version 2.x.x</span></pre>
+      <div class="box">
+        OK = número da versão. “não é reconhecido” = levantem a mão.<br/>
+        Se o npm bloquear scripts:
+        <div class="digite">DIGITAM ISTO</div>
+        <pre class="term"><span class="ps">PS C:\fiap-aluno&gt;</span> Set-ExecutionPolicy -Scope CurrentUser RemoteSigned</pre>
+      </div>
+    </div>
+
+    <!-- ===== SUBIR ===== -->
+    <h2 id="parte2">Parte 2 — Subir banco, APIs e portal</h2>
+    <div class="box red">
+      Ordem fixa: <strong>A) Docker Desktop → B) banco → C) API :5001 → D) API :5002 → E) portal :5173</strong>
+    </div>
+
+    <h3><span class="step-num">A</span> Docker Desktop</h3>
+    <div class="caso ok">
+      <div class="tag">CT-AMB-A — Docker Running</div>
+      <div class="onde">ONDE — Docker Desktop (ícone na bandeja)</div>
+      <div class="digite">FAZEM ISTO</div>
+      <p>Abram o Docker Desktop e esperem ficar <strong>Running</strong> / Engine running.</p>
+      <div class="aparece">VOCÊS DEVEM VER</div>
+      <p>Status verde · sem “Docker Desktop is starting…”.</p>
+    </div>
+
+    <h3><span class="step-num">B</span> Banco (Postgres no Docker)</h3>
+    <div class="caso ok">
+      <div class="tag">CT-AMB-B — docker compose up</div>
+      <div class="onde">ONDE — PowerShell</div>
+      <div class="digite">DIGITAM ISTO</div>
+      <pre class="term"><span class="ps">PS C:\fiap-aluno&gt;</span> cd C:\fiap-aluno\projeto\api
+<span class="ps">PS C:\fiap-aluno\projeto\api&gt;</span> docker compose up -d</pre>
+      <div class="aparece">APARECE ISTO (ou parecido)</div>
+      <pre class="term"><span class="out">[+] Running 1/1
+ ✔ Container inss-postgres  Started</span></pre>
+      <div class="digite">DIGITAM ISTO</div>
+      <pre class="term"><span class="ps">PS C:\fiap-aluno\projeto\api&gt;</span> docker ps</pre>
+      <div class="aparece">APARECE ISTO</div>
+      <pre class="term"><span class="out">CONTAINER ID   IMAGE         STATUS                   PORTS                    NAMES
+a1b2c3d4e5f6   postgres:16   Up X minutes (healthy)   0.0.0.0:5432-&gt;5432/tcp   inss-postgres</span></pre>
+      <p>→ NAMES = <code>inss-postgres</code> · PORTS = <code>5432</code>.</p>
+    </div>
+
+    <h3><span class="step-num">C</span> API Contribuintes :5001</h3>
+    <div class="caso ok">
+      <div class="tag">CT-AMB-C — API :5001</div>
+      <div class="onde">ONDE — PowerShell nº 1 (deixem aberto)</div>
+      <div class="digite">DIGITAM ISTO</div>
+      <pre class="term"><span class="ps">PS C:\fiap-aluno\projeto\api&gt;</span> dotnet run --project src\Contribuintes.Api</pre>
+      <div class="aparece">APARECE ISTO (terminal fica ocupado)</div>
+      <pre class="term"><span class="out">info: Microsoft.Hosting.Lifetime[14]
+      Now listening on: http://localhost:5001
+info: Microsoft.Hosting.Lifetime[0]
+      Application started. Press Ctrl+C to shut down.</span></pre>
+      <div class="box gold">
+        Este terminal <strong>fica ocupado</strong> enquanto a API roda. <strong>Não fechem</strong>.
+        Para o próximo passo, abram <strong>outro</strong> PowerShell.
+      </div>
+      <div class="onde">ONDE — Chrome</div>
+      <div class="digite">FAZEM ISTO</div>
+      <p>Abram <code>http://localhost:5001</code> (ou a URL OpenAPI/Swagger que aparecer no log).</p>
+      <div class="aparece">VOCÊS DEVEM VER</div>
+      <p>Página da API responde (não “não é possível aceder”).</p>
+    </div>
+
+    <h3><span class="step-num">D</span> API Benefícios :5002</h3>
+    <div class="caso ok">
+      <div class="tag">CT-AMB-D — API :5002</div>
+      <div class="onde">ONDE — PowerShell nº 2 (nova janela)</div>
+      <div class="digite">DIGITAM ISTO</div>
+      <pre class="term"><span class="ps">PS C:\Users\...&gt;</span> cd C:\fiap-aluno\projeto\api
+<span class="ps">PS C:\fiap-aluno\projeto\api&gt;</span> dotnet run --project src\Beneficios.Api</pre>
+      <div class="aparece">APARECE ISTO</div>
+      <pre class="term"><span class="out">Now listening on: http://localhost:5002
+Application started. Press Ctrl+C to shut down.</span></pre>
+      <div class="onde">ONDE — Chrome</div>
+      <div class="digite">FAZEM ISTO</div>
+      <p>Abram <code>http://localhost:5002</code>.</p>
+      <div class="aparece">VOCÊS DEVEM VER</div>
+      <p>API Benefícios responde.</p>
+    </div>
+
+    <h3><span class="step-num">E</span> Portal React :5173</h3>
+    <div class="caso ok">
+      <div class="tag">CT-AMB-E — Portal</div>
+      <div class="onde">ONDE — PowerShell nº 3 (nova janela)</div>
+      <div class="digite">DIGITAM ISTO</div>
+      <pre class="term"><span class="ps">PS C:\Users\...&gt;</span> cd C:\fiap-aluno\projeto\app
+<span class="ps">PS C:\fiap-aluno\projeto\app&gt;</span> copy .env.example .env
+<span class="ps">PS C:\fiap-aluno\projeto\app&gt;</span> npm install
+<span class="ps">PS C:\fiap-aluno\projeto\app&gt;</span> npm run dev</pre>
+      <div class="aparece">APARECE ISTO</div>
+      <pre class="term"><span class="out">  VITE v6.x.x  ready in xxx ms
+
+  ➜  Local:   http://localhost:5173/
+  ➜  press h + enter to show help</span></pre>
+      <div class="onde">ONDE — Chrome</div>
+      <div class="digite">FAZEM ISTO</div>
+      <p>Abram <code>http://localhost:5173</code>.</p>
+      <div class="dados">Login: <code>admin</code> · senha: <code>123</code></div>
+      <div class="aparece">VOCÊS DEVEM VER</div>
+      <p>Tela de login do portal INSS · depois da entrada, lista de contribuintes.</p>
+    </div>
+
+    <div class="caso ok">
+      <div class="tag">CT-AMB — ambiente ok? (checklist visual)</div>
+      <p>Marquem só quando <strong>abrirem no browser</strong> e confirmarem:</p>
+      <ul class="check check-visual">
+        <li><strong>Docker Desktop</strong> — Running · <code>docker ps</code> mostra <code>inss-postgres</code> :5432</li>
+        <li><strong>Chrome</strong> → <code>http://localhost:5001</code> — API Contribuintes responde</li>
+        <li><strong>Chrome</strong> → <code>http://localhost:5002</code> — API Benefícios responde</li>
+        <li><strong>Chrome</strong> → <code>http://localhost:5173</code> — portal abre</li>
+        <li><strong>Chrome</strong> → login <code>admin</code> / <code>123</code> → lista de contribuintes (seed)</li>
+      </ul>
+    </div>
+
+    <!-- ===== BANCO DOCKER ===== -->
+    <h2 id="parte2b">Parte 2b — Testar o banco na máquina (passo a passo)</h2>
+
+    <div class="box gold">
+      <strong>Regra de ouro — API NÃO precisa estar no ar</strong><br/>
+      Depois que a <strong>Migration + seed já rodaram uma vez</strong> (API :5001 e :5002 subiram pelo menos uma vez),
+      os dados ficam no <strong>volume do Docker</strong>. Vocês podem:
+      <ul>
+        <li>Parar as APIs (:5001 / :5002) e o portal (:5173)</li>
+        <li>Deixar <strong>só</strong> o Docker Desktop + container <code>inss-postgres</code> ligados</li>
+        <li>Consultar os <strong>dois bancos</strong> com <code>docker exec</code> / <code>psql</code> (ou DBeaver)</li>
+      </ul>
+      Consultar o banco ≠ chamar a API. O Postgres vive no container; a API só escreve/lê nele quando está ligada.
+    </div>
+
+    <div class="box red">
+      <strong>Antes de começar esta parte</strong>
+      <ol>
+        <li>Docker Desktop aberto e verde.</li>
+        <li>Na pasta <code>projeto\api</code>: <code>docker compose up -d</code> · <code>docker ps</code> mostra <code>inss-postgres</code>.</li>
+        <li><strong>Primeira carga (só se ainda não fizeram):</strong> subir :5001 e :5002 uma vez → Migration cria tabelas + seed. Depois podem <em>parar</em> as APIs (Ctrl+C nos PowerShells).</li>
+        <li><strong>Se a primeira carga já foi feita</strong> (ex.: aula anterior): <strong>não</strong> precisa subir API de novo — só o container no ar.</li>
+        <li>Nesta parte as APIs podem estar <strong>paradas</strong>. Só o Docker importa.</li>
+      </ol>
+    </div>
+
+    <div class="box gold">
+      <strong>Dois bancos, um container — vejam os dois</strong><br/>
+      Container: <code>inss-postgres</code> · porta <code>5432</code><br/>
+      <strong>Banco 1</strong> <code>inss_contribuintes</code> → tabela <code>Contribuintes</code> (API :5001)<br/>
+      <strong>Banco 2</strong> <code>inss_beneficios</code> → tabela <code>PedidosBeneficio</code> (API :5002)<br/>
+      Relação: pedido guarda só <code>ContribuinteId</code> (GUID). Sem JOIN entre bancos.<br/>
+      <em>Objetivo:</em> listar tabelas e dados nos <strong>dois</strong> databases com a API desligada.
+    </div>
+
+    <!-- ===== GUID / RELAÇÃO ===== -->
+    <h3 id="guid-relacao">Como os dois bancos se relacionam (GUID)</h3>
+
+    <div class="box red">
+      <strong>Ideia em uma frase</strong><br/>
+      O pedido <strong>não copia</strong> o nome nem o NUIT do contribuinte.
+      Ele guarda só um <strong>GUID</strong> (= <code>ContribuinteId</code>) que é o mesmo valor do
+      <code>Id</code> na tabela <code>Contribuintes</code> do <strong>outro</strong> banco.
+    </div>
+
+    <div class="box">
+      <strong>O que é um GUID?</strong><br/>
+      Um identificador único, tipo:
+      <pre class="term" style="margin:.6rem 0"><span class="out">e5f6a7b8-1111-2222-3333-444455556666</span></pre>
+      No nosso projeto:
+      <ul class="guid-rules">
+        <li>Em <code>Contribuintes</code>, a coluna <code>Id</code> é o GUID da pessoa.</li>
+        <li>Em <code>PedidosBeneficio</code>, a coluna <code>ContribuinteId</code> guarda <strong>esse mesmo</strong> GUID.</li>
+        <li>Não existe FK (chave estrangeira) entre os dois bancos — o Postgres <strong>não</strong> faz JOIN automático.</li>
+        <li>Quem “liga” os dois é a aplicação (React + APIs), usando o GUID como ponte.</li>
+      </ul>
+    </div>
+
+    <h4>Diagrama Mermaid — dois bancos, uma ponte (GUID)</h4>
+    <pre class="mermaid">
+flowchart TB
+  subgraph PORTAL["Portal React :5173"]
+    R["Lista / Detalhe / Novo pedido"]
+  end
+
+  subgraph API1["API Contribuintes :5001"]
+    C["CRUD + Auth JWT"]
+  end
+
+  subgraph API2["API Benefícios :5002"]
+    P["CRUD Pedidos"]
+  end
+
+  subgraph DB1["Postgres - inss_contribuintes"]
+    T1["Contribuintes: Id GUID, Nuit, Nome, Salario"]
+  end
+
+  subgraph DB2["Postgres - inss_beneficios"]
+    T2["PedidosBeneficio: Id, ContribuinteId GUID, Tipo, Valor"]
+  end
+
+  R -->|"HTTP GET/POST"| API1
+  R -->|"HTTP GET/POST"| API2
+  API1 --> DB1
+  API2 --> DB2
+  T2 -.->|"ContribuinteId = Id (mesmo GUID, sem FK)"| T1
+    </pre>
+
+    <h4>Mesma ideia em tabela (projetor / offline)</h4>
+    <div class="guid-diagram" aria-label="Relação GUID entre dois bancos">
+      <div class="guid-db db1">
+        <h4>Banco 1 · inss_contribuintes</h4>
+        <p>Tabela <code>Contribuintes</code></p>
+        <table>
+          <tr><th>Id (GUID)</th><th>Nuit</th><th>Nome</th></tr>
+          <tr>
+            <td class="hl">e5f6…6666</td>
+            <td>100200301</td>
+            <td>Ana Celeste Mabunda</td>
+          </tr>
+        </table>
+        <p><small>Aqui mora o cadastro completo.</small></p>
+      </div>
+      <div class="guid-bridge">
+        <div class="arrow">⟷</div>
+        <div>mesmo<br/>GUID</div>
+        <small>ContribuinteId<br/>=<br/>Id</small>
+      </div>
+      <div class="guid-db db2">
+        <h4>Banco 2 · inss_beneficios</h4>
+        <p>Tabela <code>PedidosBeneficio</code></p>
+        <table>
+          <tr><th>Id pedido</th><th>ContribuinteId</th><th>Tipo</th></tr>
+          <tr>
+            <td>a1b2…9999</td>
+            <td class="hl">e5f6…6666</td>
+            <td>Reforma</td>
+          </tr>
+        </table>
+        <p><small>Aqui <strong>não</strong> tem Nome nem NUIT — só o GUID.</small></p>
+      </div>
+    </div>
+
+    <div class="box red" style="font-size:1.15em">
+      <strong>Projetor / cliqueiro</strong><br/>
+      Para apresentar sem rolar a página, abram os slides (setas · PageDown · controle remoto · F11):<br/>
+      <a href="slides-guid-bancos.html" target="_blank" rel="noopener"
+         style="display:inline-block;margin-top:.65rem;background:#006233;color:#fff;padding:.65rem 1.25rem;border-radius:10px;text-decoration:none;font-weight:900">
+        Abrir slides — GUID · dois bancos · bounded contexts
+      </a>
+      <br/><small style="font-weight:700">Arquivo: <code>docs/slides-guid-bancos.html</code></small>
+    </div>
+
+    <div class="box gold">
+      <strong>Leitura do diagrama (resumo)</strong>
+      <ol>
+        <li>React fala com as <strong>duas</strong> APIs (não com o Postgres direto).</li>
+        <li>Cada API escreve/lê no <strong>seu</strong> banco.</li>
+        <li>O pedido no banco 2 aponta para a pessoa no banco 1 só com <code>ContribuinteId</code>.</li>
+        <li>Para saber o <strong>nome</strong>, usam o GUID no banco 1 (SQL-08).</li>
+      </ol>
+    </div>
+
+    <div class="box">
+      <strong>Para lembrar (depois dos slides)</strong><br/>
+      Não tem JOIN porque são <strong>2 contextos / 2 bancos</strong>.
+      A ponte é o <code>ContribuinteId</code> (GUID) — independência, clareza e menos acoplamento.
+      <ul style="margin-top:.75rem">
+        <li>❌ Não é monólito de um banco só · ❌ Não é JOIN entre databases · ❌ Pedido não copia Nome · ❌ APIs não se chamam para gravar</li>
+        <li>✅ Bounded context (DDD) · ✅ cada API dona do seu dado · ✅ :5001 e :5002 independentes</li>
+      </ul>
+    </div>
+
+    <div class="legenda-passos">
+      <strong>Prompts:</strong>
+      <span><code class="ps" style="background:#0c0c0c;color:#3ecf8e;padding:.2rem .5rem;border-radius:4px">PS C:\…&gt;</code> = fora (PowerShell)</span>
+      <span><code style="background:#0c0c0c;color:#6cb6ff;padding:.2rem .5rem;border-radius:4px">inss_…=#</code> = dentro do psql</span>
+    </div>
+
+    <h3>Passo 1 — Confirmar que o container está no ar</h3>
+    <div class="caso ok">
+      <div class="tag">SQL-01 — docker ps</div>
+      <div class="onde">ONDE — PowerShell (fora do psql)</div>
+      <div class="digite">DIGITAM ISTO</div>
+      <pre class="term"><span class="ps">PS C:\fiap-aluno\projeto\api&gt;</span> docker ps</pre>
+      <div class="aparece">APARECE ISTO</div>
+      <pre class="term"><span class="out">CONTAINER ID   IMAGE         STATUS                   PORTS                    NAMES
+…              postgres:16   Up … (healthy)           0.0.0.0:5432-&gt;5432/tcp   inss-postgres</span></pre>
+      <p>Procurem: NAMES ≈ <code>inss-postgres</code> · PORTS ≈ <code>5432</code> · STATUS ≈ Up.</p>
+      <p><strong>Se não aparecer:</strong></p>
+      <div class="digite">DIGITAM ISTO</div>
+      <pre class="term"><span class="ps">PS C:\fiap-aluno\projeto\api&gt;</span> docker compose up -d
+<span class="ps">PS C:\fiap-aluno\projeto\api&gt;</span> docker ps</pre>
+    </div>
+
+    <h3>Passo 2 — Entrar no banco de Contribuintes</h3>
+    <div class="caso ok">
+      <div class="tag">SQL-02 — Abrir o psql</div>
+      <div class="onde">ONDE — PowerShell → depois dentro do psql</div>
+      <div class="digite">DIGITAM ISTO (ainda no PS)</div>
+      <pre class="term"><span class="ps">PS C:\fiap-aluno\projeto\api&gt;</span> docker exec -it inss-postgres psql -U inss -d inss_contribuintes</pre>
+      <div class="aparece">APARECE ISTO — o prompt MUDA</div>
+      <pre class="term"><span class="sql">inss_contribuintes=#</span></pre>
+      <p>Isso significa: vocês estão <strong>dentro</strong> do Postgres, no database de Contribuintes.
+      Daqui para frente, até o <code>\q</code>, digitem comandos SQL / meta-comandos — <strong>não</strong> comandos PowerShell.</p>
+      <p><strong>Se der erro “No such container”:</strong> rodem <code>docker ps</code> e usem o NAMES que aparecer.</p>
+    </div>
+
+    <h3>Passo 3 — Ver databases e a tabela de Contribuintes</h3>
+    <div class="caso ok">
+      <div class="tag">SQL-03 — \l e \dt (banco 1)</div>
+      <div class="onde">ONDE — psql · prompt <code>inss_contribuintes=#</code></div>
+      <div class="digite">DIGITAM ISTO</div>
+      <pre class="term"><span class="sql">inss_contribuintes=#</span> \l</pre>
+      <div class="aparece">APARECE ISTO — os dois databases</div>
+      <pre class="term"><span class="out">                                  List of databases
+        Name         | Owner | …
+---------------------+-------+----
+ inss_beneficios     | inss  | …
+ inss_contribuintes  | inss  | …
+ postgres            | inss  | …</span></pre>
+      <div class="digite">DIGITAM ISTO</div>
+      <pre class="term"><span class="sql">inss_contribuintes=#</span> \dt</pre>
+      <div class="aparece">APARECE ISTO — neste banco (contribuintes)</div>
+      <pre class="term"><span class="out">               List of relations
+ Schema |         Name          | Type  | Owner
+--------+-----------------------+-------+-------
+ public | Contribuintes         | table | inss
+ public | __EFMigrationsHistory | table | inss
+(2 rows)</span></pre>
+      <p>Se <code>\dt</code> vier vazio: Migration ainda não rodou. Saiam com <code>\q</code>, subam :5001 <em>uma vez</em>, parem a API se quiserem, e voltem neste passo.</p>
+    </div>
+
+    <h3>Passo 4 — SELECT no seed (banco Contribuintes)</h3>
+    <div class="caso ok">
+      <div class="tag">SQL-04 — Listar contribuintes</div>
+      <div class="onde">ONDE — psql · <code>inss_contribuintes=#</code></div>
+      <div class="digite">DIGITAM ISTO</div>
+      <pre class="term"><span class="sql">inss_contribuintes=#</span> SELECT "Nuit", "Nome", "SalarioMensal" FROM "Contribuintes" ORDER BY "Nome";</pre>
+      <div class="aparece">APARECE ISTO (seed real — ordem pode variar)</div>
+      <pre class="term"><span class="out">   Nuit    |             Nome              | SalarioMensal
+-----------+-------------------------------+---------------
+ 100200301 | Ana Celeste Mabunda           |      56000.00
+ 200300401 | Carlos Alberto Massingue      |      48000.00
+ 200300403 | Eduardo Nunes Sitoe           |      46000.00
+ 200300405 | Filipe Jordão Ubisse          |      44000.00
+ 100200303 | Graça Mussá Tembe             |      52000.00
+ …</span></pre>
+      <div class="dados">Conferir NUIT do seed: <code>100200301</code> = Ana Celeste Mabunda</div>
+      <div class="digite">DIGITAM ISTO</div>
+      <pre class="term"><span class="sql">inss_contribuintes=#</span> SELECT * FROM "Contribuintes" WHERE "Nuit" = '100200301';</pre>
+      <div class="aparece">APARECE ISTO</div>
+      <pre class="term"><span class="out"> … | 100200301 | Ana Celeste Mabunda | … | 56000.00 | …
+(1 row)</span></pre>
+      <p><strong>Lembrem:</strong> isto funciona <strong>com a API :5001 parada</strong> — o dado já está no Docker.</p>
+    </div>
+
+    <h3>Passo 5 — Cruzar com o 3%</h3>
+    <div class="caso ok">
+      <div class="tag">SQL-05 — Contribuição estimada</div>
+      <div class="onde">ONDE — psql · <code>inss_contribuintes=#</code></div>
+      <div class="digite">DIGITAM ISTO</div>
+      <pre class="term"><span class="sql">inss_contribuintes=#</span> SELECT "Nome",
+       "SalarioMensal",
+       ROUND("SalarioMensal" * 0.03, 2) AS contribuicao_3pct
+FROM "Contribuintes"
+ORDER BY "Nome"
+LIMIT 5;</pre>
+      <div class="aparece">APARECE ISTO</div>
+      <pre class="term"><span class="out">             Nome              | SalarioMensal | contribuicao_3pct
+-------------------------------+---------------+-------------------
+ Ana Celeste Mabunda           |      56000.00 |           1680.00
+ Carlos Alberto Massingue      |      48000.00 |           1440.00
+ …</span></pre>
+      <p><strong>Teste mental:</strong> salário 56000 → 56000 × 0,03 = <strong>1680</strong> · bate com o portal.</p>
+    </div>
+
+    <h3>Passo 6 — Ir ao outro banco e ver a tabela de Benefícios</h3>
+    <div class="caso ok">
+      <div class="tag">SQL-06 — Banco 2 · \dt PedidosBeneficio</div>
+      <div class="onde">ONDE — psql → PowerShell → psql de novo</div>
+      <p><strong>1.</strong> Saiam do psql de Contribuintes:</p>
+      <div class="digite">DIGITAM ISTO</div>
+      <pre class="term"><span class="sql">inss_contribuintes=#</span> \q</pre>
+      <div class="aparece">APARECE ISTO — voltam ao PowerShell</div>
+      <pre class="term"><span class="ps">PS C:\fiap-aluno\projeto\api&gt;</span></pre>
+      <p><strong>2.</strong> Entrem no <strong>segundo</strong> database (mesmo container):</p>
+      <div class="digite">DIGITAM ISTO</div>
+      <pre class="term"><span class="ps">PS C:\fiap-aluno\projeto\api&gt;</span> docker exec -it inss-postgres psql -U inss -d inss_beneficios</pre>
+      <div class="aparece">APARECE ISTO</div>
+      <pre class="term"><span class="sql">inss_beneficios=#</span></pre>
+      <p><strong>3.</strong> Listem as tabelas:</p>
+      <div class="digite">DIGITAM ISTO</div>
+      <pre class="term"><span class="sql">inss_beneficios=#</span> \dt</pre>
+      <div class="aparece">APARECE ISTO — banco de benefícios (diferente do Passo 3)</div>
+      <pre class="term"><span class="out">               List of relations
+ Schema |         Name          | Type  | Owner
+--------+-----------------------+-------+-------
+ public | PedidosBeneficio      | table | inss
+ public | __EFMigrationsHistory | table | inss
+(2 rows)</span></pre>
+      <p>Comparem: em <code>inss_contribuintes</code> → <code>Contribuintes</code>; em <code>inss_beneficios</code> → <code>PedidosBeneficio</code>. São <strong>dois bancos separados</strong>.</p>
+      <p>Se <code>\dt</code> vier vazio: subam a API :5002 <em>uma vez</em> (Migration), parem se quiserem, e repitam.</p>
+    </div>
+
+    <h3>Passo 7 — Ver pedidos e o ContribuinteId (GUID)</h3>
+    <div class="caso ok">
+      <div class="tag">SQL-07 — Listar pedidos (banco 2)</div>
+      <div class="onde">ONDE — psql · <code>inss_beneficios=#</code></div>
+      <div class="box gold">
+        Nesta tabela vocês <strong>não</strong> vão ver Nome nem NUIT.
+        Só o <code>ContribuinteId</code> — um GUID que “aponta” para o <code>Id</code> no banco 1.
+      </div>
+      <div class="digite">DIGITAM ISTO</div>
+      <pre class="term"><span class="sql">inss_beneficios=#</span> SELECT "Id", "ContribuinteId", "Tipo", "ValorSolicitado", "Status"
+FROM "PedidosBeneficio"
+ORDER BY "DataPedido" DESC
+LIMIT 10;</pre>
+      <div class="aparece">SE AINDA NÃO CRIARAM PEDIDO</div>
+      <pre class="term"><span class="out"> Id | ContribuinteId | Tipo | ValorSolicitado | Status
+----+----------------+------+-----------------+--------
+(0 rows)</span></pre>
+      <p><strong>Normal</strong> se ainda não criaram pedido no portal. A <strong>tabela</strong> já existe; só está vazia.
+      Criar pedido exige portal + APIs no ar — mas <strong>ler</strong> a tabela vazia não exige API.</p>
+      <div class="aparece">QUANDO HOUVER PEDIDO — leiam as duas colunas GUID</div>
+      <pre class="term"><span class="out">                  Id                  |            ContribuinteId            | Tipo | …
+--------------------------------------+--------------------------------------+------+----
+ a1b2c3d4-aaaa-bbbb-cccc-ddddeeeeffff | e5f6a7b8-1111-2222-3333-444455556666 |    1 | …</span></pre>
+      <ul>
+        <li><code>Id</code> = GUID <strong>do pedido</strong> (banco 2)</li>
+        <li><code>ContribuinteId</code> = GUID <strong>da pessoa</strong> (= <code>Id</code> no banco 1) ← <strong>esta é a ponte</strong></li>
+      </ul>
+      <p>Copiem o <code>ContribuinteId</code> inteiro para o Passo 8.</p>
+    </div>
+
+    <h3>Passo 8 — Provar a ponte GUID (banco 2 → banco 1)</h3>
+    <div class="caso ok">
+      <div class="tag">SQL-08 — ContribuinteId → Nome no outro banco</div>
+      <div class="onde">ONDE — saem do benefícios · entram no contribuintes</div>
+      <div class="box red">
+        <strong>Prova prática da relação</strong><br/>
+        Valor copiado de <code>PedidosBeneficio."ContribuinteId"</code>
+        = valor de <code>Contribuintes."Id"</code>
+        → aí aparece o Nome. Sem isso, o pedido “não sabe” quem é a pessoa.
+      </div>
+      <ol>
+        <li>No resultado do SQL-07, <strong>copiem</strong> o <code>ContribuinteId</code> (se houver pedido).</li>
+        <li>Saiam do banco 2:</li>
+      </ol>
+      <div class="digite">DIGITAM ISTO</div>
+      <pre class="term"><span class="sql">inss_beneficios=#</span> \q</pre>
+      <p>3. Entrem no banco 1:</p>
+      <div class="digite">DIGITAM ISTO</div>
+      <pre class="term"><span class="ps">PS C:\fiap-aluno\projeto\api&gt;</span> docker exec -it inss-postgres psql -U inss -d inss_contribuintes</pre>
+      <p>4. Busquem a pessoa pelo <strong>mesmo</strong> GUID:</p>
+      <div class="digite">DIGITAM ISTO (cole o GUID de vocês no lugar do exemplo)</div>
+      <pre class="term"><span class="sql">inss_contribuintes=#</span> SELECT "Id", "Nuit", "Nome"
+FROM "Contribuintes"
+WHERE "Id" = 'e5f6a7b8-1111-2222-3333-444455556666';</pre>
+      <div class="aparece">VOCÊS DEVEM VER (exemplo)</div>
+      <pre class="term"><span class="out">                  Id                  |   Nuit    |          Nome
+--------------------------------------+-----------+------------------------
+ e5f6a7b8-1111-2222-3333-444455556666 | 100200301 | Ana Celeste Mabunda
+(1 row)</span></pre>
+      <p><strong>Conclusão:</strong> o pedido no banco 2 não tem o nome; o GUID leva vocês até o nome no banco 1.
+      Voltem ao <a href="#guid-relacao">diagrama do GUID</a> se quiserem revisar.</p>
+      <div class="digite">DIGITAM ISTO</div>
+      <pre class="term"><span class="sql">inss_contribuintes=#</span> \q</pre>
+      <p>Se não houver pedido ainda, pulem este passo e voltem depois do <strong>CT-31</strong> (criar pedido no portal).</p>
+    </div>
+
+    <h3>Passo 9 — Ver os DOIS bancos no PowerShell (como na tela de vocês)</h3>
+    <div class="caso ok">
+      <div class="tag">SQL-09 — Mesma janela do PowerShell · API pode estar parada</div>
+
+      <div class="box gold">
+        <strong>Onde digitar</strong><br/>
+        Abrir <strong>Windows PowerShell</strong> (pode estar em <code>C:\fiap-aluno\projeto\api</code>).<br/>
+        <strong>Não</strong> precisa estar dentro do <code>psql</code> (sem prompt <code>inss_…=#</code>).<br/>
+        <strong>Não</strong> precisa de API :5001 / :5002 ligada — só o container <code>inss-postgres</code> Up (<code>docker ps</code>).<br/>
+        Copiem <strong>a linha inteira</strong> (aspas simples + pipe + docker) e Enter.
+      </div>
+
+      <p><strong>A) Banco 1 — listar tabelas de Contribuintes</strong></p>
+      <div class="onde">ONDE — PowerShell</div>
+      <div class="digite">DIGITAM ISTO</div>
+      <pre class="term"><span class="ps">PS C:\fiap-aluno\projeto\api&gt;</span> '\dt' | docker exec -i inss-postgres psql -U inss -d inss_contribuintes</pre>
+      <div class="aparece">APARECE ISTO (ou parecido)</div>
+      <pre class="term"><span class="out">               List of relations
+ Schema |         Name          | Type  | Owner
+--------+-----------------------+-------+-------
+ public | Contribuintes         | table | inss
+ public | __EFMigrationsHistory | table | inss
+(2 rows)</span></pre>
+      <p>→ Database <code>inss_contribuintes</code> · tabela principal: <code>Contribuintes</code>.</p>
+
+      <p><strong>B) Banco 2 — listar tabelas de Benefícios</strong></p>
+      <div class="digite">DIGITAM ISTO</div>
+      <pre class="term"><span class="ps">PS C:\fiap-aluno\projeto\api&gt;</span> '\dt' | docker exec -i inss-postgres psql -U inss -d inss_beneficios</pre>
+      <div class="aparece">APARECE ISTO</div>
+      <pre class="term"><span class="out">               List of relations
+ Schema |         Name          | Type  | Owner
+--------+-----------------------+-------+-------
+ public | PedidosBeneficio      | table | inss
+ public | __EFMigrationsHistory | table | inss
+(2 rows)</span></pre>
+      <p>→ Database <code>inss_beneficios</code> · tabela principal: <code>PedidosBeneficio</code>.</p>
+
+      <p><strong>C) Contar linhas nos dois</strong></p>
+      <div class="digite">DIGITAM ISTO</div>
+      <pre class="term"><span class="ps">PS C:\fiap-aluno\projeto\api&gt;</span> 'SELECT COUNT(*) FROM "Contribuintes";' | docker exec -i inss-postgres psql -U inss -d inss_contribuintes</pre>
+      <div class="aparece">APARECE ISTO</div>
+      <pre class="term"><span class="out"> count
+-------
+    10
+(1 row)</span></pre>
+      <div class="digite">DIGITAM ISTO</div>
+      <pre class="term"><span class="ps">PS C:\fiap-aluno\projeto\api&gt;</span> 'SELECT COUNT(*) FROM "PedidosBeneficio";' | docker exec -i inss-postgres psql -U inss -d inss_beneficios</pre>
+      <div class="aparece">APARECE ISTO</div>
+      <pre class="term"><span class="out"> count
+-------
+     0
+(1 row)</span></pre>
+      <p>→ Contribuintes com seed (10). Pedidos pode ser <code>0</code> se ainda não criaram pedido — <strong>normal</strong>.</p>
+
+      <p><strong>D) Ver dados — amostra Contribuintes</strong></p>
+      <div class="digite">DIGITAM ISTO</div>
+      <pre class="term"><span class="ps">PS C:\fiap-aluno\projeto\api&gt;</span> 'SELECT "Nuit", "Nome" FROM "Contribuintes" LIMIT 5;' | docker exec -i inss-postgres psql -U inss -d inss_contribuintes</pre>
+      <div class="aparece">APARECE ISTO (nomes do seed — ordem pode variar)</div>
+      <pre class="term"><span class="out">   Nuit    |             Nome
+-----------+------------------------------
+ 100200301 | Ana Celeste Mabunda
+ 100200302 | Tomás Viola Matola
+ 100200303 | Graça Mussá Tembe
+ 200300401 | Carlos Alberto Massingue
+ 200300402 | Helena João Macamo
+(5 rows)</span></pre>
+      <p class="box gold" style="margin-top:.5rem">Se aparecerem <strong>outros nomes</strong> mas ainda com NUIT e ~10 linhas: o volume Docker é de um seed antigo — <strong>ok</strong>. O que importa: tabela <code>Contribuintes</code> com dados · API pode estar parada.</p>
+
+      <p><strong>E) Ver dados — amostra Benefícios</strong></p>
+      <div class="digite">DIGITAM ISTO</div>
+      <pre class="term"><span class="ps">PS C:\fiap-aluno\projeto\api&gt;</span> 'SELECT "Id", "ContribuinteId", "Tipo", "Status" FROM "PedidosBeneficio" LIMIT 5;' | docker exec -i inss-postgres psql -U inss -d inss_beneficios</pre>
+      <div class="aparece">SE AINDA NÃO CRIARAM PEDIDO</div>
+      <pre class="term"><span class="out"> Id | ContribuinteId | Tipo | Status
+----+----------------+------+--------
+(0 rows)</span></pre>
+      <p>Tabela existe; está vazia. Depois de criar pedido no portal (CT-31, com APIs ligadas), rode o mesmo comando e aparecem linhas com GUID em <code>ContribuinteId</code>.</p>
+
+      <div class="box red">
+        <strong>Se der erro <code>relation "contribuintes" does not exist</code></strong><br/>
+        Vocês usaram <code>-c "…"</code> e o PowerShell comeu as aspas. Usem o formato com <code>'…' | docker exec -i …</code> como acima.
+      </div>
+
+      <ul class="check">
+        <li>Vi tabela <code>Contribuintes</code> no banco 1</li>
+        <li>Vi tabela <code>PedidosBeneficio</code> no banco 2</li>
+        <li>Vi linhas do seed (COUNT = 10) em Contribuintes</li>
+        <li>Fiz isso com a API parada (só Docker Up)</li>
+      </ul>
+    </div>
+
+    <h3>Passo 10 — (Opcional) DBeaver / pgAdmin</h3>
+    <div class="caso ok">
+      <div class="tag">SQL-10 — Conexão gráfica</div>
+      <div class="onde">ONDE — DBeaver Community (ou pgAdmin)</div>
+      <div class="digite">FAZEM ISTO</div>
+      <ol>
+        <li>Instalem DBeaver Community (ou pgAdmin), se ainda não tiverem.</li>
+        <li>Nova conexão → PostgreSQL.</li>
+        <li>Preencham:
+          <ul>
+            <li>Host: <code>localhost</code></li>
+            <li>Port: <code>5432</code></li>
+            <li>Database: <code>inss_contribuintes</code></li>
+            <li>Username: <code>inss</code></li>
+            <li>Password: <code>inss123</code></li>
+          </ul>
+        </li>
+        <li>Test Connection → Finish.</li>
+        <li>Expandam Schemas → public → Tables → botão direito em Contribuintes → View Data.</li>
+        <li>Criem <strong>outra</strong> conexão igual mudando Database para <code>inss_beneficios</code>.</li>
+      </ol>
+      <div class="aparece">VOCÊS DEVEM VER</div>
+      <p>Dados sem digitar <code>docker exec</code> · dois databases separados · API pode estar parada (só Docker Up).</p>
+    </div>
+
+    <h3>Passo 11 — Checklist “banco ok na minha máquina”</h3>
+    <ul class="check">
+      <li>SQL-01 — <code>docker ps</code> mostra inss-postgres :5432</li>
+      <li>Entendi: depois da 1ª Migration, API pode estar <strong>parada</strong> e o SQL ainda funciona</li>
+      <li>SQL-02 — entrei no psql (prompt <code>inss_contribuintes=#</code>)</li>
+      <li>SQL-03 — <code>\l</code> mostra os 2 databases · <code>\dt</code> mostra <code>Contribuintes</code></li>
+      <li>SQL-04 — SELECT lista o seed (Ana Celeste, …)</li>
+      <li>SQL-05 — vi o 3% no SQL (56000 → 1680)</li>
+      <li>SQL-06 — em inss_beneficios · <code>\dt</code> mostra <code>PedidosBeneficio</code></li>
+      <li>SQL-07 — SELECT em PedidosBeneficio (mesmo que vazio)</li>
+      <li>SQL-08 — provei: <code>ContribuinteId</code> (banco 2) = <code>Id</code> (banco 1) → Nome</li>
+      <li>Entendi o diagrama GUID (dois bancos · sem JOIN · ponte pelo GUID)</li>
+      <li>SQL-09 — <code>\dt</code> + COUNT + amostra nos <strong>dois</strong> bancos pelo PowerShell</li>
+    </ul>
+
+    <div class="box red">
+      <strong>Erros comuns</strong>
+      <table>
+        <tr><th>Mensagem / sintoma</th><th>O que fazer</th></tr>
+        <tr><td>No such container</td><td><code>docker ps</code> · usar o NAMES certo · ou <code>docker compose up -d</code></td></tr>
+        <tr><td>connection refused :5432</td><td>Docker Desktop não está Up · compose de novo</td></tr>
+        <tr><td><code>\dt</code> vazio / relation does not exist</td><td>Primeira carga: subir API :5001 e :5002 <em>uma vez</em>. Depois pode parar a API.</td></tr>
+        <tr><td>relation "contribuintes" does not exist (minúsculo)</td><td>PowerShell comeu as aspas. Use pipe: <code>'SELECT … FROM "Contribuintes";' | docker exec -i …</code></td></tr>
+        <tr><td>password authentication failed</td><td>user <code>inss</code> · senha <code>inss123</code></td></tr>
+        <tr><td>Travei dentro do psql</td><td>Digitar <code>\q</code> e Enter</td></tr>
+        <tr><td>“API está fechada, banco não abre?”</td><td>Mito. Com Migration já feita, só o Docker precisa estar Up.</td></tr>
+      </table>
+    </div>
+
+    <div class="box gold">
+      <strong>Dados fixos (cole no caderno)</strong><br/>
+      Host <code>localhost</code> · Porta <code>5432</code> · User <code>inss</code> · Senha <code>inss123</code><br/>
+      DB1 <code>inss_contribuintes</code> → tabela <code>Contribuintes</code><br/>
+      DB2 <code>inss_beneficios</code> → tabela <code>PedidosBeneficio</code><br/>
+      Depois da 1ª Migration: só o Docker precisa estar Up para consultar (API pode estar parada).
+    </div>
+
+    <!-- ===== M13 ===== -->
+    <h2 id="parte3">Parte 3 — Práticas <span class="mod">M13</span></h2>
+    <p>Arquivos: VS Code → <code>projeto\app</code> → busquem <code>M13</code> (Ctrl+Shift+F).</p>
+    <div class="box gold">
+      <strong>Ordem desta parte</strong><br/>
+      1) Caminho feliz · 2) Network 200 · 3) Formulário controlado · 4) Validação · 5) Router · 6) Estados · 7) HTTP/Strict Mode.
+    </div>
+    <div class="legenda-passos">
+      <span><span class="onde">ONDE</span></span>
+      <span><span class="digite">FAZEM / DIGITAM</span></span>
+      <span><span class="aparece">VOCÊS DEVEM VER</span></span>
+    </div>
+
+    <h3>P0 — Caminho feliz (primeiro uso)</h3>
+    <p>Conteúdo: portal INSS · MZN · contribuição 3% · 1 React → 2 APIs.</p>
+
+    <div class="caso ok">
+      <div class="tag">CT-00A — Login e lista</div>
+      <div class="onde">ONDE — Chrome · <code>http://localhost:5173</code></div>
+      <div class="dados">Login: <code>admin</code> · senha: <code>123</code></div>
+      <div class="digite">FAZEM ISTO</div>
+      <ol>
+        <li>Abram o portal.</li>
+        <li>Digitem <code>admin</code> / <code>123</code> · Entrar.</li>
+        <li>Vão em Contribuintes (se não abrirem sozinhos).</li>
+      </ol>
+      <div class="aparece">VOCÊS DEVEM VER</div>
+      <p>Lista com seed (Ana Celeste Mabunda, Tomás Viola Matola, …) · salário em MZN · coluna de contribuição ≈ 3%.</p>
+    </div>
+
+    <div class="caso ok">
+      <div class="tag">CT-00B — Conferir o 3% (negócio)</div>
+      <div class="onde">ONDE — Chrome · lista de contribuintes</div>
+      <div class="dados">Exemplo seed: Ana Celeste · NUIT <code>100200301</code> · salário <code>56000</code> → 56000 × 0,03 = <code>1680</code></div>
+      <div class="digite">FAZEM ISTO</div>
+      <p>Achem Ana Celeste (ou outro) e comparem a contribuição da tela com o cálculo.</p>
+      <div class="aparece">VOCÊS DEVEM VER</div>
+      <p>Valor bate com a regra do Domain (não é “número inventado” só na tela).</p>
+    </div>
+
+    <div class="caso ok">
+      <div class="tag">CT-00C — API responde (Network)</div>
+      <div class="onde">ONDE — Chrome DevTools · Network</div>
+      <div class="digite">FAZEM ISTO (cliquem nesta ordem)</div>
+      <ol>
+        <li>Com a lista aberta, apertem <strong>F12</strong> (DevTools).</li>
+        <li>Aba <strong>Network</strong> (Rede).</li>
+        <li>Filtro <strong>Fetch/XHR</strong> (não “All” / Doc).</li>
+        <li>Apertem <strong>F5</strong> na página da lista (ou cliquem de novo em Contribuintes).</li>
+        <li>Cliquem na request que vai para <code>localhost:5001</code>.</li>
+      </ol>
+      <div class="aparece">VOCÊS DEVEM VER</div>
+      <ul>
+        <li>Host: <code>localhost:5001</code></li>
+        <li>Método: <strong>GET</strong></li>
+        <li>Status: <strong>200</strong></li>
+        <li>Aba Preview / Response: JSON com os contribuintes</li>
+      </ul>
+    </div>
+
+    <div class="caso ok">
+      <div class="tag">CT-00D — Front não acessa o banco</div>
+      <div class="onde">ONDE — Chrome DevTools · Network (mesma request do CT-00C)</div>
+      <div class="digite">FAZEM ISTO</div>
+      <p>Olhem a URL completa da request (Headers → Request URL).</p>
+      <div class="aparece">VOCÊS DEVEM VER</div>
+      <p>Só API (<code>:5001</code> ou <code>:5002</code>) · <strong>nunca</strong> porta <code>5432</code> do Postgres.
+      Fluxo: React → HTTP → API → banco.</p>
+    </div>
+
+    <h3>P1 — Formulário controlado</h3>
+    <p>Conteúdo slide: valor no <code>useState</code> · cada tecla atualiza o estado · <code>ContribuinteForm.jsx</code></p>
+
+    <div class="caso ok">
+      <div class="tag">CT-01A — Campo controlado</div>
+      <div class="onde">ONDE — Chrome · portal · Novo contribuinte</div>
+      <div class="digite">FAZEM ISTO</div>
+      <p>Abram Novo contribuinte · digitem o NUIT aos poucos: 1, 12, 123…</p>
+      <div class="aparece">VOCÊS DEVEM VER</div>
+      <p>O campo mostra exatamente o que digitam (o estado controla a tela).</p>
+    </div>
+
+    <div class="caso ok">
+      <div class="tag">CT-01B — Ver no código</div>
+      <div class="onde">ONDE — VS Code · <code>projeto\app</code></div>
+      <div class="digite">FAZEM ISTO</div>
+      <p>Abram <code>ContribuinteForm.jsx</code> · achem <code>value</code> e <code>onChange</code> / <code>setForm</code>.</p>
+      <div class="aparece">VOCÊS DEVEM VER</div>
+      <p>Padrão do formulário controlado do M13.</p>
+    </div>
+
+    <h3>P1b — Validação front × servidor</h3>
+    <p>Conteúdo: UX no React + Domain/API protege de verdade.</p>
+
+    <div class="caso fail">
+      <div class="tag">CT-02 — NUIT curto</div>
+      <div class="onde">ONDE — Chrome · formulário Novo contribuinte</div>
+      <div class="dados">NUIT <code>12345</code> · nome ok · data ok · salário <code>10000</code></div>
+      <div class="digite">FAZEM ISTO</div>
+      <p>Preencham os dados acima · tentem salvar.</p>
+      <div class="aparece">VOCÊS DEVEM VER</div>
+      <p>Mensagem: “NUIT deve ter exatamente 9 dígitos” · não grava.</p>
+    </div>
+
+    <div class="caso fail">
+      <div class="tag">CT-03 — NUIT com letras</div>
+      <div class="onde">ONDE — Chrome · formulário</div>
+      <div class="dados">NUIT <code>12A456789</code></div>
+      <div class="digite">FAZEM ISTO</div>
+      <p>Tentem salvar com NUIT com letras.</p>
+      <div class="aparece">VOCÊS DEVEM VER</div>
+      <p>Rejeitado (só dígitos · exatamente 9).</p>
+    </div>
+
+    <div class="caso fail">
+      <div class="tag">CT-04 — NUIT com 10 dígitos</div>
+      <div class="onde">ONDE — Chrome · formulário</div>
+      <div class="dados">NUIT <code>1234567890</code></div>
+      <div class="digite">FAZEM ISTO</div>
+      <p>Tentem salvar.</p>
+      <div class="aparece">VOCÊS DEVEM VER</div>
+      <p>Rejeitado (exatamente 9).</p>
+    </div>
+
+    <div class="caso fail">
+      <div class="tag">CT-05 — Nome curto</div>
+      <div class="onde">ONDE — Chrome · formulário</div>
+      <div class="dados">nome <code>Ab</code> · NUIT <code>111222333</code></div>
+      <div class="digite">FAZEM ISTO</div>
+      <p>Tentem salvar.</p>
+      <div class="aparece">VOCÊS DEVEM VER</div>
+      <p>“Nome deve ter pelo menos 3 caracteres”.</p>
+    </div>
+
+    <div class="caso fail">
+      <div class="tag">CT-06 — Sem data</div>
+      <div class="onde">ONDE — Chrome · formulário</div>
+      <div class="digite">FAZEM ISTO</div>
+      <p>Deixem a data vazia · resto ok · salvar.</p>
+      <div class="aparece">VOCÊS DEVEM VER</div>
+      <p>“Data de nascimento é obrigatória”.</p>
+    </div>
+
+    <div class="caso fail">
+      <div class="tag">CT-07 — Salário 0 e negativo</div>
+      <div class="onde">ONDE — Chrome · formulário</div>
+      <div class="dados">salário <code>0</code> depois <code>-100</code></div>
+      <div class="digite">FAZEM ISTO</div>
+      <p>Tentem salvar com cada valor.</p>
+      <div class="aparece">VOCÊS DEVEM VER</div>
+      <p>“Salário deve ser maior que zero”.</p>
+    </div>
+
+    <div class="caso ok">
+      <div class="tag">CT-08 — Cadastro válido + 3%</div>
+      <div class="onde">ONDE — Chrome · formulário</div>
+      <div class="dados">NUIT <code>987654321</code> · nome <code>Maria Teste Maputo</code> · salário <code>20000</code></div>
+      <div class="digite">FAZEM ISTO</div>
+      <p>Cadastrem com dados válidos · salvem.</p>
+      <div class="aparece">VOCÊS DEVEM VER</div>
+      <p>Salva · contribuição ≈ <strong>600</strong> MZN (20000 × 0,03).</p>
+    </div>
+
+    <div class="caso ok">
+      <div class="tag">CT-09 — POST no Network</div>
+      <div class="onde">ONDE — Chrome · F12 → Network → Fetch/XHR</div>
+      <div class="digite">FAZEM ISTO</div>
+      <p>Abram Network · cadastrem outro contribuinte válido · cliquem no POST.</p>
+      <div class="aparece">VOCÊS DEVEM VER</div>
+      <p>POST para <code>:5001</code> · status <strong>200</strong> ou <strong>201</strong> · JSON no response.</p>
+    </div>
+
+    <h3>P2 — React Router + :id</h3>
+    <p>Conteúdo: SPA · rota · parâmetro · sem reload clássico.</p>
+
+    <div class="caso ok">
+      <div class="tag">CT-10 — Lista → detalhe</div>
+      <div class="onde">ONDE — Chrome · portal</div>
+      <div class="digite">FAZEM ISTO</div>
+      <p>Na lista, abram Detalhes de um contribuinte (ex.: Ana Celeste).</p>
+      <div class="aparece">VOCÊS DEVEM VER</div>
+      <p>URL <code>/contribuintes/&lt;id&gt;</code> · mesmos dados na tela.</p>
+      <div class="box red">
+        <strong>Detalhes precisa das DUAS APIs (local · sem mudar código)</strong><br/>
+        · <code>:5001</code> — dados do contribuinte<br/>
+        · <code>:5002</code> — pedidos daquele contribuinte (<code>/api/pedidos/contribuinte/…</code>)<br/>
+        Se só a :5001 estiver no ar (ex.: só Visual Studio com Contribuintes.Api), a <strong>lista</strong> pode ir ·
+        o <strong>Detalhe</strong> mostra erro / Network vermelho em :5002.<br/>
+        <strong>Não é bug do React</strong> — prova dois microsserviços. Subam Benefícios:
+        <pre class="term"><span class="ps">PS C:\fiap-aluno\projeto\api&gt;</span> dotnet run --project src\Beneficios.Api</pre>
+      </div>
+    </div>
+
+    <div class="caso ok">
+      <div class="tag">CT-11 — SPA</div>
+      <div class="onde">ONDE — Chrome · Network (filtro Doc) + portal</div>
+      <div class="digite">FAZEM ISTO</div>
+      <p>Naveguem lista ↔ detalhe · observem se o “document” recarrega sempre.</p>
+      <div class="aparece">VOCÊS DEVEM VER</div>
+      <p>Navegação do Router · não site MVC recarregando tudo a cada clique.</p>
+    </div>
+
+    <div class="caso ok">
+      <div class="tag">CT-12 — Voltar à lista</div>
+      <div class="onde">ONDE — Chrome · portal</div>
+      <div class="digite">FAZEM ISTO</div>
+      <p>Cliquem no menu/link Contribuintes.</p>
+      <div class="aparece">VOCÊS DEVEM VER</div>
+      <p>URL <code>/contribuintes</code>.</p>
+    </div>
+
+    <div class="caso ok">
+      <div class="tag">CT-13 — Rotas no App.jsx</div>
+      <div class="onde">ONDE — VS Code · <code>projeto\app</code></div>
+      <div class="digite">FAZEM ISTO</div>
+      <p>Abram <code>App.jsx</code> · achem <code>Route</code> e <code>:id</code>.</p>
+      <div class="aparece">VOCÊS DEVEM VER</div>
+      <p>Mapa das telas do portal.</p>
+    </div>
+
+    <h3>P3 — Estados loading / erro / vazio / sucesso</h3>
+
+    <div class="caso ok">
+      <div class="tag">CT-14 — Sucesso</div>
+      <div class="onde">ONDE — Chrome · Contribuintes (APIs no ar)</div>
+      <div class="digite">FAZEM ISTO</div>
+      <p>Abram a lista com :5001 ligada.</p>
+      <div class="aparece">VOCÊS DEVEM VER</div>
+      <p>Dados na tela (estado sucesso).</p>
+    </div>
+
+    <div class="caso ok">
+      <div class="tag">CT-15 — Vazio ≠ erro</div>
+      <div class="onde">ONDE — Chrome · Pedidos · Network</div>
+      <div class="digite">FAZEM ISTO</div>
+      <p>Abram Pedidos (pode estar vazio) · olhem o Network.</p>
+      <div class="aparece">VOCÊS DEVEM VER</div>
+      <p>Empty-state “Nenhum pedido registrado.” · HTTP <strong>200</strong> com <code>[]</code> · não é tela de erro.</p>
+    </div>
+
+    <div class="caso fail">
+      <div class="tag">CT-16 — Erro API :5001 off</div>
+      <div class="onde">ONDE — PowerShell da API Contribuintes + Chrome</div>
+      <div class="box red">
+        <strong>Parem a API no PowerShell com Ctrl+C</strong><br/>
+        Vá no terminal onde está <code>dotnet run --project src\Contribuintes.Api</code> ·
+        apertem <strong>Ctrl+C</strong> · esperem o processo sair.
+      </div>
+      <div class="digite">FAZEM ISTO</div>
+      <ol>
+        <li>Ctrl+C no PowerShell da :5001.</li>
+        <li>No Chrome, F5 na lista de Contribuintes.</li>
+      </ol>
+      <div class="aparece">VOCÊS DEVEM VER</div>
+      <p>UI de erro (componente de mensagem / retry) · <strong>não</strong> tela branca.</p>
+      <div class="digite">DEPOIS — DIGITAM ISTO (subam de novo)</div>
+      <pre class="term"><span class="ps">PS C:\fiap-aluno\projeto\api&gt;</span> dotnet run --project src\Contribuintes.Api</pre>
+    </div>
+
+    <div class="caso ok">
+      <div class="tag">CT-17 — Loading (opcional)</div>
+      <div class="onde">ONDE — Chrome · Network → throttling</div>
+      <div class="digite">FAZEM ISTO</div>
+      <p>Network → Slow 3G · recarreguem a lista.</p>
+      <div class="aparece">VOCÊS DEVEM VER</div>
+      <p>Loading/spinner (“Carregando contribuintes…”). Se for rápido demais, ok — conceito do slide.</p>
+    </div>
+
+    <h3>P4 — HTTP + Strict Mode + 2 APIs</h3>
+    <p>Conteúdo: <code>api.js</code> · fetch · 1 front → 2 microsserviços · Strict Mode.</p>
+
+    <div class="caso ok">
+      <div class="tag">CT-18 — Pedidos em :5002</div>
+      <div class="onde">ONDE — Chrome · F12 → Network → Fetch/XHR</div>
+      <div class="digite">FAZEM ISTO</div>
+      <p>Abram Network · abram a tela Pedidos.</p>
+      <div class="aparece">VOCÊS DEVEM VER</div>
+      <p>Request em <strong>:5002</strong> (não :5001).</p>
+    </div>
+
+    <div class="caso ok">
+      <div class="tag">CT-19 — Strict Mode 2×</div>
+      <div class="onde">ONDE — Chrome Network + VS Code <code>main.jsx</code></div>
+      <div class="digite">FAZEM ISTO</div>
+      <p>Contem requests GET iguais ao carregar a lista · abram <code>main.jsx</code> · vejam <code>StrictMode</code>.</p>
+      <div class="aparece">VOCÊS DEVEM VER</div>
+      <p>Em dev pode aparecer 2× · não é bug.</p>
+    </div>
+
+    <div class="caso ok">
+      <div class="tag">CT-20 — Ler api.js</div>
+      <div class="onde">ONDE — VS Code · <code>src/services/api.js</code></div>
+      <div class="digite">FAZEM ISTO</div>
+      <p>Abram o arquivo · achem as URLs 5001 e 5002.</p>
+      <div class="aparece">VOCÊS DEVEM VER</div>
+      <p>Onde cada microsserviço é chamado.</p>
+    </div>
+
+    <!-- ===== M14 ===== -->
+    <h2 id="parte4">Parte 4 — Práticas <span class="mod">M14</span></h2>
+    <p>Conteúdo: autenticação · JWT · Context · ProtectedRoute · UI · 2º microsserviço.</p>
+
+    <div class="box gold">
+      <strong>Ferramentas nesta parte — abram o certo</strong>
+      <ul>
+        <li><strong>Chrome</strong> → portal <code>http://localhost:5173</code> (quase todos os CTs)</li>
+        <li><strong>F12</strong> no Chrome → Application (token) · Network (requests)</li>
+        <li><strong>VS Code</strong> → pasta <code>C:\fiap-aluno\projeto\app</code> — <em>só no CT-28</em> (ler código)</li>
+        <li><strong>Não</strong> confundir: VS Code = front React · Visual Studio = APIs .NET (Parte 5 debug)</li>
+        <li>APIs :5001 e :5002 + portal :5173 <strong>ligados</strong></li>
+      </ul>
+    </div>
+
+    <h3>P5 — Autenticação JWT</h3>
+    <div class="box">
+      <strong>Antes de CT-21</strong><br/>
+      1. Abram o <strong>Google Chrome</strong> (ainda não o VS Code).<br/>
+      2. Digitem <code>http://localhost:5173</code>.<br/>
+      3. Se já estiver logado, façam Logout.
+    </div>
+
+    <div class="caso fail">
+      <div class="tag">CT-21 — Login inválido</div>
+      <div class="onde">ONDE — Chrome · tela de login · F12 → Application</div>
+      <div class="dados">usuário <code>admin</code> · senha <code>errada</code> (de propósito)</div>
+      <div class="digite">FAZEM — passo a passo</div>
+      <ol>
+        <li>Abram <code>http://localhost:5173/login</code>.</li>
+        <li>Digitem <code>admin</code> / senha <code>errada</code> · Entrar.</li>
+        <li>F12 → aba <strong>Application</strong> (Aplicação).</li>
+        <li>Local Storage → cliquem <code>http://localhost:5173</code>.</li>
+      </ol>
+      <div class="aparece">VOCÊS DEVEM VER</div>
+      <p>Mensagem de erro na tela · <strong>não</strong> aparece a chave <code>inss_token</code>.</p>
+    </div>
+
+    <div class="caso ok">
+      <div class="tag">CT-22 — Login + token</div>
+      <div class="onde">ONDE — Chrome · F12 → Application → Local Storage</div>
+      <div class="dados">Login correto: <code>admin</code> / <code>123</code></div>
+      <div class="digite">FAZEM — passo a passo</div>
+      <ol>
+        <li>Login: <code>admin</code> / <code>123</code> · Entrar.</li>
+        <li>F12 → Application → Local Storage → <code>http://localhost:5173</code>.</li>
+        <li>Cliquem na chave <code>inss_token</code>.</li>
+      </ol>
+      <div class="aparece">VOCÊS DEVEM VER</div>
+      <p>JWT com <strong>3 partes</strong>: <code>xxx.yyy.zzz</code>.</p>
+    </div>
+
+    <div class="caso ok">
+      <div class="tag">CT-23 — POST login no Network</div>
+      <div class="onde">ONDE — Chrome · F12 → Network → Fetch/XHR</div>
+      <div class="digite">FAZEM — passo a passo</div>
+      <ol>
+        <li>F12 → Network · filtro Fetch/XHR.</li>
+        <li>Logout (ou apaguem o token) · login de novo <code>admin</code> / <code>123</code>.</li>
+        <li>Cliquem na request de login.</li>
+      </ol>
+      <div class="aparece">VOCÊS DEVEM VER</div>
+      <p>POST <code>localhost:5001/api/auth/login</code> · 200 · Response com token.</p>
+    </div>
+
+    <div class="caso ok">
+      <div class="tag">CT-24 — Header Bearer</div>
+      <div class="onde">ONDE — Chrome · Network → GET da lista → Headers</div>
+      <div class="digite">FAZEM — passo a passo</div>
+      <ol>
+        <li>Já logados · Network → Fetch/XHR.</li>
+        <li>Contribuintes (ou F5) · cliquem no GET :5001.</li>
+        <li>Headers → Request Headers.</li>
+      </ol>
+      <div class="aparece">VOCÊS DEVEM VER</div>
+      <p><code>Authorization: Bearer …</code> (mesmo token do Local Storage).</p>
+    </div>
+
+    <div class="caso ok">
+      <div class="tag">CT-25 — Sessão sobrevive ao F5</div>
+      <div class="onde">ONDE — Chrome · portal logado</div>
+      <div class="digite">FAZEM ISTO</div>
+      <p>Estando logados, apertem F5.</p>
+      <div class="aparece">VOCÊS DEVEM VER</div>
+      <p>Continuam dentro · não voltam ao login (token no Local Storage).</p>
+    </div>
+
+    <h3>P6 — Rotas protegidas</h3>
+    <div class="box">Continuam no <strong>Chrome</strong>. VS Code só no CT-28.</div>
+
+    <div class="caso ok">
+      <div class="tag">CT-26 — Sem token → login</div>
+      <div class="onde">ONDE — Chrome · Application → Local Storage</div>
+      <div class="digite">FAZEM — passo a passo</div>
+      <ol>
+        <li>F12 → Application → Local Storage → <code>http://localhost:5173</code>.</li>
+        <li>Botão direito em <code>inss_token</code> → Delete.</li>
+        <li>F5 · ou abram <code>http://localhost:5173/contribuintes</code>.</li>
+      </ol>
+      <div class="aparece">VOCÊS DEVEM VER</div>
+      <p>Redireciona para <code>/login</code>.</p>
+    </div>
+
+    <div class="caso ok">
+      <div class="tag">CT-27 — URL direta /pedidos</div>
+      <div class="onde">ONDE — Chrome (sem token)</div>
+      <div class="digite">FAZEM ISTO</div>
+      <p>Na barra: <code>http://localhost:5173/pedidos</code> · Enter.</p>
+      <div class="aparece">VOCÊS DEVEM VER</div>
+      <p>Bloqueado · vai para login.</p>
+    </div>
+
+    <div class="caso ok">
+      <div class="tag">CT-28 — Código ProtectedRoute (agora sim VS Code)</div>
+      <div class="onde">ONDE — Visual Studio Code · pasta <code>projeto\app</code></div>
+      <div class="digite">FAZEM — passo a passo</div>
+      <ol>
+        <li>Abram o <strong>VS Code</strong> (não o Visual Studio .NET).</li>
+        <li>File → Open Folder → <code>C:\fiap-aluno\projeto\app</code>.</li>
+        <li>Ctrl+P → digitem <code>ProtectedRoute</code> → Enter.</li>
+        <li>Ctrl+P → digitem <code>AuthContext</code> → Enter.</li>
+      </ol>
+      <div class="aparece">VOCÊS DEVEM VER</div>
+      <p>Tem token? entra · senão login. Chrome fica aberto do lado.</p>
+    </div>
+
+    <h3>P7 — Qualidade de UI</h3>
+
+    <div class="caso ok">
+      <div class="tag">CT-29 — Responsivo</div>
+      <div class="onde">ONDE — Chrome · F12 → modo dispositivo / estreitar janela</div>
+      <div class="digite">FAZEM ISTO</div>
+      <p>Estreitem a janela ou ativem o modo celular.</p>
+      <div class="aparece">VOCÊS DEVEM VER</div>
+      <p>Layout usável (não quebra por completo).</p>
+    </div>
+
+    <div class="caso ok">
+      <div class="tag">CT-30 — Tab / foco</div>
+      <div class="onde">ONDE — Chrome · formulário</div>
+      <div class="digite">FAZEM ISTO</div>
+      <p>Naveguem o form só com a tecla Tab.</p>
+      <div class="aparece">VOCÊS DEVEM VER</div>
+      <p>Foco visível · ordem ok (a11y).</p>
+    </div>
+
+    <h3>P8 — Microsserviço Benefícios</h3>
+    <p>Conteúdo: 2º bounded context · tipos Reforma/Pensão… · MZN · só contribuinteId.</p>
+
+    <div class="caso ok">
+      <div class="tag">CT-31 — Criar pedido</div>
+      <div class="onde">ONDE — Chrome · detalhe do contribuinte · Network</div>
+      <div class="dados">tipo <strong>Reforma</strong> · valor <code>15000</code></div>
+      <div class="digite">FAZEM ISTO</div>
+      <ol>
+        <li>Abram o detalhe de um contribuinte.</li>
+        <li>Criem pedido: Reforma · 15000 · enviem.</li>
+        <li>Olhem Network (POST :5002).</li>
+      </ol>
+      <div class="aparece">VOCÊS DEVEM VER</div>
+      <p>POST :5002 · status 201/200 · aparece na lista de pedidos.</p>
+      <div class="box gold">
+        <strong>Liguem com a Parte 2b</strong><br/>
+        Agora podem ver o pedido no Docker (API pode até estar parada para <em>ler</em>):
+        <pre class="term"><span class="ps">PS C:\fiap-aluno\projeto\api&gt;</span> 'SELECT "Id", "ContribuinteId", "Tipo", "Status" FROM "PedidosBeneficio";' | docker exec -i inss-postgres psql -U inss -d inss_beneficios</pre>
+        Contagem deixa de ser 0 · veem o GUID em <code>ContribuinteId</code> (SQL-07 / SQL-08 / SQL-09).
+      </div>
+    </div>
+
+    <div class="caso ok">
+      <div class="tag">CT-32 — Valor com vírgula</div>
+      <div class="onde">ONDE — Chrome · formulário de pedido</div>
+      <div class="dados">valor <code>15000,50</code></div>
+      <div class="digite">FAZEM ISTO</div>
+      <p>Criem outro pedido com vírgula decimal.</p>
+      <div class="aparece">VOCÊS DEVEM VER</div>
+      <p>Aceita formato pt-BR.</p>
+    </div>
+
+    <div class="caso ok">
+      <div class="tag">CT-33 — Tipos Pensao / Doenca / Maternidade</div>
+      <div class="onde">ONDE — Chrome · formulário de pedido</div>
+      <div class="digite">FAZEM ISTO</div>
+      <p>Criem pelo menos 2 tipos diferentes (além de Reforma).</p>
+      <div class="aparece">VOCÊS DEVEM VER</div>
+      <p>Lista mostra os tipos.</p>
+    </div>
+
+    <div class="caso ok">
+      <div class="tag">CT-34 — Body só com contribuinteId (GUID)</div>
+      <div class="onde">ONDE — Chrome · Network → POST do pedido → Payload</div>
+      <div class="digite">FAZEM ISTO</div>
+      <p>Abram o Payload / Request do POST do pedido.</p>
+      <div class="aparece">VOCÊS DEVEM VER (exemplo)</div>
+      <pre class="term"><span class="out">{
+  "contribuinteId": "e5f6a7b8-1111-2222-3333-444455556666",
+  "tipo": "Reforma",
+  "valorSolicitado": 15000
+}</span></pre>
+      <p>Manda o <strong>GUID</strong> (<code>contribuinteId</code>) · <strong>não</strong> manda Nome/NUIT/tabela inteira.
+      Esse GUID é o mesmo <code>Id</code> do contribuinte no banco 1 — ver <a href="#guid-relacao">diagrama GUID</a>.</p>
+    </div>
+
+    <div class="caso fail">
+      <div class="tag">CT-35 — :5002 off, :5001 ok</div>
+      <div class="onde">ONDE — PowerShell da API Benefícios + Chrome</div>
+      <div class="box red">
+        <strong>Parem a API Benefícios no PowerShell com Ctrl+C</strong><br/>
+        Terminal onde está <code>dotnet run --project src\Beneficios.Api</code> · <strong>Ctrl+C</strong>.
+        Deixem a API Contribuintes (:5001) <strong>ligada</strong>.
+      </div>
+      <div class="digite">FAZEM ISTO</div>
+      <ol>
+        <li>Ctrl+C na :5002.</li>
+        <li>Testem a tela Pedidos.</li>
+        <li>Testem a lista Contribuintes.</li>
+      </ol>
+      <div class="aparece">VOCÊS DEVEM VER</div>
+      <p>Pedidos falham (erro) · contribuintes seguem ok · microsserviços independentes.</p>
+      <div class="digite">DEPOIS — DIGITAM ISTO</div>
+      <pre class="term"><span class="ps">PS C:\fiap-aluno\projeto\api&gt;</span> dotnet run --project src\Beneficios.Api</pre>
+    </div>
+
+    <!-- ===== DEBUG API ===== -->
+    <h2 id="parte5-debug">Parte 5 — Debug da API no Visual Studio</h2>
+    <p>
+      Agora vamos <strong>parar a execução dentro da API</strong> e ver o que o front está mandando.
+      Portal (:5173) continua no ar · API sobe <strong>pelo Visual Studio com F5</strong> (modo debug).
+    </p>
+
+    <div class="box red">
+      <strong>Importante — local · sem mudar código</strong>
+      <ul>
+        <li>Se a API Contribuintes já estiver no PowerShell (<code>dotnet run</code>),
+            <strong>parem</strong> com <strong>Ctrl+C</strong> — senão a porta 5001 fica ocupada e o debug não sobe.</li>
+        <li>Portal (:5173) continua no ar · Contribuintes (:5001) sobe pelo <strong>Visual Studio F5</strong>.</li>
+        <li>Benefícios (:5002) deixem no <strong>outro PowerShell</strong>:
+          <code>dotnet run --project src\Beneficios.Api</code>
+          — sem isso, Detalhes/Pedidos falham no Chrome (Network :5002 failed). <strong>Normal</strong>.</li>
+        <li>Enquanto o VS estiver <strong>parado no breakpoint</strong> (linha amarela), a API “congela”:
+            o portal pode mostrar “Não foi possível contactar a API”. Apertem <strong>Continuar (F5)</strong>.</li>
+      </ul>
+    </div>
+
+    <h3>Preparar o Visual Studio (façam uma vez)</h3>
+    <div class="caso ok">
+      <div class="tag">DBG-00 — Abrir e escolher o projeto</div>
+      <div class="onde">ONDE — Visual Studio</div>
+      <div class="digite">FAZEM ISTO</div>
+      <ol>
+        <li>Abram <code>C:\fiap-aluno\projeto\api\InssModernizacao.slnx</code>.</li>
+        <li>No seletor de startup, escolham <strong>Contribuintes.Api</strong> (ou Multiple → Contribuintes + Beneficios).</li>
+        <li>Confiram perfil <strong>http</strong> / porta <strong>5001</strong>.</li>
+      </ol>
+      <div class="aparece">VOCÊS DEVEM VER</div>
+      <p>Solution carrega · pastas Api, Application, Domain, Infrastructure.</p>
+    </div>
+
+    <h3>DBG-A — Ver o GET da lista (front → API)</h3>
+
+    <div class="caso ok">
+      <div class="tag">DBG-01 — Breakpoint no Listar</div>
+      <div class="onde">ONDE — Visual Studio · <code>ContribuintesController.cs</code></div>
+      <div class="digite">FAZEM ISTO</div>
+      <ol>
+        <li>Abram <code>ContribuintesController.cs</code>.</li>
+        <li>Achem o método <code>Listar</code> (<code>[HttpGet]</code>).</li>
+        <li>Cliquem na margem cinza à esquerda da linha do <code>return Ok(await service.ListarAsync…)</code>
+            → bolinha <strong>vermelha</strong> = breakpoint.</li>
+        <li>Apertem <strong>F5</strong> (Start Debugging).</li>
+      </ol>
+      <div class="aparece">VOCÊS DEVEM VER</div>
+      <p>API em debug na :5001 · breakpoint ativo (bolinha vermelha cheia).</p>
+    </div>
+
+    <div class="caso ok">
+      <div class="tag">DBG-02 — Front dispara o GET</div>
+      <div class="onde">ONDE — Chrome portal + Visual Studio</div>
+      <div class="digite">FAZEM ISTO</div>
+      <ol>
+        <li>No Chrome (<code>http://localhost:5173</code>), login se precisar.</li>
+        <li>Abram Contribuintes (ou F5 na lista).</li>
+        <li>Olhem o Visual Studio.</li>
+      </ol>
+      <div class="aparece">VOCÊS DEVEM VER</div>
+      <p>Execução <strong>para</strong> no breakpoint (linha amarela) · prova: React chamou a API.</p>
+      <div class="box gold">Depois de inspecionar: <strong>F5 Continuar</strong> no VS — senão o portal fica sem resposta.</div>
+    </div>
+
+    <div class="caso ok">
+      <div class="tag">DBG-03 — Inspecionar no debug</div>
+      <div class="onde">ONDE — Visual Studio (modo break)</div>
+      <div class="digite">FAZEM ISTO</div>
+      <ol>
+        <li>Passem o mouse sobre variáveis / abram Locals ou Autos.</li>
+        <li>F10 (Step Over) algumas vezes ou F5 para continuar.</li>
+        <li>Voltem ao portal.</li>
+      </ol>
+      <div class="aparece">VOCÊS DEVEM VER</div>
+      <p>Lista aparece · fluxo Listar → service → Domain/Infra → JSON ao React.</p>
+    </div>
+
+    <div class="caso ok">
+      <div class="tag">DBG-04 — Conferir no Network ao mesmo tempo</div>
+      <div class="onde">ONDE — Chrome Network + Visual Studio</div>
+      <div class="digite">FAZEM ISTO</div>
+      <ol>
+        <li>F12 → Network → Fetch/XHR.</li>
+        <li>Com breakpoint ativo, recarreguem a lista · VS para de novo.</li>
+        <li>No Network a request fica <em>pending</em> enquanto o debug está parado.</li>
+        <li>F5 no VS (continuar) → Network muda para <strong>200</strong>.</li>
+      </ol>
+      <div class="aparece">VOCÊS DEVEM VER</div>
+      <p>Front espera · API processa no breakpoint · resposta 200.</p>
+    </div>
+
+    <h3>DBG-B — Ver o POST do cadastro</h3>
+
+    <div class="caso ok">
+      <div class="tag">DBG-05 — Breakpoint no Criar</div>
+      <div class="onde">ONDE — Visual Studio · <code>ContribuintesController.cs</code></div>
+      <div class="digite">FAZEM ISTO</div>
+      <ol>
+        <li>Achem <code>Criar</code> (<code>[HttpPost]</code>).</li>
+        <li>Breakpoint na linha do <code>service.CriarAsync(request, ct)</code> (ou abertura do <code>try</code>).</li>
+        <li>Se a API não estiver em debug, F5 de novo.</li>
+      </ol>
+      <div class="aparece">VOCÊS DEVEM VER</div>
+      <p>Breakpoint vermelho no POST Criar.</p>
+    </div>
+
+    <div class="caso ok">
+      <div class="tag">DBG-06 — Enviar do formulário</div>
+      <div class="onde">ONDE — Chrome · Novo contribuinte</div>
+      <div class="dados">NUIT <code>555666777</code> · nome <code>Debug Teste VS</code> · salário <code>18000</code></div>
+      <div class="digite">FAZEM ISTO</div>
+      <p>Preencham · salvem.</p>
+      <div class="aparece">VOCÊS DEVEM VER</div>
+      <p>VS para no Criar.</p>
+    </div>
+
+    <div class="caso ok">
+      <div class="tag">DBG-07 — Ver o que o front mandou</div>
+      <div class="onde">ONDE — Visual Studio Locals + (opcional) Chrome Network</div>
+      <div class="digite">FAZEM ISTO</div>
+      <ol>
+        <li>Expandam <code>request</code> (Locals / DataTips).</li>
+        <li>Confiram <code>Nuit</code>, <code>Nome</code>, <code>SalarioMensal</code>.</li>
+        <li>Opcional: Network → POST → Payload — deve bater.</li>
+        <li>F5 no VS para continuar.</li>
+      </ol>
+      <div class="aparece">VOCÊS DEVEM VER</div>
+      <p>“O front falou X” = o mesmo X chega no <code>[FromBody]</code> · portal mostra sucesso.</p>
+    </div>
+
+    <div class="caso fail">
+      <div class="tag">DBG-08 — Validação: NUIT inválido</div>
+      <div class="onde">ONDE — Visual Studio Domain + Chrome form</div>
+      <div class="digite">FAZEM ISTO</div>
+      <ol>
+        <li>Opcional: breakpoint em <code>Nuit.cs</code> (onde lança <code>DomainException</code>).</li>
+        <li>No form, NUIT <code>12</code> — o front pode barrar antes (UX).</li>
+        <li>Leiam o <code>catch</code> do controller: Domain rejeita → 400.</li>
+      </ol>
+      <div class="aparece">VOCÊS DEVEM VER</div>
+      <p>Entender: front valida UX · Domain/API protege de verdade.</p>
+    </div>
+
+    <h3>DBG-C — Login JWT (AuthController)</h3>
+    <div class="caso ok">
+      <div class="tag">DBG-09 — Breakpoint no login</div>
+      <div class="onde">ONDE — Visual Studio · <code>AuthController.cs</code> + Chrome login</div>
+      <div class="dados">Login: <code>admin</code> / <code>123</code></div>
+      <div class="digite">FAZEM ISTO</div>
+      <ol>
+        <li>Breakpoint no método <code>[HttpPost("login")]</code>.</li>
+        <li>No portal: logout · login de novo.</li>
+        <li>VS para · inspecionem (senha é de demo).</li>
+        <li>F5 · Network mostra o token.</li>
+      </ol>
+      <div class="aparece">VOCÊS DEVEM VER</div>
+      <p>POST <code>/api/auth/login</code> chega no controller · front grava <code>inss_token</code>.</p>
+    </div>
+
+    <h3>DBG-D — Detalhe por id</h3>
+    <div class="caso ok">
+      <div class="tag">DBG-10 — Breakpoint no Obter(id)</div>
+      <div class="onde">ONDE — Visual Studio + Chrome detalhe</div>
+      <div class="digite">FAZEM ISTO</div>
+      <ol>
+        <li>Confirmem :5002 no ar (PowerShell Beneficios) — Detalhes também chama pedidos.</li>
+        <li>Breakpoint em <code>Obter(Guid id, …)</code>.</li>
+        <li>No portal, abram Detalhes.</li>
+        <li>Inspecionem <code>id</code> no VS · depois <strong>Continuar (F5)</strong>.</li>
+      </ol>
+      <div class="aparece">VOCÊS DEVEM VER</div>
+      <p><code>id</code> = mesmo GUID da URL <code>/contribuintes/&lt;id&gt;</code>.</p>
+      <div class="box red">
+        Network vermelho em <code>:5002/api/pedidos/contribuinte/…</code> =
+        Benefícios parado · subam a :5002. Não é bug do React · não precisa mudar código.
+      </div>
+    </div>
+
+    <h3>DBG-E — Segundo microsserviço (Benefícios :5002)</h3>
+    <div class="caso ok">
+      <div class="tag">DBG-11 — Debug na API de pedidos</div>
+      <div class="onde">ONDE — Visual Studio · Beneficios.Api + Chrome</div>
+      <div class="digite">FAZEM ISTO</div>
+      <ol>
+        <li>Parem o <code>dotnet run</code> da :5002 no PowerShell (Ctrl+C).</li>
+        <li>Startup → <strong>Beneficios.Api</strong> (ou Multiple).</li>
+        <li>Breakpoint no controller de pedidos (criar/listar).</li>
+        <li>F5 · no portal criem pedido (valor <code>15000</code>).</li>
+        <li>Inspecionem: <code>contribuinteId</code>, <code>tipo</code>, <code>valorSolicitado</code>.</li>
+      </ol>
+      <div class="aparece">VOCÊS DEVEM VER</div>
+      <p>POST vai para :5002 · Contribuintes (:5001) é outro processo · dois bounded contexts.</p>
+    </div>
+
+    <div class="box gold">
+      <strong>Atalhos úteis no Visual Studio</strong>
+      <ul>
+        <li><strong>F5</strong> — continuar / iniciar debug</li>
+        <li><strong>F9</strong> — ligar/desligar breakpoint</li>
+        <li><strong>F10</strong> — Step Over</li>
+        <li><strong>F11</strong> — Step Into</li>
+        <li><strong>Shift+F5</strong> — parar o debug</li>
+      </ul>
+    </div>
+
+    <div class="box">
+      <strong>Checklist rápido desta parte</strong>
+      <ul class="check">
+        <li>DBG-01/02 — Breakpoint no Listar · lista do portal parou no VS</li>
+        <li>DBG-04 — Request pending no Network enquanto debug parado</li>
+        <li>DBG-06/07 — POST cadastro · <code>request</code> = dados do form</li>
+        <li>DBG-09 — Login parou no AuthController</li>
+        <li>DBG-10 — <code>id</code> do detalhe = GUID da URL</li>
+        <li>DBG-11 — Pedido debugado na API Benefícios</li>
+      </ul>
+    </div>
+
+    <!-- ===== DOMAIN ===== -->
+    <h2 id="parte5">Parte 6 — Domain no Visual Studio</h2>
+    <p>Abram <code>projeto\api\InssModernizacao.slnx</code> · cruzar com o slide DDD.</p>
+
+    <div class="caso ok">
+      <div class="tag">CT-36 — Mesma regra no Domain</div>
+      <div class="onde">ONDE — Visual Studio · Domain</div>
+      <div class="digite">FAZEM ISTO</div>
+      <p>Abram <code>Nuit.cs</code> e <code>Contribuinte.cs</code>.</p>
+      <div class="aparece">VOCÊS DEVEM VER</div>
+      <p>NUIT 9 dígitos · 3% · “a regra mora no Domain”.</p>
+    </div>
+
+    <div class="caso ok">
+      <div class="tag">CT-37 — Dois bounded contexts</div>
+      <div class="onde">ONDE — Visual Studio · Solution Explorer</div>
+      <div class="digite">FAZEM ISTO</div>
+      <p>Olhem pastas/projetos <code>Contribuintes.*</code> e <code>Beneficios.*</code>.</p>
+      <div class="aparece">VOCÊS DEVEM VER</div>
+      <p>Dois projetos · dois bancos · APIs não se chamam · só o React fala com as duas.</p>
+    </div>
+
+    <div class="caso ok">
+      <div class="tag">CT-38 — Controller fino</div>
+      <div class="onde">ONDE — Visual Studio · <code>ContribuintesController</code> + Domain</div>
+      <div class="digite">FAZEM ISTO</div>
+      <p>Comparem o controller com o Domain.</p>
+      <div class="aparece">VOCÊS DEVEM VER</div>
+      <p>Controller não calcula 3% “na mão” · orquestra / chama o Domain.</p>
+    </div>
+
+    <!-- ===== CHECKLIST ===== -->
+    <h2 id="parte6">Parte 7 — Casos de teste (marcar)</h2>
+    <p>Marquem o que já fizeram:</p>
+    <table>
+      <tr><th>ID</th><th>Caso (cruzamento com o conteúdo)</th><th>OK?</th></tr>
+      <tr><td>CT-AMB</td><td>Ambiente local portas 5001/5002/5173</td><td>☐</td></tr>
+      <tr><td>SQL-01–11</td><td>Dois bancos Docker · API pode estar parada</td><td>☐</td></tr>
+      <tr><td>CT-00A–D</td><td>Caminho feliz + 3% + Network 200 + front≠banco</td><td>☐</td></tr>
+      <tr><td>CT-01A–B</td><td>Formulário controlado (M13)</td><td>☐</td></tr>
+      <tr><td>CT-02–07</td><td>Validações NUIT/nome/data/salário</td><td>☐</td></tr>
+      <tr><td>CT-08–09</td><td>Cadastro ok + POST Network</td><td>☐</td></tr>
+      <tr><td>CT-10–13</td><td>React Router / SPA / :id</td><td>☐</td></tr>
+      <tr><td>CT-14–17</td><td>Estados sucesso/vazio/erro/loading</td><td>☐</td></tr>
+      <tr><td>CT-18–20</td><td>2 APIs + Strict Mode + api.js</td><td>☐</td></tr>
+      <tr><td>CT-21–25</td><td>JWT / Bearer / sessão (M14)</td><td>☐</td></tr>
+      <tr><td>CT-26–28</td><td>Rotas protegidas</td><td>☐</td></tr>
+      <tr><td>CT-29–30</td><td>UI responsivo + a11y</td><td>☐</td></tr>
+      <tr><td>CT-31–35</td><td>Pedidos / microsserviço Benefícios</td><td>☐</td></tr>
+      <tr><td>CT-36–38</td><td>Domain / DDD / controller fino</td><td>☐</td></tr>
+      <tr><td>DBG-01–11</td><td>Debug VS: Listar, Criar, Login, Obter, Pedidos</td><td>☐</td></tr>
+      <tr><td>CT-39–41</td><td>Dia 2: dotnet test / e2e / Actions</td><td>☐</td></tr>
+      <tr><td>NUVEM-01–07</td><td>Publicar na nuvem (última parte)</td><td>☐</td></tr>
+    </table>
+
+    <!-- ===== DIA 2 ===== -->
+    <h2 id="parte7">Parte 8 — Dia 2 <span class="mod">M15</span> <span class="mod">M16</span> · ainda local</h2>
+    <p>(Quando chegarmos neste bloco — ambiente local no ar)</p>
+
+    <h3>Testes automatizados</h3>
+    <div class="caso ok">
+      <div class="tag">CT-39 — dotnet test</div>
+      <div class="onde">ONDE — PowerShell</div>
+      <div class="digite">DIGITAM ISTO</div>
+      <pre class="term"><span class="ps">PS C:\fiap-aluno&gt;</span> cd C:\fiap-aluno\projeto\api
+<span class="ps">PS C:\fiap-aluno\projeto\api&gt;</span> dotnet test</pre>
+      <div class="aparece">VOCÊS DEVEM VER</div>
+      <pre class="term"><span class="out">Passed!  - Failed:     0, Passed:    XX, Skipped:     0, Total:    XX</span></pre>
+      <p>Verde · vejam AAA nos <code>*Tests.cs</code>.</p>
+    </div>
+
+    <div class="caso ok">
+      <div class="tag">CT-40 — E2E (se eu pedir)</div>
+      <div class="onde">ONDE — PowerShell · pasta <code>projeto\app</code> (APIs + portal no ar)</div>
+      <div class="digite">FAZEM ISTO</div>
+      <p>Playwright na pasta app, quando eu pedir o comando.</p>
+      <div class="aparece">VOCÊS DEVEM VER</div>
+      <p>Login + lista automatizados.</p>
+    </div>
+
+    <h3>CI / quality gate</h3>
+    <div class="caso ok">
+      <div class="tag">CT-41 — GitHub Actions</div>
+      <div class="onde">ONDE — Browser · GitHub → Actions</div>
+      <div class="digite">FAZEM ISTO</div>
+      <p>Depois do push do projeto de vocês, abram a aba Actions.</p>
+      <div class="aparece">VOCÊS DEVEM VER</div>
+      <p>Pipeline verde = quality gate ok.</p>
+    </div>
+
+    <!-- ===== PROBLEMAS ===== -->
+    <h2 id="problemas">Problemas comuns (local)</h2>
+    <table>
+      <tr><th>Sintoma</th><th>O que tentar</th></tr>
+      <tr><td>Portal sem dados</td><td>APIs :5001 e :5002 no ar? (PowerShell com <code>dotnet run</code>)</td></tr>
+      <tr><td>Detalhe com erro / Network :5002 failed</td><td>Lista usa :5001 · Detalhe também chama :5002. Subam <code>dotnet run --project src\Beneficios.Api</code>. Não é bug do React.</td></tr>
+      <tr><td>“Não contactar a API” com VS aberto</td><td>Breakpoint parado? <strong>F5 Continuar</strong> no Visual Studio (a API fica congelada até continuar)</td></tr>
+      <tr><td>docker compose falha</td><td>Docker Desktop aberto e Running?</td></tr>
+      <tr><td>npm install erro</td><td>Internet na 1ª vez</td></tr>
+      <tr><td>Porta em uso</td><td>Fechar o que usa 5001 / 5002 / 5173 · Ctrl+C nos terminais</td></tr>
+      <tr><td>Pedido dá 400</td><td>Valor MZN válido · tipo do pedido · API :5002 no ar</td></tr>
+      <tr><td>401 / volta ao login</td><td>Token apagado ou inválido — login de novo <code>admin</code>/<code>123</code></td></tr>
+      <tr><td>Debug não sobe</td><td>Parar <code>dotnet run</code> no PowerShell (porta ocupada)</td></tr>
+      <tr><td>relation "contribuintes" (minúsculo)</td><td>PowerShell comeu aspas — usem pipe <code>'…' | docker exec -i …</code></td></tr>
+    </table>
+
+    <div class="box gold">
+      <strong>Lembrete até aqui</strong><br/>
+      Tudo acima é <strong>local</strong>. Só depois de praticar e debugar, vamos para a <strong>última parte: nuvem</strong>.
+    </div>
+
+    <!-- ===== NUVEM ===== -->
+    <h2 id="parte8">Parte 9 — ÚLTIMO PASSO: subir na nuvem (da máquina de vocês)</h2>
+    <div class="box red">
+      <strong>Só façam esta parte por último.</strong><br/>
+      Antes: Partes 1–8 ok (local rodando, práticas, debug).<br/>
+      Stack: <strong>GitHub → Neon → Render → Vercel → CORS</strong>.
+    </div>
+
+    <table>
+      <tr><th>Camada</th><th>Local (já fizeram)</th><th>Nuvem (agora)</th></tr>
+      <tr><td>Código</td><td>Pasta no HD</td><td><strong>GitHub</strong></td></tr>
+      <tr><td>2 bancos Postgres</td><td>Docker :5432</td><td><strong>Neon</strong></td></tr>
+      <tr><td>2 APIs .NET</td><td>:5001 / :5002</td><td><strong>Render</strong></td></tr>
+      <tr><td>Portal React</td><td>:5173</td><td><strong>Vercel</strong></td></tr>
+    </table>
+
+    <h3>NUVEM-01 — Contas</h3>
+    <div class="caso ok">
+      <div class="tag">NUVEM-01 — Criar contas</div>
+      <div class="onde">ONDE — Browser</div>
+      <div class="digite">FAZEM ISTO (nesta ordem)</div>
+      <ol>
+        <li>Conta no <strong>GitHub</strong> (se ainda não tiverem).</li>
+        <li>Conta no <a href="https://neon.tech" target="_blank" rel="noopener">Neon</a> (login com GitHub).</li>
+        <li>Conta no <a href="https://render.com" target="_blank" rel="noopener">Render</a> (login com GitHub).</li>
+        <li>Conta no <a href="https://vercel.com" target="_blank" rel="noopener">Vercel</a> (login com GitHub).</li>
+      </ol>
+      <div class="aparece">VOCÊS DEVEM VER</div>
+      <p>As quatro contas acessíveis.</p>
+    </div>
+
+    <h3>NUVEM-02 — Subir o código no GitHub</h3>
+    <div class="caso ok">
+      <div class="tag">NUVEM-02 — Repositório + push</div>
+      <div class="onde">ONDE — GitHub (browser) + PowerShell ou GitHub Desktop</div>
+      <div class="digite">FAZEM ISTO</div>
+      <ol>
+        <li>GitHub: <strong>+</strong> → New repository · nome ex.: <code>inss-mocambique-fiap</code> · Private · <strong>sem</strong> README.</li>
+        <li>Na pasta do projeto no HD, enviem o código:</li>
+      </ol>
+      <p><strong>Opção A — GitHub Desktop:</strong> Add Local Repository → Publish → Push.</p>
+      <p><strong>Opção B — PowerShell</strong> (ajustem a URL do remote):</p>
+      <div class="digite">DIGITAM ISTO</div>
+      <pre class="term"><span class="ps">PS C:\fiap-aluno&gt;</span> git init
+<span class="ps">PS C:\fiap-aluno&gt;</span> git add .
+<span class="ps">PS C:\fiap-aluno&gt;</span> git commit -m "INSS Moçambique — FIAP G1"
+<span class="ps">PS C:\fiap-aluno&gt;</span> git branch -M main
+<span class="ps">PS C:\fiap-aluno&gt;</span> git remote add origin https://github.com/SEU_USUARIO/inss-mocambique-fiap.git
+<span class="ps">PS C:\fiap-aluno&gt;</span> git push -u origin main</pre>
+      <div class="aparece">VOCÊS DEVEM VER</div>
+      <p>Código no GitHub · aba <strong>Actions</strong> pode rodar o CI (M16).</p>
+    </div>
+
+    <h3>NUVEM-03 — Banco no Neon (2 databases)</h3>
+    <div class="caso ok">
+      <div class="tag">NUVEM-03 — Neon</div>
+      <div class="onde">ONDE — Browser · Neon console</div>
+      <div class="digite">FAZEM ISTO</div>
+      <ol>
+        <li>Neon → <strong>New Project</strong> (ex.: <code>inss-aula</code>).</li>
+        <li>Anotem connection string / host, user, senha.</li>
+        <li>No SQL Editor, criem o segundo banco:</li>
+      </ol>
+      <div class="digite">DIGITAM ISTO (SQL Editor Neon)</div>
+      <pre class="term"><span class="sql">neondb=&gt;</span> CREATE DATABASE inss_beneficios;</pre>
+      <p>4. Montem <strong>duas</strong> connection strings (mesmo host/user/senha; muda só o Database):</p>
+      <pre class="term"><span class="out">Host=SEU_HOST.neon.tech;Database=neondb;Username=...;Password=...;SSL Mode=Require;Trust Server Certificate=true
+
+Host=SEU_HOST.neon.tech;Database=inss_beneficios;Username=...;Password=...;SSL Mode=Require;Trust Server Certificate=true</span></pre>
+      <p>(Se o DB principal do Neon não for <code>neondb</code>, usem o nome do painel para Contribuintes.)</p>
+      <div class="aparece">VOCÊS DEVEM VER</div>
+      <p>2 databases prontos · 2 strings Npgsql anotadas.</p>
+    </div>
+
+    <h3>NUVEM-04 — API Contribuintes no Render</h3>
+    <div class="caso ok">
+      <div class="tag">NUVEM-04 — Web Service Contribuintes</div>
+      <div class="onde">ONDE — Browser · Render</div>
+      <div class="digite">FAZEM ISTO</div>
+      <ol>
+        <li>Render → <strong>New +</strong> → <strong>Web Service</strong> · conectem o repositório GitHub.</li>
+        <li>Preencham:</li>
+      </ol>
+      <table>
+        <tr><th>Campo</th><th>Valor</th></tr>
+        <tr><td>Name</td><td><code>inss-contribuintes</code> (ou com o nome de vocês)</td></tr>
+        <tr><td>Root Directory</td><td><code>projeto/api</code></td></tr>
+        <tr><td>Runtime</td><td><strong>Docker</strong></td></tr>
+        <tr><td>Dockerfile Path</td><td><code>docker/Dockerfile.contribuintes</code></td></tr>
+        <tr><td>Instance</td><td><strong>Free</strong></td></tr>
+      </table>
+      <p>3. Environment Variables:</p>
+      <table>
+        <tr><th>Key</th><th>Value</th></tr>
+        <tr><td><code>ASPNETCORE_ENVIRONMENT</code></td><td><code>Production</code></td></tr>
+        <tr><td><code>ConnectionStrings__Default</code></td><td>string do Neon (Contribuintes)</td></tr>
+        <tr><td><code>Jwt__Key</code></td><td><code>InssMozambique2026ChaveSecretaMin32Chars!</code></td></tr>
+        <tr><td><code>Jwt__Issuer</code></td><td><code>InssContribuintes</code></td></tr>
+        <tr><td><code>Jwt__Audience</code></td><td><code>InssPortal</code></td></tr>
+        <tr><td><code>Cors__Origins</code></td><td>(vazio por agora — preenche depois da Vercel)</td></tr>
+      </table>
+      <p>4. Create · esperem o build (5–10 min na 1ª vez).</p>
+      <p>5. Testem: <code>https://SEU-SERVICO.onrender.com/openapi/v1.json</code></p>
+      <div class="aparece">VOCÊS DEVEM VER</div>
+      <p>JSON OpenAPI · anotem a URL da API.</p>
+    </div>
+
+    <h3>NUVEM-05 — API Benefícios no Render</h3>
+    <div class="caso ok">
+      <div class="tag">NUVEM-05 — Web Service Benefícios</div>
+      <div class="onde">ONDE — Browser · Render</div>
+      <div class="digite">FAZEM ISTO</div>
+      <ol>
+        <li>Repitam o New Web Service.</li>
+        <li>Name: <code>inss-beneficios</code> · Dockerfile: <code>docker/Dockerfile.beneficios</code>.</li>
+        <li><code>ConnectionStrings__Default</code> = string do Neon <strong>inss_beneficios</strong>.</li>
+        <li>Mesmas Jwt__* · Cors vazio por agora.</li>
+        <li>Testem: <code>https://SEU-BENEFICIOS.onrender.com/openapi/v1.json</code></li>
+      </ol>
+      <div class="aparece">VOCÊS DEVEM VER</div>
+      <p>Segunda API no ar · anotem a URL.</p>
+      <div class="box red" style="margin-top:.75rem">Render free “dorme”: a 1ª request pode levar 30–60 s. Normal.</div>
+    </div>
+
+    <h3>NUVEM-06 — Front na Vercel</h3>
+    <div class="caso ok">
+      <div class="tag">NUVEM-06 — Deploy React</div>
+      <div class="onde">ONDE — Browser · Vercel</div>
+      <div class="digite">FAZEM ISTO</div>
+      <ol>
+        <li>Vercel → Add New Project · importem o mesmo GitHub.</li>
+        <li>Configuração:</li>
+      </ol>
+      <table>
+        <tr><th>Campo</th><th>Valor</th></tr>
+        <tr><td>Root Directory</td><td><code>projeto/app</code></td></tr>
+        <tr><td>Framework</td><td>Vite</td></tr>
+        <tr><td>Build Command</td><td><code>npm run build</code></td></tr>
+        <tr><td>Output Directory</td><td><code>dist</code></td></tr>
+      </table>
+      <p>3. Environment Variables (Production):</p>
+      <table>
+        <tr><th>Key</th><th>Value</th></tr>
+        <tr><td><code>VITE_CONTRIBUINTES_API</code></td><td><code>https://SUA-API-CONTRIBUINTES.onrender.com</code></td></tr>
+        <tr><td><code>VITE_BENEFICIOS_API</code></td><td><code>https://SUA-API-BENEFICIOS.onrender.com</code></td></tr>
+      </table>
+      <p>4. Deploy · anotem <code>https://seu-projeto.vercel.app</code></p>
+      <div class="aparece">VOCÊS DEVEM VER</div>
+      <p>Portal abre na URL da Vercel.</p>
+    </div>
+
+    <h3>NUVEM-07 — CORS (obrigatório) + teste final</h3>
+    <div class="caso ok">
+      <div class="tag">NUVEM-07 — Cors__Origins + smoke test</div>
+      <div class="onde">ONDE — Render (Environment) + Chrome (URL Vercel)</div>
+      <div class="digite">FAZEM ISTO</div>
+      <ol>
+        <li>No Render, em <strong>cada</strong> API → Environment → editem:</li>
+      </ol>
+      <pre class="term"><span class="out">Cors__Origins=https://seu-projeto.vercel.app</span></pre>
+      <p>(sem barra no final · URL exata da Vercel)</p>
+      <ol start="2">
+        <li>Salvem (Render redeploya).</li>
+        <li>Abram a URL da Vercel.</li>
+        <li>Se a API “dormiu”, esperem 30–60 s ou abram a URL da API no browser antes.</li>
+        <li>Login <code>admin</code> / <code>123</code> · listar contribuintes · criar contribuinte · criar pedido.</li>
+      </ol>
+      <div class="aparece">VOCÊS DEVEM VER</div>
+      <p>Mesmo comportamento do local · prova de que o deploy da máquina de vocês funcionou.</p>
+    </div>
+
+    <div class="box gold">
+      <strong>Checklist final da nuvem</strong>
+      <ul class="check">
+        <li>GitHub com o código + Actions (opcional verde)</li>
+        <li>Neon: 2 databases</li>
+        <li>Render: 2 Web Services no ar</li>
+        <li>Vercel: front com VITE_* apontando para o Render</li>
+        <li>Cors__Origins = URL da Vercel nas 2 APIs</li>
+        <li>Login + lista + pedido testados na nuvem</li>
+      </ul>
+    </div>
+
+    <div class="box">
+      <strong>Se falhar na nuvem</strong>
+      <ul>
+        <li>F12 → Network → status / CORS / cold start</li>
+        <li>Mudou VITE_*? Precisa <strong>redeploy</strong> na Vercel</li>
+        <li>Plano B: voltem ao local (Docker + :5001 + :5002 + :5173)</li>
+      </ul>
+    </div>
+
+    <footer>
+      Roteiro do aluno · FIAP × INSS Moçambique ·
+      <code>docs/roteiro-pratico-alunos.html</code>
+      · <strong>Último passo = nuvem (Parte 9)</strong>
+    </footer>
+  </div>
+  <script type="module">
+    import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.esm.min.mjs';
+    mermaid.initialize({
+      startOnLoad: true,
+      theme: 'base',
+      themeVariables: {
+        primaryColor: '#e8f5ee',
+        primaryTextColor: '#111',
+        primaryBorderColor: '#006233',
+        lineColor: '#ce1126',
+        secondaryColor: '#fff8e1',
+        tertiaryColor: '#f8faf9',
+        fontFamily: 'Segoe UI, system-ui, sans-serif',
+        fontSize: '18px'
+      },
+      flowchart: { curve: 'basis', htmlLabels: true }
+    });
+  </script>
+</body>
+</html>

@@ -1,0 +1,54 @@
+﻿================================================================================
+  PASSO A PASSO — COM Prova de Vida
+  INSS Moçambique · FIAP
+================================================================================
+
+ANTES
+  Copie para o HD:
+    C:\fiap-aluno-com-prova-vida
+  cd C:\fiap-aluno-com-prova-vida
+
+
+PASSO 0 — Ferramentas
+  dotnet --version · node --version · npm --version · docker --version
+
+
+PASSO 1 — Docker
+  cd C:\fiap-aluno-com-prova-vida\projeto\api
+  docker compose up -d
+  docker compose ps
+
+
+PASSO 2 — Contribuintes (:5001)
+  $env:ASPNETCORE_ENVIRONMENT="Development"
+  dotnet run --project src\Contribuintes.Api --no-launch-profile --urls http://0.0.0.0:5001
+  Teste: http://localhost:5001/api/contribuintes/pensionistas/por-nuit/300400504
+
+
+PASSO 3 — Prova de Vida (:5003)  ← NOVO
+  (outro PowerShell)
+  $env:ASPNETCORE_ENVIRONMENT="Development"
+  dotnet run --project src\ProvaVida.Api --no-launch-profile --urls http://0.0.0.0:5003
+  Teste: http://localhost:5003/api/prova-vida/status/por-nuit/300400504
+
+
+PASSO 4A — Webcam
+  cd C:\fiap-aluno-com-prova-vida\docs
+  npx --yes serve . -p 5180 --no-clipboard
+  http://localhost:5180/prova-vida-webcam.html
+
+
+PASSO 4B — APK Android 1.0.1+
+  Mesma Wi‑Fi · IP do PC no app.json · 3 poses
+
+
+O QUE FOI IMPLEMENTADO (ler com imagens)
+  docs\roteiro-prova-vida.html   → seções I1…I9
+  docs\slides-prova-vida.html
+
+
+PROBLEMAS
+  CORS / Failed to fetch  → reiniciar :5001
+  getEnv…                 → APK 1.0.1+
+  Sem conexão no celular  → 0.0.0.0 + mesma Wi‑Fi
+================================================================================

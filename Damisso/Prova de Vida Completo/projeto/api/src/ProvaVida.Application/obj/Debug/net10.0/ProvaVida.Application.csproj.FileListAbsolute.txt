@@ -1,0 +1,16 @@
+C:\fiap\projeto\api\src\ProvaVida.Application\bin\Debug\net10.0\ProvaVida.Application.deps.json
+C:\fiap\projeto\api\src\ProvaVida.Application\bin\Debug\net10.0\ProvaVida.Application.dll
+C:\fiap\projeto\api\src\ProvaVida.Application\bin\Debug\net10.0\ProvaVida.Application.pdb
+C:\fiap\projeto\api\src\ProvaVida.Application\bin\Debug\net10.0\ProvaVida.Domain.dll
+C:\fiap\projeto\api\src\ProvaVida.Application\bin\Debug\net10.0\ProvaVida.Domain.pdb
+C:\fiap\projeto\api\src\ProvaVida.Application\obj\Debug\net10.0\ProvaVida.Application.csproj.AssemblyReference.cache
+C:\fiap\projeto\api\src\ProvaVida.Application\obj\Debug\net10.0\ProvaVida.Application.GeneratedMSBuildEditorConfig.editorconfig
+C:\fiap\projeto\api\src\ProvaVida.Application\obj\Debug\net10.0\ProvaVida.Application.AssemblyInfoInputs.cache
+C:\fiap\projeto\api\src\ProvaVida.Application\obj\Debug\net10.0\ProvaVida.Application.AssemblyInfo.cs
+C:\fiap\projeto\api\src\ProvaVida.Application\obj\Debug\net10.0\ProvaVida.Application.csproj.CoreCompileInputs.cache
+C:\fiap\projeto\api\src\ProvaVida.Application\obj\Debug\net10.0\ProvaVida.Application.sourcelink.json
+C:\fiap\projeto\api\src\ProvaVida.Application\obj\Debug\net10.0\ProvaVid.000E67BD.Up2Date
+C:\fiap\projeto\api\src\ProvaVida.Application\obj\Debug\net10.0\ProvaVida.Application.dll
+C:\fiap\projeto\api\src\ProvaVida.Application\obj\Debug\net10.0\refint\ProvaVida.Application.dll
+C:\fiap\projeto\api\src\ProvaVida.Application\obj\Debug\net10.0\ProvaVida.Application.pdb
+C:\fiap\projeto\api\src\ProvaVida.Application\obj\Debug\net10.0\ref\ProvaVida.Application.dll

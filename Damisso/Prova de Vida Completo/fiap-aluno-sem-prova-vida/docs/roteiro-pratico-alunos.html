@@ -1,0 +1,543 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Roteiro prático — Alunos | FIAP × INSS Moçambique</title>
+  <style>
+    :root {
+      --green: #006233;
+      --green-dark: #004d28;
+      --green-soft: #e8f5ee;
+      --gold: #c9a227;
+      --gold-soft: #fff8e1;
+      --red: #ce1126;
+      --border: #94a3b8;
+      --text: #111;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: 'Segoe UI', system-ui, sans-serif;
+      background: #fff;
+      color: var(--text);
+      line-height: 1.4;
+      font-size: clamp(1.35rem, 2.1vw, 1.85rem);
+      font-weight: 700;
+    }
+    .flag {
+      height: 12px;
+      background: linear-gradient(90deg,
+        #006233 0 25%, #111 25% 50%, #fcd116 50% 75%, #ce1126 75% 100%);
+    }
+    .wrap {
+      max-width: none;
+      width: 100%;
+      margin: 0;
+      padding: 1.25rem 3.5vw 3rem;
+    }
+    h1 {
+      color: var(--green);
+      font-size: clamp(2.4rem, 4.5vw, 3.4rem);
+      font-weight: 900;
+      margin: 0.75rem 0 0.4rem;
+    }
+    .sub { font-size: clamp(1.25rem, 2vw, 1.55rem); margin-bottom: 1.1rem; color: #222; font-weight: 700; }
+    h2 {
+      color: var(--green);
+      font-size: clamp(1.9rem, 3.2vw, 2.5rem);
+      font-weight: 900;
+      border-bottom: 5px solid var(--gold);
+      padding-bottom: 0.4rem;
+      margin: 2.25rem 0 1rem;
+    }
+    h3 {
+      color: var(--green-dark);
+      font-size: clamp(1.45rem, 2.4vw, 1.85rem);
+      font-weight: 800;
+      margin: 1.5rem 0 0.65rem;
+    }
+    h4 {
+      font-size: clamp(1.2rem, 1.9vw, 1.45rem);
+      font-weight: 900;
+      margin: 1rem 0 0.45rem;
+      color: #111;
+    }
+    p, li { margin-bottom: 0.65rem; }
+    ul, ol { padding-left: 1.5rem; }
+    strong { font-weight: 900; }
+    code, .cmd {
+      font-family: Consolas, 'Courier New', monospace;
+      background: #111;
+      color: #e8f5ee;
+      padding: 0.15rem 0.5rem;
+      border-radius: 5px;
+      font-size: 0.95em;
+      font-weight: 700;
+    }
+    pre.cmd {
+      display: block;
+      padding: 1.15rem 1.35rem;
+      border-radius: 12px;
+      overflow-x: auto;
+      margin: 0.75rem 0 1.15rem;
+      line-height: 1.55;
+      white-space: pre-wrap;
+      word-break: break-word;
+      font-size: clamp(1.25rem, 2vw, 1.65rem);
+    }
+    .box {
+      background: #fff;
+      border: 3px solid var(--border);
+      border-left: 10px solid var(--green);
+      border-radius: 14px;
+      padding: 1.25rem 1.5rem;
+      margin: 1rem 0;
+      font-size: 1.05em;
+    }
+    .box.gold { border-left-color: var(--gold); background: var(--gold-soft); }
+    .box.red { border-left-color: var(--red); background: #fdecea; }
+    .mod {
+      display: inline-block;
+      background: var(--red);
+      color: #fff;
+      font-weight: 900;
+      font-size: 0.75em;
+      padding: 0.15rem 0.5rem;
+      border-radius: 5px;
+      margin-right: 0.35rem;
+      vertical-align: middle;
+    }
+    .step-num {
+      display: inline-block;
+      background: var(--green);
+      color: #fff;
+      font-weight: 900;
+      padding: 0.25rem 0.65rem;
+      border-radius: 6px;
+      margin-right: 0.4rem;
+      font-size: 0.95em;
+    }
+    .caso {
+      background: #f8faf9;
+      border: 3px solid var(--green);
+      border-radius: 12px;
+      padding: 1rem 1.25rem;
+      margin: 0.85rem 0 1.1rem;
+    }
+    .caso .tag {
+      display: inline-block;
+      background: var(--green);
+      color: #fff;
+      font-weight: 900;
+      font-size: 0.85em;
+      padding: 0.2rem 0.55rem;
+      border-radius: 4px;
+      margin-bottom: 0.5rem;
+    }
+    .caso.fail { border-color: var(--red); }
+    .caso.fail .tag { background: var(--red); }
+    .caso.ok .tag { background: var(--green); }
+    .check { list-style: none; padding-left: 0; }
+    .check li {
+      padding: 0.55rem 0 0.55rem 2.1rem;
+      position: relative;
+      border-bottom: 1px solid #e0e5e2;
+    }
+    .check li::before {
+      content: "☐";
+      position: absolute;
+      left: 0;
+      font-size: 1.4rem;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 0.85rem 0 1.35rem;
+      font-size: clamp(1.15rem, 1.8vw, 1.45rem);
+      background: #fff;
+    }
+    th, td {
+      border: 2px solid var(--border);
+      padding: 0.75rem 0.9rem;
+      text-align: left;
+      vertical-align: top;
+    }
+    th { background: var(--green); color: #fff; font-weight: 900; }
+    nav.toc {
+      background: var(--green-soft);
+      border: 3px solid var(--green);
+      border-radius: 14px;
+      padding: 1.15rem 1.5rem;
+      margin: 1.1rem 0;
+    }
+    nav.toc a {
+      display: block;
+      color: var(--green-dark);
+      font-weight: 800;
+      text-decoration: none;
+      padding: 0.4rem 0;
+      font-size: 1.05em;
+    }
+    nav.toc a:hover { text-decoration: underline; }
+    .toc-title { font-weight: 900; color: var(--green); margin-bottom: 0.5rem; font-size: 1.15em; }
+    footer {
+      margin-top: 2.5rem;
+      padding-top: 1rem;
+      border-top: 2px solid var(--border);
+      font-size: 1rem;
+      color: #444;
+    }
+    @media print {
+      body { background: #fff; font-size: 11pt; }
+      .box, .caso, nav.toc { break-inside: avoid; }
+    }
+  </style>
+</head>
+<body>
+  <div class="flag"></div>
+  <div class="wrap">
+    <h1>Roteiro prático — o que você vai fazer</h1>
+    <p class="sub">FIAP · G1 Full-Stack · INSS Moçambique · 25–26/08/2026</p>
+
+    <div class="box gold">
+      <strong>Como vamos trabalhar</strong>
+      <ol>
+        <li>Vocês acompanham este roteiro e <strong>digitam na própria máquina</strong>.</li>
+        <li>O projeto é a pasta/ZIP que eu passar — <strong>não criamos do zero</strong>.</li>
+        <li>Ordem: <strong>subir ambiente → práticas M13/M14 → Domain → (dia 2) testes e CI</strong>.</li>
+        <li>Login: <code>admin</code> / <code>123</code> · Portal: <code>http://localhost:5173</code></li>
+      </ol>
+    </div>
+
+    <div class="box red">
+      <strong>Antes de começar</strong><br/>
+      Esperem eu passar o projeto. Pasta no HD, por exemplo <code>C:\fiap-aluno</code>.
+      Se o caminho for outro, troquem nos comandos.
+    </div>
+
+    <nav class="toc">
+      <div class="toc-title">Índice</div>
+      <a href="#parte0">Mapa do que vamos praticar</a>
+      <a href="#parte1">Parte 1 — Pasta e ferramentas</a>
+      <a href="#parte2">Parte 2 — Subir banco, APIs e portal</a>
+      <a href="#parte3">Parte 3 — Práticas M13 (forms, rotas, API)</a>
+      <a href="#parte4">Parte 4 — Práticas M14 (auth, JWT, UI)</a>
+      <a href="#parte5">Parte 5 — Domain no Visual Studio</a>
+      <a href="#parte6">Parte 6 — Casos de teste (checklist)</a>
+      <a href="#parte7">Parte 7 — Dia 2 (testes + CI)</a>
+      <a href="#problemas">Problemas comuns</a>
+    </nav>
+
+    <!-- ===== MAPA ===== -->
+    <h2 id="parte0">Mapa do que vamos praticar</h2>
+    <table>
+      <tr><th>Módulo</th><th>Vocês praticam</th><th>Onde</th></tr>
+      <tr>
+        <td><span class="mod">M13</span></td>
+        <td>Formulário, validação, rotas, estados, HTTP, Network</td>
+        <td>Portal + VS Code (<code>projeto\app</code>)</td>
+      </tr>
+      <tr>
+        <td><span class="mod">M14</span></td>
+        <td>Login JWT, Context, rota protegida, UI, pedido de benefício</td>
+        <td>Portal + DevTools</td>
+      </tr>
+      <tr>
+        <td>DDD</td>
+        <td>Ver a mesma regra (NUIT, 3%) no Domain</td>
+        <td>Visual Studio (<code>projeto\api</code>)</td>
+      </tr>
+      <tr>
+        <td><span class="mod">M15</span>/<span class="mod">M16</span></td>
+        <td>Rodar testes + olhar CI (dia 2)</td>
+        <td><code>dotnet test</code> · GitHub Actions</td>
+      </tr>
+    </table>
+
+    <!-- ===== PASTA ===== -->
+    <h2 id="parte1">Parte 1 — Pasta e ferramentas</h2>
+    <div class="box">
+      <p><span class="step-num">1</span> Coloquem a pasta no HD, por exemplo:</p>
+      <pre class="cmd">C:\fiap-aluno</pre>
+      <p><span class="step-num">2</span> PowerShell:</p>
+      <pre class="cmd">cd C:\fiap-aluno</pre>
+      <ul>
+        <li><code>projeto\api</code> — .NET · Visual Studio · <code>InssModernizacao.slnx</code></li>
+        <li><code>projeto\app</code> — React · VS Code</li>
+      </ul>
+    </div>
+    <p>Verifiquem (um de cada vez):</p>
+    <pre class="cmd">dotnet --version
+node --version
+npm --version
+docker --version
+git --version</pre>
+    <div class="box">
+      OK = número da versão. “não é reconhecido” = levantem a mão.<br/>
+      Se npm bloquear scripts:
+      <pre class="cmd">Set-ExecutionPolicy -Scope CurrentUser RemoteSigned</pre>
+    </div>
+
+    <!-- ===== SUBIR ===== -->
+    <h2 id="parte2">Parte 2 — Subir banco, APIs e portal</h2>
+    <div class="box red">
+      Ordem fixa: <strong>1) Docker + banco → 2) API :5001 → 3) API :5002 → 4) portal :5173</strong>
+    </div>
+
+    <h3><span class="step-num">A</span> Docker Desktop</h3>
+    <p>Abram e esperem ficar Running.</p>
+
+    <h3><span class="step-num">B</span> Banco</h3>
+    <pre class="cmd">cd C:\fiap-aluno\projeto\api
+docker compose up -d
+docker compose ps</pre>
+
+    <h3><span class="step-num">C</span> API Contribuintes :5001</h3>
+    <pre class="cmd">cd C:\fiap-aluno\projeto\api
+dotnet run --project src\Contribuintes.Api</pre>
+    <p>Deixem o terminal aberto · teste: <code>http://localhost:5001</code></p>
+
+    <h3><span class="step-num">D</span> API Benefícios :5002 (outro PowerShell)</h3>
+    <pre class="cmd">cd C:\fiap-aluno\projeto\api
+dotnet run --project src\Beneficios.Api</pre>
+    <p>Teste: <code>http://localhost:5002</code></p>
+
+    <h3><span class="step-num">E</span> Portal React</h3>
+    <pre class="cmd">cd C:\fiap-aluno\projeto\app
+copy .env.example .env
+npm install
+npm run dev</pre>
+    <p>Portal: <code>http://localhost:5173</code> · Login: <code>admin</code> / <code>123</code></p>
+
+    <div class="caso ok">
+      <div class="tag">CT-AMB — ambiente ok?</div>
+      <ul class="check">
+        <li>Docker running</li>
+        <li>:5001 responde</li>
+        <li>:5002 responde</li>
+        <li>:5173 abre o portal</li>
+        <li>Login admin/123 → lista de contribuintes</li>
+      </ul>
+    </div>
+
+    <!-- ===== M13 ===== -->
+    <h2 id="parte3">Parte 3 — Práticas <span class="mod">M13</span></h2>
+    <p>Arquivos: VS Code → <code>projeto\app</code> → busquem <code>M13</code> (Ctrl+Shift+F).</p>
+
+    <h3>P1 — Formulário controlado + validação</h3>
+    <p>Arquivo: <code>ContribuinteForm.jsx</code></p>
+    <div class="caso fail">
+      <div class="tag">CT-01 — NUIT inválido</div>
+      <p><strong>Façam:</strong> abrir formulário de novo contribuinte · digitar NUIT com menos de 9 dígitos (ex.: <code>123</code>) · tentar salvar.</p>
+      <p><strong>Esperado:</strong> mensagem <em>“NUIT deve ter exatamente 9 dígitos”</em> · <strong>não</strong> grava.</p>
+    </div>
+    <div class="caso fail">
+      <div class="tag">CT-02 — Nome curto</div>
+      <p><strong>Façam:</strong> nome com 1–2 letras · NUIT de 9 dígitos · salvar.</p>
+      <p><strong>Esperado:</strong> erro de nome (mínimo 3 caracteres).</p>
+    </div>
+    <div class="caso fail">
+      <div class="tag">CT-03 — Salário inválido</div>
+      <p><strong>Façam:</strong> salário <code>0</code> ou negativo · salvar.</p>
+      <p><strong>Esperado:</strong> mensagem de salário maior que zero.</p>
+    </div>
+    <div class="caso ok">
+      <div class="tag">CT-04 — Cadastro válido</div>
+      <p><strong>Façam:</strong> NUIT 9 dígitos (ex.: <code>987654321</code>) · nome completo · data · salário &gt; 0 · salvar.</p>
+      <p><strong>Esperado:</strong> sucesso · aparece na lista · contribuição ≈ 3% do salário (MZN).</p>
+    </div>
+
+    <h3>P2 — React Router + parâmetro <code>:id</code></h3>
+    <p>Arquivos: <code>App.jsx</code> · <code>ContribuinteDetail.jsx</code></p>
+    <div class="caso ok">
+      <div class="tag">CT-05 — Navegação lista → detalhe</div>
+      <p><strong>Façam:</strong> na lista, abrir Detalhes de um contribuinte.</p>
+      <p><strong>Esperado:</strong> URL muda para algo como <code>/contribuintes/…id…</code> · dados do contribuinte na tela.</p>
+    </div>
+    <div class="caso ok">
+      <div class="tag">CT-06 — Voltar pela rota</div>
+      <p><strong>Façam:</strong> voltar para a lista (link/menu) · URL volta para <code>/contribuintes</code>.</p>
+      <p><strong>Esperado:</strong> lista de novo · página <strong>não</strong> recarregou o site inteiro (SPA).</p>
+    </div>
+
+    <h3>P3 — Estados da interface</h3>
+    <p>Arquivos: <code>ContribuintesList.jsx</code> · <code>PedidosList.jsx</code> · <code>LoadingSpinner</code> · <code>ErrorMessage</code></p>
+    <div class="caso ok">
+      <div class="tag">CT-07 — Sucesso (lista com dados)</div>
+      <p><strong>Façam:</strong> abrir Contribuintes com a API no ar.</p>
+      <p><strong>Esperado:</strong> lista com seed (ou o que vocês cadastraram).</p>
+    </div>
+    <div class="caso ok">
+      <div class="tag">CT-08 — Vazio (não é erro)</div>
+      <p><strong>Façam:</strong> abrir Pedidos (pode estar vazio na 1ª vez).</p>
+      <p><strong>Esperado:</strong> estado vazio / mensagem amigável · status HTTP <strong>200</strong> (lista <code>[]</code>).</p>
+    </div>
+    <div class="caso fail">
+      <div class="tag">CT-09 — Erro (API desligada)</div>
+      <p><strong>Façam:</strong> parar a API Contribuintes (Ctrl+C no terminal :5001) · F5 na lista.</p>
+      <p><strong>Esperado:</strong> estado de <strong>erro</strong> na UI (não tela branca). Depois subam a API de novo.</p>
+    </div>
+
+    <h3>P4 — Integração HTTP + Network</h3>
+    <p>Arquivos: <code>api.js</code> · <code>main.jsx</code> (Strict Mode)</p>
+    <div class="caso ok">
+      <div class="tag">CT-10 — Ver a chamada no Network</div>
+      <p><strong>Façam:</strong> F12 → Network → filtro Fetch/XHR → abrir Pedidos.</p>
+      <p><strong>Esperado:</strong> request para a API de benefícios (:5002) · status 200 (mesmo se lista vazia).</p>
+    </div>
+    <div class="caso ok">
+      <div class="tag">CT-11 — Strict Mode (2× em dev)</div>
+      <p><strong>Façam:</strong> contar quantas vezes a mesma URL aparece ao abrir a tela.</p>
+      <p><strong>Esperado:</strong> em desenvolvimento pode aparecer <strong>2 vezes</strong> · <strong>não é bug</strong> · em produção seria 1×.</p>
+    </div>
+
+    <!-- ===== M14 ===== -->
+    <h2 id="parte4">Parte 4 — Práticas <span class="mod">M14</span></h2>
+    <p>Arquivos: busquem <code>M14</code> · <code>Login.jsx</code> · <code>AuthContext.jsx</code> · <code>ProtectedRoute.jsx</code></p>
+
+    <h3>P5 — Autenticação JWT</h3>
+    <div class="caso fail">
+      <div class="tag">CT-12 — Login inválido</div>
+      <p><strong>Façam:</strong> usuário/senha errados · entrar.</p>
+      <p><strong>Esperado:</strong> mensagem de erro · sem token · não entra no portal.</p>
+    </div>
+    <div class="caso ok">
+      <div class="tag">CT-13 — Login válido + token</div>
+      <p><strong>Façam:</strong> <code>admin</code> / <code>123</code> · DevTools → Application → Local Storage → achar <code>inss_token</code>.</p>
+      <p><strong>Esperado:</strong> token JWT gravado · entra nas telas internas.</p>
+    </div>
+    <div class="caso ok">
+      <div class="tag">CT-14 — Bearer no Network</div>
+      <p><strong>Façam:</strong> com login feito · F12 Network → abrir uma lista · inspecionar request.</p>
+      <p><strong>Esperado:</strong> header <code>Authorization: Bearer …</code></p>
+    </div>
+
+    <h3>P6 — Rotas protegidas + sessão</h3>
+    <div class="caso ok">
+      <div class="tag">CT-15 — Sem token → login</div>
+      <p><strong>Façam:</strong> apagar <code>inss_token</code> no Local Storage · F5 · tentar abrir <code>/contribuintes</code>.</p>
+      <p><strong>Esperado:</strong> redireciona para <code>/login</code>.</p>
+    </div>
+    <div class="caso ok">
+      <div class="tag">CT-16 — Logout / 401</div>
+      <p><strong>Façam:</strong> (se houver botão sair) logout · ou corromper o token e chamar a API.</p>
+      <p><strong>Esperado:</strong> sessão limpa · volta ao login.</p>
+    </div>
+
+    <h3>P7 — Qualidade de UI</h3>
+    <div class="caso ok">
+      <div class="tag">CT-17 — Responsivo</div>
+      <p><strong>Façam:</strong> estreitar a janela do browser (mobile).</p>
+      <p><strong>Esperado:</strong> layout usável · sem “quebrar” o formulário.</p>
+    </div>
+    <div class="caso ok">
+      <div class="tag">CT-18 — Teclado / foco</div>
+      <p><strong>Façam:</strong> no formulário, navegar só com <strong>Tab</strong>.</p>
+      <p><strong>Esperado:</strong> foco visível nos campos · ordem faz sentido.</p>
+    </div>
+
+    <h3>P8 — 2º microsserviço (pedidos / Benefícios)</h3>
+    <p>Arquivos: <code>PedidoForm.jsx</code> · <code>PedidosList.jsx</code> · API :5002</p>
+    <div class="caso ok">
+      <div class="tag">CT-19 — Criar pedido</div>
+      <p><strong>Façam:</strong> no detalhe de um contribuinte → novo pedido · tipo (ex.: reforma/pensão) · valor em MZN (pode usar vírgula) · salvar.</p>
+      <p><strong>Esperado:</strong> pedido criado · aparece na lista de pedidos · Network mostra POST na API <strong>:5002</strong> (não na :5001).</p>
+    </div>
+    <div class="caso fail">
+      <div class="tag">CT-20 — Pedido com API Benefícios off</div>
+      <p><strong>Façam:</strong> desligar :5002 · tentar listar/criar pedido.</p>
+      <p><strong>Esperado:</strong> erro na UI de pedidos · contribuintes (:5001) ainda pode funcionar (microsserviços independentes).</p>
+    </div>
+
+    <!-- ===== DOMAIN ===== -->
+    <h2 id="parte5">Parte 5 — Domain no Visual Studio</h2>
+    <p>Abram <code>projeto\api\InssModernizacao.slnx</code></p>
+    <div class="caso ok">
+      <div class="tag">CT-21 — Mesma regra no servidor</div>
+      <p><strong>Façam:</strong> abrir <code>Nuit.cs</code> e <code>Contribuinte.cs</code> (Domain).</p>
+      <p><strong>Esperado:</strong> ver NUIT = 9 dígitos · contribuição 3% · frase: <em>a regra mora no Domain; a API só recebe e responde</em>.</p>
+    </div>
+    <div class="caso ok">
+      <div class="tag">CT-22 — Dois bounded contexts</div>
+      <p><strong>Façam:</strong> olhar pastas <code>Contribuintes.*</code> e <code>Beneficios.*</code>.</p>
+      <p><strong>Esperado:</strong> dois projetos · dois bancos · APIs <strong>não</strong> se chamam entre si · só o React fala com as duas.</p>
+    </div>
+
+    <!-- ===== CHECKLIST ===== -->
+    <h2 id="parte6">Parte 6 — Casos de teste (marcar)</h2>
+    <p>Marquem mentalmente / no caderno o que já validaram:</p>
+    <table>
+      <tr><th>ID</th><th>Caso</th><th>OK?</th></tr>
+      <tr><td>CT-AMB</td><td>Ambiente :5001 :5002 :5173 + login</td><td>☐</td></tr>
+      <tr><td>CT-01</td><td>NUIT inválido → erro</td><td>☐</td></tr>
+      <tr><td>CT-02</td><td>Nome curto → erro</td><td>☐</td></tr>
+      <tr><td>CT-03</td><td>Salário ≤ 0 → erro</td><td>☐</td></tr>
+      <tr><td>CT-04</td><td>Cadastro válido + 3%</td><td>☐</td></tr>
+      <tr><td>CT-05</td><td>URL com :id</td><td>☐</td></tr>
+      <tr><td>CT-06</td><td>SPA / voltar à lista</td><td>☐</td></tr>
+      <tr><td>CT-07</td><td>Lista sucesso</td><td>☐</td></tr>
+      <tr><td>CT-08</td><td>Lista vazia ≠ erro</td><td>☐</td></tr>
+      <tr><td>CT-09</td><td>API off → erro UI</td><td>☐</td></tr>
+      <tr><td>CT-10</td><td>Network Fetch/XHR</td><td>☐</td></tr>
+      <tr><td>CT-11</td><td>Strict Mode 2×</td><td>☐</td></tr>
+      <tr><td>CT-12</td><td>Login inválido</td><td>☐</td></tr>
+      <tr><td>CT-13</td><td>Token inss_token</td><td>☐</td></tr>
+      <tr><td>CT-14</td><td>Header Bearer</td><td>☐</td></tr>
+      <tr><td>CT-15</td><td>Sem token → /login</td><td>☐</td></tr>
+      <tr><td>CT-16</td><td>Sessão limpa</td><td>☐</td></tr>
+      <tr><td>CT-17</td><td>Responsivo</td><td>☐</td></tr>
+      <tr><td>CT-18</td><td>Tab / foco</td><td>☐</td></tr>
+      <tr><td>CT-19</td><td>Criar pedido :5002</td><td>☐</td></tr>
+      <tr><td>CT-20</td><td>Benefícios off isolado</td><td>☐</td></tr>
+      <tr><td>CT-21</td><td>Domain Nuit/Contribuinte</td><td>☐</td></tr>
+      <tr><td>CT-22</td><td>Dois microsserviços / 2 bancos</td><td>☐</td></tr>
+    </table>
+
+    <!-- ===== DIA 2 ===== -->
+    <h2 id="parte7">Parte 7 — Dia 2 <span class="mod">M15</span> <span class="mod">M16</span></h2>
+    <p>(Quando chegarmos neste bloco)</p>
+
+    <h3>Testes automatizados</h3>
+    <div class="caso ok">
+      <div class="tag">CT-23 — dotnet test</div>
+      <pre class="cmd">cd C:\fiap-aluno\projeto\api
+dotnet test</pre>
+      <p><strong>Esperado:</strong> testes unitários/integração passam (verde) · ver Arrange/Act/Assert nos arquivos <code>*Tests.cs</code>.</p>
+    </div>
+    <div class="caso ok">
+      <div class="tag">CT-24 — E2E (se o professor pedir)</div>
+      <p>Com APIs + portal no ar, na pasta app: testes Playwright (<code>e2e</code>).</p>
+      <p><strong>Esperado:</strong> fluxo login + lista automatizado.</p>
+    </div>
+
+    <h3>CI / quality gate</h3>
+    <div class="caso ok">
+      <div class="tag">CT-25 — GitHub Actions</div>
+      <p><strong>Façam:</strong> abrir o repositório no GitHub → aba Actions (quando eu mostrar o link).</p>
+      <p><strong>Esperado:</strong> pipeline build/test · verde = quality gate ok · vermelho = corrigir antes de avançar.</p>
+    </div>
+
+    <!-- ===== PROBLEMAS ===== -->
+    <h2 id="problemas">Problemas comuns</h2>
+    <table>
+      <tr><th>Sintoma</th><th>O que tentar</th></tr>
+      <tr><td>Portal sem dados</td><td>APIs :5001 e :5002 no ar?</td></tr>
+      <tr><td>docker compose falha</td><td>Docker Desktop aberto?</td></tr>
+      <tr><td>npm install erro</td><td>Internet na 1ª vez</td></tr>
+      <tr><td>Porta em uso</td><td>Fechar o que usa 5001 / 5002 / 5173</td></tr>
+      <tr><td>Pedido dá 400</td><td>Valor MZN válido · tipo do pedido · API :5002 no ar</td></tr>
+      <tr><td>401 / volta ao login</td><td>Token apagado ou inválido — façam login de novo</td></tr>
+    </table>
+
+    <div class="box gold">
+      <strong>Demo na nuvem (quando eu liberar)</strong><br/>
+      <code>https://fiap-kappa.vercel.app</code> · <code>admin</code> / <code>123</code>
+    </div>
+
+    <footer>
+      Roteiro do aluno · FIAP × INSS Moçambique ·
+      <code>docs/roteiro-pratico-alunos.html</code>
+    </footer>
+  </div>
+</body>
+</html>

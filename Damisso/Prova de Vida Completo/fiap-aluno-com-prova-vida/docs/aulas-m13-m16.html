@@ -1,0 +1,879 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>M13–M16 — Conceitos | FIAP × INSS Moçambique</title>
+  <style>
+    :root {
+      --green: #006233;
+      --green-dark: #004d28;
+      --green-soft: #e6f4ec;
+      --gold: #c9a227;
+      --gold-soft: #fff8e1;
+      --red: #ce1126;
+      --red-soft: #fde8ea;
+      --bg: #fff;
+      --surface: #f4f6f5;
+      --border: #94a3b8;
+      --text: #000;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: 'Segoe UI', system-ui, sans-serif;
+      background: var(--bg); color: var(--text);
+      overflow: hidden; height: 100vh; font-weight: 600;
+    }
+    .flag-bar {
+      position: fixed; top: 0; left: 0; right: 0; height: 10px; z-index: 200;
+      background: linear-gradient(90deg,
+        #006233 0 25%, #111 25% 50%, #fcd116 50% 75%, #ce1126 75% 100%);
+    }
+    .progress {
+      position: fixed; top: 10px; left: 0; height: 5px;
+      background: var(--red); transition: width .3s; z-index: 100;
+    }
+    .slide {
+      display: none; height: 100vh;
+      padding: 2rem 3rem 5.5rem;
+      flex-direction: column; animation: fade .25s ease;
+    }
+    .slide.active { display: flex; }
+    .slide.center { justify-content: center; text-align: center; }
+    @keyframes fade { from { opacity: 0; } to { opacity: 1; } }
+
+    h1 { font-size: clamp(2.3rem, 4.2vw, 3.3rem); font-weight: 900; line-height: 1.15; }
+    h2 {
+      font-size: clamp(1.85rem, 3.2vw, 2.5rem); color: var(--green); font-weight: 900;
+      border-bottom: 5px solid var(--gold); padding-bottom: .4rem; margin-bottom: .85rem; flex-shrink: 0;
+    }
+    h3 { font-size: clamp(1.25rem, 1.9vw, 1.55rem); color: var(--green-dark); font-weight: 800; margin: 0 0 .4rem; }
+    p, li { font-size: clamp(1.3rem, 1.9vw, 1.55rem); line-height: 1.45; font-weight: 700; }
+    ul { margin-left: 1.5rem; margin-top: .35rem; }
+    li { margin-bottom: .45rem; }
+    strong { font-weight: 900; }
+
+    .mod {
+      display: inline-block; background: var(--red); color: #fff;
+      padding: .25rem .65rem; border-radius: 6px; font-weight: 900; margin-right: .35rem;
+    }
+    .when { font-size: 1.2rem; font-weight: 700; color: #333; margin: .6rem 0; }
+    .lead { font-size: clamp(1.25rem, 1.9vw, 1.55rem); font-weight: 800; color: #222; margin-bottom: .75rem; }
+    .badge {
+      display: inline-block; background: var(--green); color: #fff;
+      padding: .35rem .8rem; border-radius: 6px; font-weight: 800; margin: .2rem; font-size: 1.05rem;
+    }
+    .badge.gold { background: var(--gold); color: #111; }
+
+    .body { flex: 1; display: flex; flex-direction: column; gap: .75rem; min-height: 0; }
+    .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 1.15rem; }
+    .grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: .9rem; }
+    .grid-4 { display: grid; grid-template-columns: repeat(4, 1fr); gap: .75rem; }
+
+    .card {
+      background: var(--surface); border: 2px solid var(--border);
+      border-left: 8px solid var(--green); border-radius: 12px; padding: 1.15rem 1.3rem;
+    }
+    .card.gold { border-left-color: var(--gold); background: var(--gold-soft); }
+    .card.red { border-left-color: var(--red); background: var(--red-soft); }
+    .card li, .card p { font-size: clamp(1.2rem, 1.7vw, 1.4rem); }
+
+    .note {
+      background: var(--gold-soft); border: 3px solid var(--gold);
+      border-radius: 12px; padding: 1rem 1.25rem; font-weight: 800;
+      font-size: clamp(1.2rem, 1.7vw, 1.45rem); line-height: 1.4; color: #111;
+    }
+    .note strong { color: #5c4500; }
+
+    .code {
+      background: #fffef8; border: 3px solid var(--gold); border-radius: 12px;
+      padding: 1rem 1.25rem; font-family: Consolas, monospace;
+      font-size: clamp(1.3rem, 2vw, 1.65rem); line-height: 1.5; font-weight: 700;
+      white-space: pre-wrap; word-break: break-word; overflow: visible;
+    }
+    .c { color: #555; }
+    .k { color: #9f1239; font-weight: 900; }
+
+    .flow {
+      display: flex; flex-wrap: wrap; align-items: center; justify-content: center;
+      gap: .55rem; font-weight: 900; font-size: clamp(1.2rem, 1.8vw, 1.5rem); margin: .5rem 0;
+    }
+    .flow b {
+      background: var(--green-soft); border: 3px solid var(--green);
+      padding: .65rem .9rem; border-radius: 8px; font-weight: 900;
+    }
+    .flow i { font-style: normal; color: var(--red); font-size: 1.6rem; }
+
+    .pyr { display: flex; flex-direction: column; align-items: center; gap: .45rem; margin: .5rem 0; }
+    .pyr div {
+      color: #fff; font-weight: 900; text-align: center; padding: .7rem;
+      border-radius: 8px; font-size: clamp(1.05rem, 1.4vw, 1.25rem);
+    }
+    .pyr .e2e { width: 52%; background: var(--red); }
+    .pyr .int { width: 72%; background: var(--gold); color: #111; }
+    .pyr .unit { width: 92%; background: var(--green); }
+
+    .nav {
+      position: fixed; bottom: 0; left: 0; right: 0; background: #fff;
+      padding: .75rem 2rem; display: flex; justify-content: space-between; align-items: center;
+      border-top: 4px solid var(--green); z-index: 100;
+    }
+    .nav button {
+      background: var(--green); color: #fff; border: none; padding: .65rem 1.4rem;
+      border-radius: 8px; font-size: 1.15rem; font-weight: 800; cursor: pointer; min-width: 140px;
+    }
+    .nav button:disabled { opacity: .35; cursor: not-allowed; }
+    #counter { font-size: 1.2rem; font-weight: 900; }
+
+    @media (max-width: 900px) {
+      .slide { padding: 1.4rem 1rem 5rem; }
+      .grid-2, .grid-3, .grid-4 { grid-template-columns: 1fr; }
+    }
+
+    .diag {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: stretch;
+      justify-content: center;
+      gap: 0.4rem 0.3rem;
+      margin: 0.6rem auto;
+      max-width: 56rem;
+    }
+    .diag-box {
+      background: #fff;
+      border: 3px solid var(--green);
+      border-radius: 10px;
+      padding: 0.7rem 0.9rem;
+      text-align: center;
+      font-weight: 800;
+      font-size: clamp(1.15rem, 1.7vw, 1.4rem);
+      line-height: 1.3;
+      color: #000;
+    }
+    .diag-box small {
+      display: block;
+      font-weight: 700;
+      font-size: clamp(0.95rem, 1.3vw, 1.15rem);
+      color: #222;
+      margin-top: 0.2rem;
+    }
+    .diag-box.portal { background: #e6f4ec; }
+    .diag-box.api { background: #fff8e1; border-color: var(--gold); }
+    .diag-box.db {
+      background: #eef1f0;
+      border: 3px solid #333;
+      border-radius: 14px;
+      font-size: clamp(1.1rem, 1.6vw, 1.35rem);
+    }
+    .diag-box.domain { background: #e6f4ec; border-width: 4px; }
+    .diag-box.ok { background: #e6f4ec; }
+    .diag-arrow {
+      align-self: center;
+      color: var(--green);
+      font-weight: 900;
+      font-size: clamp(1.5rem, 2.2vw, 1.9rem);
+      line-height: 1;
+    }
+    .diag-steps {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(6.5rem, 1fr));
+      gap: 0.45rem;
+      margin: 0.55rem auto;
+      max-width: 52rem;
+      align-items: center;
+    }
+    .diag-steps .diag-box { font-size: clamp(1.05rem, 1.5vw, 1.25rem); padding: 0.65rem 0.5rem; }
+    .seq {
+      margin: 0.55rem auto;
+      max-width: 42rem;
+      border: 3px solid var(--border);
+      border-radius: 10px;
+      overflow: hidden;
+      font-size: clamp(1.15rem, 1.7vw, 1.4rem);
+    }
+    .seq-row {
+      display: grid;
+      grid-template-columns: 8.5rem 1fr;
+      border-bottom: 1px solid var(--border);
+    }
+    .seq-row:last-child { border-bottom: none; }
+    .seq-who {
+      background: #e6f4ec;
+      font-weight: 900;
+      padding: 0.55rem 0.75rem;
+      border-right: 1px solid var(--border);
+      color: #000;
+    }
+    .seq-what { padding: 0.55rem 0.85rem; font-weight: 700; color: #000; }
+  </style>
+</head>
+<body>
+  <div class="flag-bar"></div>
+  <div class="progress" id="progress"></div>
+
+  <!-- 1 -->
+  <section class="slide active center">
+    <div style="font-size:3rem">🇲🇿</div>
+    <h1 style="color:var(--green)">M13 → M16</h1>
+    <p class="lead" style="margin-top:.5rem">O que é cada conceito e para que serve</p>
+    <p><span class="badge">G1 Full-Stack</span><span class="badge gold">INSS Moçambique</span></p>
+    <p class="when">25 e 26 de agosto de 2026</p>
+    <p style="max-width:34rem;margin:1.25rem auto 0;font-size:1.2rem">
+      Nestes dois dias vocês vão <strong>entender</strong> os conceitos e depois
+      <strong>implementar</strong> no projeto do portal INSS.
+    </p>
+  </section>
+
+  <!-- 2 -->
+  <section class="slide">
+    <h2>Os quatro módulos</h2>
+    <div class="body">
+      <div class="grid-2">
+        <div class="card">
+          <h3><span class="mod">M13</span> 25/08 manhã</h3>
+          <p>Formulários, rotas e integração com API</p>
+        </div>
+        <div class="card gold">
+          <h3><span class="mod">M14</span> 25/08 tarde</h3>
+          <p>Autenticação, estado global e qualidade de UI</p>
+        </div>
+        <div class="card">
+          <h3><span class="mod">M15</span> 26/08 manhã</h3>
+          <p>Testes unitários, integração e e2e</p>
+        </div>
+        <div class="card gold">
+          <h3><span class="mod">M16</span> 26/08 tarde</h3>
+          <p>Pipeline de qualidade e entrega (CI/CD)</p>
+        </div>
+      </div>
+      <div class="note">
+        <strong>Como vamos trabalhar:</strong> eu leio e explico o conceito nestes slides;
+        em seguida abrimos o código do portal INSS e praticamos juntos (React + .NET + Postgres).
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== M13 ===== -->
+  <section class="slide center">
+    <span class="mod" style="font-size:1.4rem">M13</span>
+    <h1 style="color:var(--green);margin-top:.7rem">Formulários, rotas<br/>e integração com API</h1>
+    <p class="when">25 de agosto · 09:00 às 13:00</p>
+    <p class="lead" style="max-width:36rem;margin:1rem auto">
+      Como a tela captura dados, navega entre páginas e conversa com o backend.
+    </p>
+  </section>
+
+  <section class="slide">
+    <h2><span class="mod">M13</span> Formulário controlado</h2>
+    <div class="body">
+      <p class="lead">O que é?</p>
+      <p>No React, o valor do campo fica no <strong>estado</strong> do componente (<code>useState</code>),
+      não “solto” só no HTML. Cada tecla atualiza o estado; a tela mostra o que o estado manda.</p>
+      <div class="grid-2">
+        <div class="card">
+          <h3>Para que serve</h3>
+          <ul>
+            <li>Controlar o que o usuário digitou</li>
+            <li>Validar antes de enviar</li>
+            <li>Mostrar mensagens de erro por campo</li>
+            <li>Habilitar/desabilitar o botão</li>
+          </ul>
+        </div>
+        <div class="card gold">
+          <h3>No portal INSS</h3>
+          <ul>
+            <li>Cadastro de contribuinte</li>
+            <li>NUIT com 9 dígitos</li>
+            <li>Salário em Metical (MZN)</li>
+            <li>Pedido de benefício</li>
+          </ul>
+        </div>
+      </div>
+      <div class="code"><span class="c">// Ideia</span>
+value={'{'}form.nuit{'}'}
+onChange={'{'}e => setForm(...e.target.value){'}'}</div>
+    </div>
+  </section>
+
+  <section class="slide">
+    <h2><span class="mod">M13</span> Validação e mensagens</h2>
+    <div class="body">
+      <p class="lead">Validar = garantir que o dado faz sentido antes (e depois) de gravar.</p>
+      <div class="grid-2">
+        <div class="card">
+          <h3>No frontend (React)</h3>
+          <ul>
+            <li>Resposta rápida para o usuário</li>
+            <li>Ex.: NUIT sem 9 dígitos → mensagem vermelha</li>
+            <li>Evita chamar a API à toa</li>
+          </ul>
+        </div>
+        <div class="card gold">
+          <h3>No backend (.NET / Domain)</h3>
+          <ul>
+            <li>A regra de negócio “de verdade”</li>
+            <li>Value Object <code>Nuit</code></li>
+            <li>API responde 400 se inválido</li>
+          </ul>
+        </div>
+      </div>
+      <div class="note">
+        <strong>Importante:</strong> validação no front melhora a experiência.
+        Validação no servidor protege o sistema. Vocês vão implementar as duas.
+      </div>
+    </div>
+  </section>
+
+  <section class="slide">
+    <h2><span class="mod">M13</span> React Router</h2>
+    <div class="body">
+      <p class="lead">O que é? Biblioteca que troca de página <strong>sem recarregar</strong> o site inteiro (SPA).</p>
+      <div class="flow">
+        <b>/login</b><i>→</i><b>/contribuintes</b><i>→</i><b>/contribuintes/:id</b><i>→</i><b>/pedidos</b>
+      </div>
+      <div class="grid-2">
+        <div class="card">
+          <h3>Conceitos</h3>
+          <ul>
+            <li><strong>Rota</strong> — URL ligada a uma tela</li>
+            <li><strong>Parâmetro</strong> — <code>:id</code> do contribuinte</li>
+            <li><strong>Navegação</strong> — Link / navigate</li>
+            <li><strong>Layout</strong> — menu fixo + conteúdo</li>
+          </ul>
+        </div>
+        <div class="card gold">
+          <h3>Para que serve</h3>
+          <ul>
+            <li>Organizar o portal em telas</li>
+            <li>Compartilhar link direto</li>
+            <li>Voltar/avançar do browser</li>
+            <li>Experiência de sistema (não site estático)</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="slide">
+    <h2><span class="mod">M13</span> Estados da interface</h2>
+    <div class="body">
+      <p class="lead">Toda tela que busca dados precisa destes quatro estados:</p>
+      <div class="grid-4">
+        <div class="card">
+          <h3>Loading</h3>
+          <p>Aguarde… a API ainda não respondeu.</p>
+        </div>
+        <div class="card red">
+          <h3>Erro</h3>
+          <p>Falhou (rede, 500…). Mostre mensagem e opção de tentar de novo.</p>
+        </div>
+        <div class="card gold">
+          <h3>Vazio</h3>
+          <p>Deu certo, mas não há registros. Não é erro.</p>
+        </div>
+        <div class="card">
+          <h3>Sucesso</h3>
+          <p>Dados na tela, ou “salvo com sucesso”.</p>
+        </div>
+      </div>
+      <div class="note">
+        <strong>Na implementação:</strong> vocês vão tratar esses estados nas listas de contribuintes e pedidos.
+      </div>
+    </div>
+  </section>
+
+  <section class="slide">
+    <h2><span class="mod">M13</span> Integração com API</h2>
+    <div class="body">
+      <p class="lead">O frontend não acessa o banco. Ele fala <strong>HTTP</strong> com as APIs.</p>
+      <div class="diag-steps" aria-hidden="true">
+        <div class="diag-box portal">Portal React</div>
+        <div class="diag-arrow">→</div>
+        <div class="diag-box api">api.js / fetch</div>
+        <div class="diag-arrow">→</div>
+        <div class="diag-box api">API .NET</div>
+        <div class="diag-arrow">→</div>
+        <div class="diag-box db">Postgres</div>
+      </div>
+      <div class="grid-2">
+        <div class="card">
+          <h3>O que vocês usam</h3>
+          <ul>
+            <li><strong>GET</strong> — listar / buscar</li>
+            <li><strong>POST</strong> — criar</li>
+            <li><strong>PATCH</strong> — atualizar status</li>
+            <li>JSON no corpo da requisição</li>
+          </ul>
+        </div>
+        <div class="card gold">
+          <h3>No projeto INSS</h3>
+          <ul>
+            <li>1 React → 2 APIs (:5001 e :5002)</li>
+            <li>2 bancos — um por microsserviço</li>
+            <li>APIs <strong>não</strong> se chamam entre si</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="slide">
+    <h2><span class="mod">M13</span> useEffect e a aba Network</h2>
+    <div class="body">
+      <p class="lead">Ao abrir uma lista (contribuintes ou pedidos), o React busca dados na API com <strong>useEffect</strong>.</p>
+      <div class="grid-2">
+        <div class="card">
+          <h3>O que acontece</h3>
+          <ul>
+            <li>A tela monta → <code>useEffect</code> roda → <code>fetch</code> na API</li>
+            <li>DevTools → <strong>Network</strong> mostra a requisição</li>
+            <li><strong>200</strong> = sucesso (mesmo com lista vazia <code>[]</code>)</li>
+          </ul>
+        </div>
+        <div class="card gold">
+          <h3>Por que aparece 2× em dev?</h3>
+          <p>O projeto usa <strong>React Strict Mode</strong> (<code>main.jsx</code>).</p>
+          <ul>
+            <li>Em <strong>desenvolvimento</strong>, o React monta o componente duas vezes de propósito</li>
+            <li>Por isso <code>/api/pedidos</code> pode aparecer <strong>duas vezes</strong> no Network</li>
+            <li><strong>Não é bug</strong> — em produção (<code>npm run build</code>) chama <strong>1 vez só</strong></li>
+          </ul>
+        </div>
+      </div>
+      <div class="note">
+        <strong>Pedidos vazios?</strong> Normal na primeira vez: o seed cria contribuintes, não pedidos.
+        Use <strong>+ Novo Pedido</strong> para testar o microsserviço de Benefícios (:5002).
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== M14 ===== -->
+  <section class="slide center">
+    <span class="mod" style="font-size:1.4rem">M14</span>
+    <h1 style="color:var(--green);margin-top:.7rem">Autenticação, estado global<br/>e qualidade de UI</h1>
+    <p class="when">25 de agosto · 14:00 às 18:00</p>
+    <p class="lead" style="max-width:36rem;margin:1rem auto">
+      Quem está logado, como o token funciona, e como a interface fica usável.
+    </p>
+  </section>
+
+  <section class="slide">
+    <h2><span class="mod">M14</span> Autenticação</h2>
+    <div class="body">
+      <p class="lead">Autenticação = provar <strong>quem</strong> você é. No portal usamos <strong>JWT</strong>.</p>
+      <div class="seq" aria-hidden="true">
+        <div class="seq-row"><div class="seq-who">1. Usuário</div><div class="seq-what">admin / 123 no React</div></div>
+        <div class="seq-row"><div class="seq-who">2. React</div><div class="seq-what">POST /api/auth/login → API Contribuintes</div></div>
+        <div class="seq-row"><div class="seq-who">3. API</div><div class="seq-what">devolve token JWT</div></div>
+        <div class="seq-row"><div class="seq-who">4. React</div><div class="seq-what">guarda <code>inss_token</code> no localStorage</div></div>
+        <div class="seq-row"><div class="seq-who">5. Depois</div><div class="seq-what">GET /api/… com <code>Authorization: Bearer …</code> → 200 ou 401</div></div>
+      </div>
+      <div class="note">
+        Login de teste: <code>admin</code> / <code>123</code>.
+        Token no <code>localStorage</code> · header <code>Authorization: Bearer …</code>
+      </div>
+    </div>
+  </section>
+
+  <section class="slide">
+    <h2><span class="mod">M14</span> Context API (estado global)</h2>
+    <div class="body">
+      <p class="lead">Estado global = informação compartilhada por várias telas (usuário logado, token).</p>
+      <div class="grid-2">
+        <div class="card">
+          <h3>O que é Context API</h3>
+          <ul>
+            <li>Recurso nativo do React</li>
+            <li>Evita passar props em toda a árvore</li>
+            <li>No projeto: <code>AuthContext</code></li>
+            <li>Qualquer tela usa <code>useAuth()</code></li>
+          </ul>
+        </div>
+        <div class="card gold">
+          <h3>O que guardamos</h3>
+          <ul>
+            <li>Dados do usuário (nome)</li>
+            <li>Se está autenticado</li>
+            <li>Funções login / logout</li>
+            <li>Token no <code>localStorage</code></li>
+          </ul>
+        </div>
+      </div>
+      <div class="note">
+        <strong>Sessão:</strong> enquanto o token for válido, o usuário continua “dentro” do portal.
+        No logout (ou 401), a sessão é limpa.
+      </div>
+    </div>
+  </section>
+
+  <section class="slide">
+    <h2><span class="mod">M14</span> Rotas protegidas</h2>
+    <div class="body">
+      <p class="lead">Rota protegida = só entra quem está autenticado.</p>
+      <div class="flow">
+        <b>Usuário abre /contribuintes</b><i>→</i><b>Tem token?</b><i>→</i><b>Sim: entra · Não: /login</b>
+      </div>
+      <div class="grid-2">
+        <div class="card">
+          <h3>No React</h3>
+          <ul>
+            <li>Componente <code>ProtectedRoute</code></li>
+            <li>Melhora a experiência</li>
+            <li>Esconde telas internas</li>
+          </ul>
+        </div>
+        <div class="card red">
+          <h3>Na API (.NET)</h3>
+          <ul>
+            <li>Atributo <code>[Authorize]</code></li>
+            <li>Segurança de verdade</li>
+            <li>Sem JWT → 401 Unauthorized</li>
+          </ul>
+        </div>
+      </div>
+      <div class="note">
+        Front e API trabalham juntos: o React redireciona; a API bloqueia acesso indevido.
+        Em 401, o portal limpa a sessão e volta ao login.
+      </div>
+    </div>
+  </section>
+
+  <section class="slide">
+    <h2><span class="mod">M14</span> Qualidade de UI</h2>
+    <div class="body">
+      <div class="grid-2">
+        <div class="card">
+          <h3>Responsividade</h3>
+          <p>A interface se adapta a telas diferentes (notebook, tablet, celular).</p>
+          <ul>
+            <li>Menu e tabelas usáveis</li>
+            <li>CSS com media queries</li>
+          </ul>
+        </div>
+        <div class="card gold">
+          <h3>Acessibilidade (fundamentos)</h3>
+          <p>Mais pessoas conseguem usar o sistema.</p>
+          <ul>
+            <li>Labels nos campos</li>
+            <li>Mensagens de erro claras</li>
+            <li>Foco visível no teclado</li>
+            <li>Bom contraste de cores</li>
+          </ul>
+        </div>
+      </div>
+      <div class="note">
+        No portal INSS isso já aparece no login, formulários e layout — vocês vão evoluir e aplicar nas telas novas.
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== M15 ===== -->
+  <section class="slide center">
+    <span class="mod" style="font-size:1.4rem">M15</span>
+    <h1 style="color:var(--green);margin-top:.7rem">Testes unitários,<br/>integração e e2e</h1>
+    <p class="when">26 de agosto · 09:00 às 13:00</p>
+    <p class="lead" style="max-width:36rem;margin:1rem auto">
+      Como garantir automaticamente que o código continua funcionando.
+    </p>
+  </section>
+
+  <section class="slide">
+    <h2><span class="mod">M15</span> Por que automatizar testes?</h2>
+    <div class="body">
+      <p class="lead">Teste automatizado = programa que verifica outro programa.</p>
+      <div class="grid-2">
+        <div class="card">
+          <h3>Exemplos de regras do INSS</h3>
+          <ul>
+            <li>NUIT tem 9 dígitos</li>
+            <li>Contribuição = 3% do salário</li>
+            <li>Pedido aprovado só se estiver pendente</li>
+          </ul>
+        </div>
+        <div class="card gold">
+          <h3>Benefício</h3>
+          <ul>
+            <li>Detecta regressão cedo</li>
+            <li>Documenta o comportamento</li>
+            <li>Dá segurança para refatorar</li>
+            <li>Alimenta o pipeline (M16)</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="slide">
+    <h2><span class="mod">M15</span> Três níveis de teste</h2>
+    <div class="body">
+      <div class="pyr">
+        <div class="e2e">E2E — fluxo no navegador (Playwright)</div>
+        <div class="int">Integração — API completa (WebApplicationFactory)</div>
+        <div class="unit">Unitário — regras isoladas (xUnit + Moq)</div>
+      </div>
+      <div class="grid-3">
+        <div class="card">
+          <h3>Unitário</h3>
+          <p>Rápido, muitos. Testa Domain/Service sem UI.</p>
+        </div>
+        <div class="card gold">
+          <h3>Integração</h3>
+          <p>HTTP real: login, JWT, endpoints.</p>
+        </div>
+        <div class="card red">
+          <h3>E2E</h3>
+          <p>Poucos. Simula o usuário na tela.</p>
+        </div>
+      </div>
+      <div class="note">
+        <strong>Equilíbrio:</strong> a maioria dos testes é unitária; e2e só nos fluxos críticos (ex.: login).
+      </div>
+    </div>
+  </section>
+
+  <section class="slide">
+    <h2><span class="mod">M15</span> AAA, xUnit, Moq e TDD</h2>
+    <div class="body">
+      <div class="code"><span class="c">// Estrutura de todo teste unitário</span>
+<span class="k">Arrange</span>  — prepara os dados
+<span class="k">Act</span>      — executa o método
+<span class="k">Assert</span>  — verifica o resultado</div>
+      <div class="grid-3">
+        <div class="card">
+          <h3>xUnit</h3>
+          <p>Framework de testes .NET. Você escreve métodos com <code>[Fact]</code> e roda <code>dotnet test</code>.</p>
+        </div>
+        <div class="card gold">
+          <h3>Moq</h3>
+          <p>Cria um “dublê” do repositório. Isola o Service sem precisar do banco.</p>
+        </div>
+        <div class="card red">
+          <h3>TDD</h3>
+          <p>Test-Driven Development: escrever o teste (vermelho) → código (verde) → melhorar.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="slide">
+    <h2><span class="mod">M15</span> WebApplicationFactory e Playwright</h2>
+    <div class="body">
+      <div class="grid-2">
+        <div class="card">
+          <h3>WebApplicationFactory</h3>
+          <p>O que é: ferramenta do ASP.NET que sobe a API em memória para testes.</p>
+          <ul>
+            <li>Chama <code>/api/...</code> de verdade</li>
+            <li>Exercita Controllers + JWT</li>
+            <li>Usa o banco configurado (Postgres)</li>
+          </ul>
+        </div>
+        <div class="card gold">
+          <h3>Playwright</h3>
+          <p>O que é: automação de navegador.</p>
+          <ul>
+            <li>Abre o Chrome/Chromium</li>
+            <li>Digita, clica, espera textos</li>
+            <li>Valida o fluxo ponta a ponta</li>
+          </ul>
+        </div>
+      </div>
+      <div class="note">
+        <strong>Exemplo de escolha:</strong> regra dos 3% → teste unitário no Domain.
+        Fluxo “login e ver lista” → candidato a e2e.
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== M16 ===== -->
+  <section class="slide center">
+    <span class="mod" style="font-size:1.4rem">M16</span>
+    <h1 style="color:var(--green);margin-top:.7rem">Pipeline de qualidade<br/>e entrega</h1>
+    <p class="when">26 de agosto · 14:00 às 18:00</p>
+    <p class="lead" style="max-width:36rem;margin:1rem auto">
+      O que acontece automaticamente a cada commit até chegar num deploy controlado.
+    </p>
+  </section>
+
+  <section class="slide">
+    <h2><span class="mod">M16</span> CI com GitHub Actions</h2>
+    <div class="body">
+      <p class="lead">CI = a cada <code>git push</code>, a nuvem valida o código sozinha.</p>
+      <div class="diag-steps" aria-hidden="true">
+        <div class="diag-box">git push</div>
+        <div class="diag-arrow">→</div>
+        <div class="diag-box api">Actions</div>
+        <div class="diag-arrow">→</div>
+        <div class="diag-box">restore</div>
+        <div class="diag-arrow">→</div>
+        <div class="diag-box">build</div>
+        <div class="diag-arrow">→</div>
+        <div class="diag-box">test</div>
+        <div class="diag-arrow">→</div>
+        <div class="diag-box ok">artefatos</div>
+      </div>
+      <p style="text-align:center;font-size:.9rem;margin:.25rem 0 .5rem;font-weight:700;color:var(--red)">
+        Se o teste falhar → pipeline vermelho (para aí)
+      </p>
+      <div class="grid-2">
+        <div class="card">
+          <h3>No projeto</h3>
+          <ul>
+            <li>Arquivo <code>.github/workflows/ci.yml</code></li>
+            <li>Testa API + build do front</li>
+            <li>Repo: <code>gitfernandolopes/fiap</code></li>
+          </ul>
+        </div>
+        <div class="card gold">
+          <h3>Quality gate</h3>
+          <p>Se o teste falhar, o pipeline para — não “fingimos” que está ok.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="slide">
+    <h2><span class="mod">M16</span> Quality gates e artefatos</h2>
+    <div class="body">
+      <div class="grid-2">
+        <div class="card">
+          <h3>Quality gate</h3>
+          <p>Regra de qualidade: o pipeline <strong>só passa</strong> se build e testes estiverem ok.</p>
+          <ul>
+            <li>Verde → pode seguir</li>
+            <li>Vermelho → corrija antes de avançar</li>
+          </ul>
+        </div>
+        <div class="card gold">
+          <h3>Artefatos</h3>
+          <p>Arquivos gerados e guardados pelo pipeline.</p>
+          <ul>
+            <li>Resultados de teste</li>
+            <li>Build do React (<code>dist</code>)</li>
+            <li>Servem para análise e publicação</li>
+          </ul>
+        </div>
+      </div>
+      <div class="note">
+        Se um teste falha, vocês analisam o log do Actions: qual projeto falhou e qual Assert quebrou.
+      </div>
+    </div>
+  </section>
+
+  <section class="slide">
+    <h2><span class="mod">M16</span> Ambientes e deploy controlado</h2>
+    <div class="body">
+      <p class="lead">Deploy = publicar uma versão do sistema em um ambiente.</p>
+      <div class="diag-steps" aria-hidden="true">
+        <div class="diag-box portal">Dev<small>local + Docker</small></div>
+        <div class="diag-arrow">→</div>
+        <div class="diag-box api">Staging<small>homologação</small></div>
+        <div class="diag-arrow">→</div>
+        <div class="diag-box domain">Produção<small>usuários reais</small></div>
+      </div>
+      <p style="text-align:center;font-size:.9rem;margin:0 0 .55rem;font-weight:700">
+        Só sobe se o <strong>quality gate</strong> (CI) estiver verde.
+      </p>
+      <div class="grid-3">
+        <div class="card">
+          <h3>Dev</h3>
+          <p>Máquina local + Docker Postgres. Onde vocês desenvolvem.</p>
+        </div>
+        <div class="card gold">
+          <h3>Staging</h3>
+          <p>Homologação. Ensaio antes da produção.</p>
+        </div>
+        <div class="card red">
+          <h3>Produção</h3>
+          <p>Usuários reais (ex.: operação do INSS).</p>
+        </div>
+      </div>
+      <div class="note">
+        <strong>Deploy controlado:</strong> só sobe versão que passou nos quality gates.
+        Empacotar = gerar o artefato (API publicada, frontend buildado) de forma repetível.
+      </div>
+    </div>
+  </section>
+
+  <section class="slide">
+    <h2>Do conceito à implementação</h2>
+    <div class="body">
+      <div class="grid-2">
+        <div class="card">
+          <h3>Dia 1 — vocês implementam</h3>
+          <ul>
+            <li>Forms + validação + mensagens</li>
+            <li>Rotas e navegação</li>
+            <li>Estados loading/erro/vazio/sucesso</li>
+            <li>Login JWT + Context + rotas protegidas</li>
+          </ul>
+        </div>
+        <div class="card gold">
+          <h3>Dia 2 — vocês implementam</h3>
+          <ul>
+            <li>Testes AAA com xUnit/Moq</li>
+            <li>Teste de API e fluxo e2e</li>
+            <li>Entender e evoluir o <code>ci.yml</code></li>
+            <li>Ver Migrations + consultas no Postgres</li>
+          </ul>
+        </div>
+      </div>
+      <div class="note">
+        Projeto prático: portal INSS (Contribuintes + Benefícios) · NUIT · Metical (MZN)
+      </div>
+    </div>
+  </section>
+
+  <section class="slide center">
+    <div style="font-size:3rem">🇲🇿</div>
+    <h1 style="color:var(--green)">Próximo passo:<br/>mão no código</h1>
+    <p class="when">Contribuintes fictícios · demo INSS</p>
+    <p style="font-size:1.25rem;margin-top:1rem">FIAP × INSS Moçambique · G1 Full-Stack 2026</p>
+  </section>
+
+  <nav class="nav">
+    <button id="prev" disabled>← Anterior</button>
+    <span id="counter">1</span>
+    <button id="next">Próximo →</button>
+  </nav>
+
+  <script>
+    const slides = [...document.querySelectorAll('.slide')];
+    const prev = document.getElementById('prev');
+    const next = document.getElementById('next');
+    const counter = document.getElementById('counter');
+    const progress = document.getElementById('progress');
+    let i = 0;
+    function go(n) {
+      slides[i].classList.remove('active');
+      i = Math.max(0, Math.min(n, slides.length - 1));
+      slides[i].classList.add('active');
+      counter.textContent = `${i + 1} / ${slides.length}`;
+      progress.style.width = `${((i + 1) / slides.length) * 100}%`;
+      prev.disabled = i === 0;
+      next.disabled = i === slides.length - 1;
+    }
+
+    prev.onclick = () => go(i - 1);
+    next.onclick = () => go(i + 1);
+
+    // Trocador / controle remoto: PageDown/PageUp, setas, espaço, clique na tela
+    document.onkeydown = e => {
+      const nextKeys = ['ArrowRight', 'ArrowDown', 'PageDown', ' ', 'Enter', 'n', 'N'];
+      const prevKeys = ['ArrowLeft', 'ArrowUp', 'PageUp', 'Backspace', 'p', 'P'];
+      if (nextKeys.includes(e.key)) { e.preventDefault(); go(i + 1); }
+      else if (prevKeys.includes(e.key)) { e.preventDefault(); go(i - 1); }
+    };
+
+    document.body.addEventListener('click', (e) => {
+      if (e.target.closest('a, button, input, textarea, select, nav')) return;
+      if (e.target.closest('.slide.active, .body, .content, h1, h2, p')) go(i + 1);
+    });
+
+    window.focus();
+    document.body.tabIndex = -1;
+    document.body.focus();
+    go(0);
+  </script>
+</body>
+</html>

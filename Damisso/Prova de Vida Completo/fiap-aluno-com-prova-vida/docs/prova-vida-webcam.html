@@ -1,0 +1,454 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>INSS — Prova de Vida (Webcam + Liveness)</title>
+  <style>
+    :root { --green: #006233; --blue: #0d47a1; --gold: #c9a227; }
+    * { box-sizing: border-box; }
+    body {
+      font-family: 'Segoe UI', system-ui, sans-serif;
+      max-width: 720px; margin: 0 auto; padding: 1.25rem;
+      background: #f5f7fb; color: #111;
+    }
+    h1 { color: var(--green); font-size: 1.5rem; margin-bottom: .25rem; }
+    .sub { color: #555; margin-bottom: 1rem; font-size: .95rem; }
+    label { font-weight: 700; display: block; margin-top: .75rem; }
+    input {
+      width: 100%; padding: .65rem; font-size: 1.1rem;
+      border: 2px solid #ccc; border-radius: 8px; margin-top: .35rem;
+    }
+    .video-wrap {
+      position: relative; margin: 1rem 0; border-radius: 12px;
+      overflow: hidden; background: #000; aspect-ratio: 3/4; max-height: 480px;
+    }
+    video, canvas { width: 100%; height: 100%; object-fit: cover; display: block; }
+    canvas { position: absolute; top: 0; left: 0; pointer-events: none; }
+    .status {
+      padding: .75rem 1rem; border-radius: 8px; font-weight: 600;
+      margin: .75rem 0; background: #e8f0fe; border-left: 5px solid var(--blue);
+    }
+    .status.ok { background: #e8f5ee; border-color: var(--green); }
+    .status.err { background: #fdecea; border-color: #ce1126; }
+    .status.warn { background: #fff8e1; border-color: var(--gold); }
+    button {
+      width: 100%; padding: .85rem; margin-top: .5rem; font-size: 1rem;
+      font-weight: 700; border: none; border-radius: 8px; cursor: pointer;
+      background: var(--blue); color: #fff;
+    }
+    button:disabled { opacity: .5; cursor: not-allowed; }
+    button.secondary { background: #666; }
+    #btn-status { background: #006233; }
+    .metrics { font-size: .85rem; color: #444; font-family: Consolas, monospace; }
+    .passo { font-size: 1.15rem; font-weight: 800; color: var(--green); }
+    .hidden { display: none; }
+  </style>
+</head>
+<body>
+  <h1>Prova de Vida — Webcam (PC)</h1>
+  <p class="sub">
+    Liveness (MediaPipe) + <strong>reconhecimento facial face-api 128D</strong> · APIs :5001 e :5003 · Chrome/Edge · permita a câmera.
+  </p>
+
+  <div id="tela-inicio">
+    <label for="nuit">NUIT do pensionista</label>
+    <input id="nuit" type="text" maxlength="9" value="300400504" />
+    <p class="sub">Teste match: <strong>300400504</strong> (António, cadastro limpo) · Maria 300400501 (já tem prova sem embedding)</p>
+    <label for="api-contrib">API Contribuintes</label>
+    <input id="api-contrib" type="text" value="http://localhost:5001" />
+    <label for="api-prova">API Prova de Vida</label>
+    <input id="api-prova" type="text" value="http://localhost:5003" />
+    <div class="status ok" id="painel-status">Consultando status…</div>
+    <button type="button" id="btn-iniciar">Cadastrar (1ª vez)</button>
+    <button type="button" id="btn-status" class="secondary" style="margin-top:.5rem;background:#666">Consultar acesso ao benefício</button>
+  </div>
+
+  <div id="tela-liveness" class="hidden">
+    <p class="passo" id="passo-texto">Preparando…</p>
+    <div class="video-wrap">
+      <video id="video" playsinline autoplay muted></video>
+      <canvas id="overlay"></canvas>
+    </div>
+    <div class="status" id="status">Aguardando rosto na câmera…</div>
+    <p class="metrics" id="metrics"></p>
+    <button type="button" id="btn-cancelar" class="secondary">Cancelar</button>
+  </div>
+
+  <div id="tela-resultado" class="hidden">
+    <div class="status ok" id="resultado-msg"></div>
+    <button type="button" id="btn-nova">Nova prova</button>
+  </div>
+
+  <script type="module">
+    import { FaceLandmarker, FilesetResolver } from 'https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@0.10.14/+esm';
+    import * as faceapi from 'https://cdn.jsdelivr.net/npm/@vladmandic/face-api@1.7.15/+esm';
+
+    const PASSOS = [
+      { id: 'centro', label: 'Olhe para a câmera (rosto centralizado)', minYaw: -12, maxYaw: 12 },
+      { id: 'esquerda', label: 'Vire levemente o rosto à ESQUERDA', minYaw: 12, maxYaw: 45 },
+      { id: 'direita', label: 'Vire levemente o rosto à DIREITA', minYaw: -45, maxYaw: -12 },
+    ];
+
+    const FACE_MODEL_URL = 'https://cdn.jsdelivr.net/npm/@vladmandic/face-api@1.7.15/model';
+
+    let landmarker = null;
+    let faceApiPronto = false;
+    let stream = null;
+    let rafId = null;
+    let passoAtual = 0;
+    let capturas = [];
+    let pensionista = null;
+    let ultimoYaw = 0;
+    let framesValidos = 0;
+    const FRAMES_NECESSARIOS = 8;
+    let operacaoAtual = 'Cadastrar';
+    let statusAtual = null;
+
+    const el = (id) => document.getElementById(id);
+    const video = el('video');
+    const canvas = el('overlay');
+    const ctx = canvas.getContext('2d');
+
+    function setStatus(msg, tipo = '') {
+      const s = el('status');
+      s.textContent = msg;
+      s.className = 'status' + (tipo ? ' ' + tipo : '');
+    }
+
+    async function initFaceApi() {
+      if (faceApiPronto) return;
+      setStatus('Carregando face-api (embedding 128D)…', '');
+      await faceapi.nets.tinyFaceDetector.loadFromUri(FACE_MODEL_URL);
+      await faceapi.nets.faceLandmark68TinyNet.loadFromUri(FACE_MODEL_URL);
+      await faceapi.nets.faceRecognitionNet.loadFromUri(FACE_MODEL_URL);
+      faceApiPronto = true;
+    }
+
+    /** Gera embedding 128D — tenta várias capturas com limiar mais baixo. */
+    async function gerarEmbedding(listaBase64) {
+      await initFaceApi();
+      const opcoes = [
+        new faceapi.TinyFaceDetectorOptions({ inputSize: 416, scoreThreshold: 0.3 }),
+        new faceapi.TinyFaceDetectorOptions({ inputSize: 320, scoreThreshold: 0.2 }),
+        new faceapi.TinyFaceDetectorOptions({ inputSize: 224, scoreThreshold: 0.15 }),
+      ];
+
+      for (const base64 of listaBase64) {
+        if (!base64) continue;
+        const img = await faceapi.fetchImage(`data:image/jpeg;base64,${base64}`);
+        for (const opts of opcoes) {
+          const det = await faceapi
+            .detectSingleFace(img, opts)
+            .withFaceLandmarks(true)
+            .withFaceDescriptor();
+          if (det) return Array.from(det.descriptor);
+        }
+      }
+
+      throw new Error(
+        'Rosto não detectado para reconhecimento. Melhore a luz, aproxime o rosto e olhe de frente (sem óculos escuros).',
+      );
+    }
+
+    async function initMediaPipe() {
+      const vision = await FilesetResolver.forVisionTasks(
+        'https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@0.10.14/wasm'
+      );
+      landmarker = await FaceLandmarker.createFromOptions(vision, {
+        baseOptions: {
+          modelAssetPath: 'https://storage.googleapis.com/mediapipe-models/face_landmarker/face_landmarker/float16/1/face_landmarker.task',
+          delegate: 'CPU',
+        },
+        runningMode: 'VIDEO',
+        numFaces: 1,
+        outputFaceBlendshapes: false,
+        outputFacialTransformationMatrixes: true,
+      });
+    }
+
+    function yawFromMatrix(matrix) {
+      if (!matrix || matrix.length < 16) return 0;
+      const m = matrix;
+      const yawRad = Math.atan2(m[8], m[10]);
+      return (yawRad * 180) / Math.PI;
+    }
+
+    function desenharOverlay(detectado) {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      if (!detectado) return;
+      ctx.strokeStyle = '#00ff88';
+      ctx.lineWidth = 3;
+      ctx.strokeRect(canvas.width * 0.2, canvas.height * 0.15, canvas.width * 0.6, canvas.height * 0.7);
+    }
+
+    function capturarFrameBase64(qualidade = 0.92) {
+      const c = document.createElement('canvas');
+      c.width = video.videoWidth || 640;
+      c.height = video.videoHeight || 480;
+      const g = c.getContext('2d');
+      // Espelha como o usuário se vê (frente da webcam)
+      g.translate(c.width, 0);
+      g.scale(-1, 1);
+      g.drawImage(video, 0, 0, c.width, c.height);
+      return c.toDataURL('image/jpeg', qualidade).split(',')[1];
+    }
+
+    /** Após liveness: espera rosto de frente e tira foto boa para o embedding. */
+    async function capturarParaReconhecimento() {
+      setStatus('Olhe de FRENTE para a câmera — gerando identidade facial…', 'warn');
+      el('passo-texto').textContent = 'Reconhecimento facial';
+
+      for (let i = 0; i < 45; i++) {
+        await new Promise((r) => setTimeout(r, 80));
+        if (!landmarker || video.readyState < 2) continue;
+        const result = landmarker.detectForVideo(video, performance.now());
+        if (!result.faceLandmarks?.length) continue;
+        const yaw = yawFromMatrix(result.facialTransformationMatrixes?.[0]?.data);
+        if (Math.abs(yaw) <= 15) {
+          return capturarFrameBase64(0.95);
+        }
+      }
+      // Fallback: captura mesmo assim
+      return capturarFrameBase64(0.95);
+    }
+
+    function passoAtende(yaw, passo) {
+      return yaw >= passo.minYaw && yaw <= passo.maxYaw;
+    }
+
+    async function loopDetecao() {
+      if (!landmarker || video.readyState < 2) {
+        rafId = requestAnimationFrame(loopDetecao);
+        return;
+      }
+
+      canvas.width = video.videoWidth;
+      canvas.height = video.videoHeight;
+
+      const result = landmarker.detectForVideo(video, performance.now());
+      const passo = PASSOS[passoAtual];
+
+      if (!result.faceLandmarks?.length) {
+        framesValidos = 0;
+        desenharOverlay(false);
+        setStatus('Rosto não detectado — posicione-se na câmera.', 'warn');
+        el('metrics').textContent = '';
+        rafId = requestAnimationFrame(loopDetecao);
+        return;
+      }
+
+      desenharOverlay(true);
+      const matrix = result.facialTransformationMatrixes?.[0]?.data;
+      ultimoYaw = yawFromMatrix(matrix);
+      el('metrics').textContent = `Yaw: ${ultimoYaw.toFixed(1)}° · passo ${passoAtual + 1}/${PASSOS.length} · frames ok: ${framesValidos}/${FRAMES_NECESSARIOS}`;
+
+      if (passoAtende(ultimoYaw, passo)) {
+        framesValidos++;
+        setStatus(`✓ ${passo.label} — mantenha (${framesValidos}/${FRAMES_NECESSARIOS})`, 'ok');
+        if (framesValidos >= FRAMES_NECESSARIOS) {
+          capturas.push(capturarFrameBase64());
+          passoAtual++;
+          framesValidos = 0;
+          if (passoAtual >= PASSOS.length) {
+            cancelAnimationFrame(rafId);
+            await enviarProva();
+            return;
+          }
+          el('passo-texto').textContent = `Passo ${passoAtual + 1} de ${PASSOS.length}`;
+          setStatus(PASSOS[passoAtual].label, 'warn');
+        }
+      } else {
+        framesValidos = Math.max(0, framesValidos - 1);
+        setStatus(passo.label, 'warn');
+      }
+
+      rafId = requestAnimationFrame(loopDetecao);
+    }
+
+    async function buscarPensionista(nuit, baseUrl) {
+      const r = await fetch(`${baseUrl.replace(/\/$/, '')}/api/contribuintes/pensionistas/por-nuit/${nuit}`);
+      if (r.status === 404) throw new Error('NUIT não é pensionista cadastrado.');
+      if (!r.ok) throw new Error('Erro ao buscar pensionista — API :5001 está no ar?');
+      return r.json();
+    }
+
+    async function consultarStatus(nuit) {
+      const base = el('api-prova').value.replace(/\/$/, '');
+      const r = await fetch(`${base}/api/prova-vida/status/por-nuit/${nuit}`);
+      const data = await r.json();
+      if (!r.ok) throw new Error(data.mensagem || 'Erro ao consultar status.');
+      return data;
+    }
+
+    async function atualizarPainelStatus() {
+      const painel = el('painel-status');
+      const btn = el('btn-iniciar');
+      try {
+        const nuit = el('nuit').value.trim();
+        statusAtual = await consultarStatus(nuit);
+        operacaoAtual = statusAtual.proximaAcao;
+
+        if (statusAtual.requerCadastroInicial) {
+          painel.className = 'status warn';
+          painel.textContent = 'Sem cadastro — faça a Prova de Vida (1ª vez).';
+          btn.textContent = 'Cadastrar (1ª vez) — câmera + liveness';
+          btn.disabled = false;
+        } else if (statusAtual.provaValida) {
+          painel.className = 'status ok';
+          painel.textContent = `Prova VÁLIDA até ${new Date(statusAtual.validaAte).toLocaleDateString('pt-MZ')} (${statusAtual.diasRestantes} dias). Consulta abre a câmera e autentica — não renova.`;
+          btn.textContent = 'Consultar — câmera + autenticar rosto';
+          btn.disabled = false;
+        } else {
+          painel.className = 'status err';
+          painel.textContent = `Prova EXPIRADA — ${statusAtual.motivoBloqueio} Renove comparando com o cadastro existente.`;
+          btn.textContent = 'Renovar — bater com cadastro existente';
+          btn.disabled = false;
+        }
+      } catch (e) {
+        painel.className = 'status err';
+        painel.textContent = e.message || String(e);
+        btn.disabled = false;
+      }
+    }
+
+    async function enviarProva() {
+      el('tela-liveness').classList.remove('hidden');
+      setStatus('Preparando reconhecimento facial…', '');
+
+      try {
+        const fotoId = await capturarParaReconhecimento();
+        const candidatos = [fotoId, ...capturas].filter(Boolean);
+
+        setStatus('Gerando embedding facial 128D…', '');
+        const faceEmbedding = await gerarEmbedding(candidatos);
+        setStatus('Enviando prova de vida…', '');
+        el('tela-liveness').classList.add('hidden');
+
+        const score = Math.min(95, 70 + capturas.length * 8 + Math.abs(ultimoYaw) * 0.2);
+        const body = {
+          nuit: pensionista.nuit,
+          scoreLiveness: Math.round(score * 10) / 10,
+          movimentosDetectados: true,
+          imagemBase64: candidatos.join('|'),
+          faceEmbedding,
+        };
+
+        const base = el('api-prova').value.replace(/\/$/, '');
+        const endpoint =
+          operacaoAtual === 'Renovar' ? 'renovar'
+          : operacaoAtual === 'Consultar' ? 'consultar'
+          : 'cadastrar';
+        const r = await fetch(`${base}/api/prova-vida/${endpoint}`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(body),
+        });
+        const data = await r.json().catch(() => ({}));
+        if (!r.ok) throw new Error(data.mensagem || 'Erro na API :5003');
+
+        pararCamera();
+        const status = await consultarStatus(pensionista.nuit);
+        const titulo =
+          data.tipoOperacao === 'Consulta' ? 'Identidade confirmada (consulta)'
+          : data.tipoOperacao === 'Renovacao' ? 'Prova renovada'
+          : 'Cadastro facial 128D concluído';
+        const detalhe =
+          data.tipoOperacao === 'Consulta'
+            ? 'Match facial + liveness — validade NÃO alterada.'
+            : data.tipoOperacao === 'Cadastro'
+              ? 'Template facial salvo no banco. Próxima vez: Consultar compara o rosto.'
+              : 'Mesmo registro atualizado — não criou cadastro novo.';
+        el('resultado-msg').innerHTML = `
+          <strong>${titulo}</strong><br/>
+          ${pensionista.nome} · NUIT ${pensionista.nuit}<br/>
+          Identidade confirmada: ${data.identidadeConfirmada ? 'sim' : 'não'} · Liveness: ${data.scoreLiveness}%<br/>
+          ${data.similaridadeFacial != null ? `<strong>Similaridade facial: ${Number(data.similaridadeFacial).toFixed(0)}%</strong> (mín. 72%)<br/>` : ''}
+          Registro ID: ${data.id}<br/>
+          ${detalhe}<br/><br/>
+          <strong>Acesso ao benefício:</strong> ${status.podeAcessarBeneficio ? 'LIBERADO' : 'BLOQUEADO'}<br/>
+          Válida até: ${status.validaAte ? new Date(status.validaAte).toLocaleDateString('pt-MZ') : '-'} · ${status.diasRestantes} dias restantes
+        `;
+        el('resultado-msg').className = 'status ok';
+        el('tela-resultado').classList.remove('hidden');
+      } catch (e) {
+        pararCamera();
+        el('resultado-msg').className = 'status err';
+        el('resultado-msg').innerHTML = `<strong>Falha na validação</strong><br/>${e.message || e}<br/><br/>Se for “Rosto não confere”, o embedding não bateu com o cadastro (outro rosto).`;
+        el('tela-resultado').classList.remove('hidden');
+      }
+    }
+
+    function pararCamera() {
+      if (rafId) cancelAnimationFrame(rafId);
+      if (stream) stream.getTracks().forEach((t) => t.stop());
+      stream = null;
+    }
+
+    async function iniciar() {
+      try {
+        await atualizarPainelStatus();
+
+        el('btn-iniciar').disabled = true;
+        setStatus('Carregando MediaPipe + face-api…', '');
+
+        const nuit = el('nuit').value.trim();
+        pensionista = await buscarPensionista(nuit, el('api-contrib').value);
+
+        await initFaceApi();
+        await initMediaPipe();
+
+        stream = await navigator.mediaDevices.getUserMedia({
+          video: { facingMode: 'user', width: { ideal: 640 }, height: { ideal: 480 } },
+          audio: false,
+        });
+        video.srcObject = stream;
+        await video.play();
+
+        passoAtual = 0;
+        capturas = [];
+        framesValidos = 0;
+        el('tela-inicio').classList.add('hidden');
+        el('tela-liveness').classList.remove('hidden');
+        el('passo-texto').textContent = `Passo 1 de ${PASSOS.length}`;
+        setStatus(PASSOS[0].label, 'warn');
+
+        loopDetecao();
+      } catch (e) {
+        alert(e.message || String(e));
+        el('btn-iniciar').disabled = false;
+        pararCamera();
+        await atualizarPainelStatus();
+      }
+    }
+
+    el('nuit').addEventListener('change', atualizarPainelStatus);
+    atualizarPainelStatus();
+
+    el('btn-iniciar').addEventListener('click', iniciar);
+    el('btn-status').addEventListener('click', async () => {
+      try {
+        await atualizarPainelStatus();
+        const s = statusAtual;
+        const msg = s.podeAcessarBeneficio
+          ? `LIBERADO — prova válida por ${s.diasRestantes} dias (até ${new Date(s.validaAte).toLocaleDateString('pt-MZ')})\nPróxima ação: ${s.proximaAcao}`
+          : `BLOQUEADO — ${s.motivoBloqueio}\n${s.acaoRequerida || ''}\nPróxima ação: ${s.proximaAcao}`;
+        alert(msg);
+      } catch (e) {
+        alert(e.message || String(e));
+      }
+    });
+    el('btn-cancelar').addEventListener('click', async () => {
+      pararCamera();
+      el('tela-liveness').classList.add('hidden');
+      el('tela-inicio').classList.remove('hidden');
+      await atualizarPainelStatus();
+    });
+    el('btn-nova').addEventListener('click', async () => {
+      el('tela-resultado').classList.add('hidden');
+      el('tela-inicio').classList.remove('hidden');
+      await atualizarPainelStatus();
+    });
+  </script>
+</body>
+</html>

@@ -1,0 +1,6 @@
+@InssApi_HostAddress = http://localhost:5197
+
+GET {{InssApi_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###

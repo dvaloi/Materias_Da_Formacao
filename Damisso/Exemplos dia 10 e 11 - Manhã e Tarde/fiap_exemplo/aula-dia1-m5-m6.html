@@ -1,0 +1,2654 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Portal INSS — M5 e M6</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@600;700&family=Source+Sans+3:wght@600;700;800;900&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --green: #006233; --green-dark: #004d28; --green-soft: #e6f4ec;
+      --gold: #c9a227; --gold-soft: #fff8e1; --red: #ce1126; --red-soft: #fde8ea;
+      --blue: #0b3d91; --border: #94a3b8;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    html { font-size: 20px; }
+    body {
+      font-family: "Source Sans 3", "Segoe UI", Calibri, sans-serif;
+      background: #fff; color: #111; overflow: hidden; height: 100vh; font-weight: 700;
+      letter-spacing: .01em; text-rendering: optimizeLegibility;
+      -webkit-font-smoothing: antialiased;
+    }
+    .flag-bar {
+      position: fixed; top: 0; left: 0; right: 0; height: 10px; z-index: 200;
+      background: linear-gradient(90deg,#006233 0 25%,#111 25% 50%,#fcd116 50% 75%,#ce1126 75% 100%);
+    }
+    .progress {
+      position: fixed; top: 10px; left: 0; height: 6px;
+      background: var(--red); z-index: 100; transition: width .25s;
+    }
+    .slide {
+      display: none; height: 100vh; padding: 0.65rem 1.5rem 3.5rem;
+      flex-direction: column; animation: fadeIn .2s ease;
+      overflow: hidden;
+    }
+    .slide.active { display: flex; }
+    .slide.fill { justify-content: center; text-align: center; }
+    @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+    h1 {
+      font-size: 2.9rem; font-weight: 800; color: var(--green);
+      line-height: 1.08; margin-bottom: .45rem; letter-spacing: -.03em;
+    }
+    h2 {
+      font-size: 2rem; color: var(--green); font-weight: 800;
+      border-bottom: 4px solid var(--gold); padding-bottom: .2rem; margin-bottom: .45rem;
+      letter-spacing: -.02em; flex-shrink: 0;
+    }
+    p, li { font-size: 1.32rem; line-height: 1.3; font-weight: 700; margin-bottom: .22rem; }
+    ul, ol { padding-left: 1.5rem; }
+    strong { font-weight: 900; }
+    code {
+      font-family: "IBM Plex Mono", Consolas, monospace; background: #111; color: #e8f5ee;
+      padding: .08rem .35rem; border-radius: 5px; font-size: .92em; font-weight: 700;
+      white-space: normal; overflow-wrap: anywhere; word-break: break-word;
+    }
+    .highlight { color: var(--red); font-size: 2rem; font-weight: 800; margin-bottom: .5rem; }
+    .content {
+      flex: 1 1 auto; display: flex; flex-direction: column;
+      justify-content: flex-start; gap: 0.45rem; min-height: 0; min-width: 0;
+      width: 100%; overflow: hidden;
+    }
+    .fluxo {
+      display: flex; flex-wrap: wrap; align-items: stretch;
+      justify-content: center; gap: 0.65rem; margin: .1rem 0;
+      flex-shrink: 0;
+    }
+    .fluxo .passo {
+      flex: 1 1 7.5rem; background: var(--green-soft); border: 3px solid var(--green);
+      border-radius: 10px; padding: .55rem .65rem; text-align: center;
+      font-size: 1.1rem; font-weight: 700; line-height: 1.25;
+    }
+    .fluxo .passo small { display: block; font-weight: 700; font-size: .88em; margin-top: .15rem; }
+    .fluxo .seta {
+      align-self: center; color: var(--red); font-weight: 900;
+      font-size: 1.8rem;
+    }
+    .callout {
+      background: var(--gold-soft); border: 3px solid var(--gold); border-left: 10px solid var(--gold);
+      border-radius: 12px; padding: .85rem 1.15rem;
+      font-size: 1.5rem; font-weight: 700; line-height: 1.3;
+    }
+    .fill .callout { max-width: 46rem; margin: 1rem auto; text-align: left; }
+    .callout.green { background: var(--green-soft); border-color: var(--green); border-left-color: var(--green); }
+    .callout.red { background: var(--red-soft); border-color: var(--red); border-left-color: var(--red); }
+    .tag {
+      display: inline-block; background: var(--blue); color: #fff; font-weight: 900;
+      padding: .25rem .65rem; border-radius: 8px; font-size: 1.25rem; margin-bottom: .25rem;
+    }
+    .tag.ok { background: var(--green); }
+    .tag.gold { background: var(--gold); color: #111; }
+    table { width: 100%; border-collapse: collapse; font-size: 1.3rem; }
+    th, td { border: 2px solid var(--border); padding: .45rem .6rem; text-align: left; vertical-align: top; }
+    th { background: var(--green); color: #fff; }
+    .nav-bar {
+      position: fixed; bottom: 0; left: 0; right: 0; background: #fff;
+      padding: .35rem 1.2rem; display: flex; justify-content: space-between; align-items: center;
+      border-top: 4px solid var(--green); z-index: 100;
+    }
+    .nav-bar button {
+      background: var(--green); color: #fff; border: none; padding: .4rem 1.1rem;
+      border-radius: 8px; cursor: pointer; font-size: 1.05rem; font-weight: 800; min-width: 120px;
+    }
+    .nav-bar button:disabled { opacity: .35; }
+    .slide-counter { font-size: 1.25rem; font-weight: 900; }
+    .hint {
+      position: fixed; top: .95rem; right: .95rem; font-size: 1rem; font-weight: 800; color: #444;
+      z-index: 150; background: #fff; border: 2px solid var(--border); border-radius: 8px; padding: .35rem .6rem;
+    }
+    .tela {
+      border: 3px solid #3c3c3c; border-radius: 8px; overflow: hidden;
+      font-family: Consolas, "IBM Plex Mono", "Courier New", monospace;
+      flex: 0 1 auto; min-height: 0; max-height: 100%;
+      display: flex; flex-direction: column;
+      box-shadow: 0 0 0 1px #252526;
+    }
+    .tela-bar {
+      background: #2d2d30; color: #cccccc; padding: .35rem .7rem;
+      font-size: 1rem; font-weight: 700;
+      border-bottom: 1px solid #1e1e1e;
+      border-left: 3px solid #007acc;
+      flex-shrink: 0;
+    }
+    .tela-body {
+      background: #1e1e1e; color: #d4d4d4; padding: .55rem .8rem;
+      font-size: 1.05rem; line-height: 1.38; white-space: pre-wrap;
+      overflow-wrap: anywhere; flex: 1 1 auto; min-height: 0;
+      overflow: auto; font-weight: 500;
+    }
+    /* Cores do Visual Studio Dark */
+    .tela-body .k, .term .k { color: #569cd6; }   /* keyword: public, if, return, new */
+    .tela-body .t, .term .t, .tela-body .hi { color: #4ec9b0; } /* tipo: class, string, Contribuinte */
+    .tela-body .s, .term .s { color: #ce9178; }   /* string */
+    .tela-body .c, .term .c { color: #6a9955; }   /* comentário */
+    .tela-body .a, .term .a { color: #9cdcfe; }   /* atributo / parâmetro */
+    .tela-body .at, .term .at { color: #c586c0; } /* [HttpGet] */
+    .tela-body .m, .term .m { color: #dcdcaa; }   /* método */
+    .tela-body .n, .term .n { color: #b5cea8; }   /* número */
+    .tela-body .mark { background: #264f78; color: #fff; }
+    .tela-body.denso {
+      font-size: 1rem; line-height: 1.36; padding: .5rem .75rem;
+    }
+    .legenda-vs {
+      display: flex; flex-wrap: wrap; gap: .35rem .7rem; margin-top: .35rem;
+      font-size: .85rem !important; font-weight: 700; font-family: Consolas, monospace;
+    }
+    .legenda-vs span { font-size: .85rem !important; }
+    .legenda-vs .k { color: #569cd6; }
+    .legenda-vs .t { color: #4ec9b0; }
+    .legenda-vs .s { color: #ce9178; }
+    .legenda-vs .c { color: #6a9955; }
+    .legenda-vs .at { color: #c586c0; }
+    .legenda-vs .m { color: #dcdcaa; }
+    pre.term {
+      background: #1e1e1e; color: #d4d4d4; padding: .65rem .85rem; border-radius: 8px;
+      border: 2px solid #3c3c3c; font-family: Consolas, "IBM Plex Mono", monospace;
+      font-size: 1.1rem; line-height: 1.4; white-space: pre-wrap; overflow-wrap: anywhere;
+      max-width: 100%; font-weight: 500; overflow: auto; flex: 0 1 auto;
+    }
+    .split.codigo {
+      grid-template-columns: minmax(0, 1.9fr) minmax(9.5rem, 0.65fr); gap: .85rem;
+    }
+    .arvore {
+      background: #252526; color: #cccccc; border: 1px solid #3c3c3c; border-radius: 6px;
+      padding: 0; font-family: "Segoe UI", Consolas, sans-serif;
+      font-size: 1.05rem; line-height: 1.4; font-weight: 600;
+      flex: 0 1 auto; min-height: 0; overflow: auto;
+    }
+    .arvore .bar {
+      background: #2d2d30; color: #cccccc; font-size: .92rem; font-weight: 700;
+      border-bottom: 1px solid #3c3c3c; padding: .4rem .7rem;
+      display: flex; align-items: center; gap: .4rem;
+    }
+    .arvore .bar::before {
+      content: ""; width: 10px; height: 10px; border-radius: 2px; background: #007acc;
+    }
+    .arvore ul { list-style: none; margin: 0; padding: .25rem 0 .35rem; }
+    .arvore li {
+      padding: .08rem .7rem .08rem 1rem; color: #cccccc;
+      font-size: .95rem !important; line-height: 1.25; margin-bottom: 0 !important;
+    }
+    .arvore li.indent { padding-left: 1.8rem; }
+    .arvore li.indent2 { padding-left: 2.6rem; }
+    .arvore .pasta::before { content: ""; }
+    .arvore .arq::before { content: ""; }
+    .arvore .cs::before { content: ""; }
+    .arvore .pasta { color: #dcb67a; }
+    .arvore .arq, .arvore .cs { color: #9cdcfe; }
+    .arvore .novo { color: #b5cea8; font-weight: 800; }
+    .arvore .foco {
+      background: #094771; border-left: 3px solid #007acc; padding-left: calc(1rem - 3px);
+    }
+    .arvore .foco.indent { padding-left: calc(1.8rem - 3px); }
+    .arvore .foco.indent2 { padding-left: calc(2.6rem - 3px); }
+    .arvore .hint { color: #858585; font-size: .88rem; font-weight: 600; margin-left: .35rem; }
+    .vs-path {
+      display: flex; flex-wrap: wrap; align-items: center; gap: .25rem;
+      margin-bottom: .35rem;
+    }
+    .vs-path .chip {
+      background: #2d2d30; color: #e0e0e0; border: 1px solid #3c3c3c;
+      border-radius: 4px; padding: .2rem .55rem; font-size: 1rem; font-weight: 700;
+      font-family: "Segoe UI", sans-serif;
+    }
+    .vs-path .sep { color: #858585; font-weight: 800; font-size: 1.1rem; }
+    .vs-path .chip.accent { background: #007acc; border-color: #007acc; color: #fff; }
+    .nuget {
+      background: #1e1e1e; border: 1px solid #3c3c3c; border-radius: 6px; overflow: hidden;
+    }
+    .nuget .nb {
+      background: #2d2d30; color: #ccc; padding: .4rem .7rem; font-size: .95rem; font-weight: 700;
+      border-bottom: 1px solid #3c3c3c;
+    }
+    .nuget .nb span { color: #007acc; margin-right: .5rem; }
+    .nuget .row {
+      display: flex; justify-content: space-between; align-items: center;
+      padding: .55rem .75rem; border-bottom: 1px solid #2d2d30;
+      font-family: Consolas, monospace; font-size: 1.05rem; color: #9cdcfe; font-weight: 700;
+    }
+    .nuget .row:last-child { border-bottom: none; }
+    .nuget .btn {
+      background: #0e639c; color: #fff; border-radius: 3px; padding: .2rem .55rem;
+      font-size: .9rem; font-weight: 800; font-family: "Segoe UI", sans-serif;
+    }
+    .term-bar {
+      background: #2d2d30; color: #ccc; padding: .3rem .65rem; font-size: .9rem; font-weight: 700;
+      border-radius: 6px 6px 0 0; border: 1px solid #3c3c3c; border-bottom: none;
+      font-family: "Segoe UI", sans-serif;
+    }
+    pre.term.vs {
+      border-radius: 0 0 6px 6px; margin-top: 0; border-color: #3c3c3c;
+    }
+    .passo-limpo {
+      font-size: 1.25rem !important; margin-bottom: .45rem !important; font-weight: 700;
+    }
+    .slide.compact p, .slide.compact li { font-size: 1.25rem; margin-bottom: .18rem; }
+    .slide.compact h2 { margin-bottom: .3rem; }
+    .slide.compact ol, .slide.compact ul { margin-bottom: 0; }
+    .slide.mapa-final .split { align-items: stretch; }
+    .slide.mapa-final .passo-limpo { margin-bottom: .2rem !important; }
+    .split {
+      flex: 1; display: grid; grid-template-columns: minmax(0, 1.5fr) minmax(12rem, 0.9fr); gap: 1.2rem;
+      min-height: 0; min-width: 0; align-items: stretch; width: 100%;
+    }
+    .split .col {
+      display: flex; flex-direction: column; gap: 0.4rem;
+      min-height: 0; min-width: 0; overflow: hidden; max-height: 100%;
+    }
+    .split .col > p,
+    .split .col > ol,
+    .split .col > ul,
+    .split .col > .passo-limpo,
+    .split .col > .vs-path,
+    .split .col > .tag,
+    .split .col > .legenda-vs { flex-shrink: 0; }
+    .cards {
+      display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 0.9rem; flex: 0 0 auto;
+      align-items: stretch;
+    }
+    .cards.dois { grid-template-columns: 1fr 1fr; }
+    .card {
+      background: #f3f6f4; border: 2px solid var(--border); border-left: 8px solid var(--green);
+      border-radius: 12px; padding: 0.85rem 1rem; display: flex; flex-direction: column;
+      justify-content: flex-start; min-width: 0; overflow-wrap: anywhere;
+    }
+    .card h3 {
+      color: var(--green); font-size: 1.35rem;
+      margin-bottom: .25rem; font-weight: 800; letter-spacing: -.02em; line-height: 1.2;
+    }
+    .card p, .slide.compact .card p, .slide.compact .card li {
+      font-size: 1.15rem; margin-bottom: .15rem; font-weight: 700;
+      line-height: 1.3;
+    }
+    .lado {
+      background: #1f2a22; color: #f4f6f5; border-radius: 14px; padding: 1.15rem 1.25rem;
+      display: flex; flex-direction: column; gap: 0.55rem;
+      min-height: 0; min-width: 0; overflow-wrap: anywhere; align-self: stretch;
+    }
+    .lado h3 { color: #fcd116; font-size: 1.4rem; font-weight: 800; letter-spacing: -.02em; }
+    .lado ol, .lado ul { margin: 0; padding-left: 1.2rem; }
+    .lado li, .lado p {
+      color: #f4f6f5; font-size: 1.15rem !important;
+      margin-bottom: .35rem; font-weight: 700; line-height: 1.3;
+      overflow-wrap: anywhere;
+    }
+    .lado .rodape { margin-top: auto; font-size: 1.05rem !important; opacity: .95; font-weight: 700; }
+    .explica {
+      background: #eef3ff; border: 2px solid #9cb4e8; border-left: 8px solid var(--blue);
+      border-radius: 0 10px 10px 0; padding: .55rem .9rem;
+      font-size: 1.35rem; font-weight: 700; line-height: 1.35;
+    }
+  </style>
+</head>
+<body>
+  <div class="flag-bar"></div>
+  <div class="progress" id="progress" style="width:2%"></div>
+  <div class="hint">← → · PageUp/Down · F11</div>
+
+  <div class="deck">
+
+    <section class="slide fill active">
+      <h1>Construção de APIs<br>com ASP.NET Core</h1>
+      <p class="highlight">Do HTTP ao primeiro endpoint — Portal INSS</p>
+      <p>Profº Fernando Lopes Cardoso Ferreira</p>
+      <p>10 de setembro de 2026 · 09:00 às 13:00</p>
+    </section>
+
+    <section class="slide compact">
+      <h2>Manhã · M5 — o que vamos estudar</h2>
+      <div class="content">
+        <div class="split">
+          <div class="col">
+            <p>Vamos construir uma API com ASP.NET Core. O exemplo do dia: contribuinte e pedido de benefício do INSS.</p>
+            <div class="cards dois">
+              <div class="card">
+                <h3>Controllers e rotas</h3>
+                <p>Quem atende o pedido HTTP e em qual endereço (URL).</p>
+              </div>
+              <div class="card">
+                <h3>DTOs e serialização</h3>
+                <p>DTO = formulário que entra/sai. Serialização = C# ↔ JSON automático.</p>
+              </div>
+              <div class="card">
+                <h3>Validação e status</h3>
+                <p>Dado errado → 400. Sucesso → 200 / 201. Não achou → 404.</p>
+              </div>
+              <div class="card">
+                <h3>Swagger</h3>
+                <p>Página no browser para documentar e testar a API (Try it out).</p>
+              </div>
+            </div>
+          </div>
+          <aside class="lado">
+            <h3>Como a aula roda</h3>
+            <ol>
+              <li>Conceitos (sem digitar ainda)</li>
+              <li>Prática no Visual Studio</li>
+            </ol>
+            <p class="rodape">À tarde (M6): a mesma API grava no SQLite.</p>
+          </aside>
+        </div>
+      </div>
+    </section>
+
+    <section class="slide compact">
+      <h2>O que vamos construir hoje</h2>
+      <div class="content">
+        <div class="split">
+          <div class="col">
+            <p>Uma API REST do zero. REST = jeito padrão de organizar endereços e verbos HTTP. Exemplo: o <strong>balcão do INSS</strong>.</p>
+            <div class="cards">
+              <div class="card">
+                <h3>Contribuinte</h3>
+                <p>Ficha do cidadão: NUIT, nome, status.</p>
+                <p>Eu mostro no projetor.</p>
+              </div>
+              <div class="card">
+                <h3>CRUD</h3>
+                <p>Criar, ler, atualizar e remover.</p>
+                <p>GET · POST · PUT · PATCH · DELETE</p>
+              </div>
+              <div class="card">
+                <h3>Swagger</h3>
+                <p>Testem na hora, no browser.</p>
+                <p>Try it out → Execute — sem Postman.</p>
+              </div>
+            </div>
+          </div>
+          <aside class="lado">
+            <h3>Como cada bloco</h3>
+            <ol>
+              <li>Primeiro: os conceitos</li>
+              <li>Depois: a prática no Visual Studio</li>
+            </ol>
+            <p class="rodape">Projeto do dia todo: <code>InssApi</code>.</p>
+          </aside>
+        </div>
+      </div>
+    </section>
+
+    <section class="slide compact">
+      <h2>O dia inteiro</h2>
+      <div class="content">
+        <div class="split">
+          <div class="col">
+            <div class="fluxo">
+              <div class="passo">Pedir<small>HTTP</small></div>
+              <span class="seta">→</span>
+              <div class="passo">Atender<small>Controller</small></div>
+              <span class="seta">→</span>
+              <div class="passo">Formulário<small>DTO</small></div>
+              <span class="seta">→</span>
+              <div class="passo">Gravar<small>SQLite</small></div>
+            </div>
+            <div class="cards dois">
+              <div class="card">
+                <h3>Manhã · M5</h3>
+                <p>Controllers, rotas, DTOs, validação e Swagger — lista só na memória.</p>
+              </div>
+              <div class="card">
+                <h3>Tarde · M6</h3>
+                <p>DbContext, migration, SaveChanges — mesma API + arquivo <code>inss.db</code>.</p>
+              </div>
+            </div>
+          </div>
+          <aside class="lado">
+            <h3>Em resumo</h3>
+            <p><strong>Manhã:</strong> fecha o F5? A lista some.</p>
+            <p><strong>Tarde:</strong> fecha e abre? Continua no arquivo.</p>
+            <p class="rodape">Um único projeto: <code>InssApi</code></p>
+          </aside>
+        </div>
+      </div>
+    </section>
+
+    <section class="slide fill">
+      <h1>M5 · Manhã</h1>
+      <p class="highlight">Construção de APIs com ASP.NET Core</p>
+      <p>Primeiro os conceitos. Depois a prática.</p>
+      <p>09:00 às 13:00</p>
+    </section>
+
+    <section class="slide fill">
+      <h1>Manhã · Conceitos</h1>
+      <p class="highlight">Ainda não digitamos. Primeiro entendemos.</p>
+      <p>HTTP · Controller · Rota · DTO · Validação · Status</p>
+    </section>
+
+    <section class="slide compact">
+      <h2>Abstrair — o carro</h2>
+      <div class="content">
+        <div class="split">
+          <div class="col">
+            <p>No carro vocês aceleram e freiam — não montam o motor. No Swagger: um clique; o ASP.NET Core faz o HTTP e o JSON.</p>
+            <div class="cards">
+              <div class="card">
+                <h3>Roteamento</h3>
+                <p>Qual URL cai em qual método — ex.: <code>/api/contribuintes</code>.</p>
+              </div>
+              <div class="card">
+                <h3>Serialização</h3>
+                <p>C# ↔ JSON automático. Vocês não montam string na mão.</p>
+              </div>
+              <div class="card">
+                <h3>Middleware</h3>
+                <p>Passos antes do método — como a segurança na porta do balcão.</p>
+              </div>
+            </div>
+          </div>
+          <aside class="lado">
+            <h3>A ideia</h3>
+            <p>ASP.NET Core é o motor já montado.</p>
+            <p>Nós só dizemos o que o balcão faz: listar, cadastrar, corrigir.</p>
+            <p class="rodape">Não construímos HTTP do zero.</p>
+          </aside>
+        </div>
+      </div>
+    </section>
+
+    <section class="slide compact">
+      <h2>1 — ASP.NET Core</h2>
+      <div class="content">
+        <div class="split">
+          <div class="col">
+            <p>ASP.NET Core = o framework .NET para a Web. É o motor que sobe a API e faz o JSON aparecer no Swagger.</p>
+            <div class="cards">
+              <div class="card">
+                <h3>Infra pronta</h3>
+                <p>HTTP, JSON, rotas, HTTPS. Não montamos a “antena”.</p>
+              </div>
+              <div class="card">
+                <h3>Abstrai</h3>
+                <p>Como o celular: vocês abrem o app — não soldam a placa.</p>
+              </div>
+              <div class="card">
+                <h3>Nosso trabalho</h3>
+                <p>Escrever o atendimento: listar, cadastrar, corrigir. O ASP.NET cuida do HTTP.</p>
+              </div>
+            </div>
+          </div>
+          <aside class="lado">
+            <h3>Em uma frase</h3>
+            <p>Não precisamos construir a infraestrutura HTTP do zero.</p>
+            <p class="rodape">Conceito 1 de 13</p>
+          </aside>
+        </div>
+      </div>
+    </section>
+
+    <section class="slide compact">
+      <h2>2 — HTTP é uma conversa</h2>
+      <div class="content">
+        <div class="split">
+          <div class="col">
+            <p>HTTP = o protocolo da conversa na Web. Como no balcão: o cidadão pergunta, o atendente responde. Sempre os dois.</p>
+            <div class="cards dois">
+              <div class="card">
+                <h3>Request (pedido)</h3>
+                <p>O que o Execute mandou: método + URL + (às vezes) body.</p>
+              </div>
+              <div class="card">
+                <h3>Response (resposta)</h3>
+                <p>O que voltou: status + JSON (ou vazio no 204).</p>
+              </div>
+            </div>
+          </div>
+          <aside class="lado">
+            <h3>Regra</h3>
+            <p>Não existe pergunta sozinha.</p>
+            <p>Cada Request espera uma Response.</p>
+            <p class="rodape">Método · URL · Headers · Body · Status</p>
+          </aside>
+        </div>
+      </div>
+    </section>
+
+    <section class="slide compact">
+      <h2>O pedido tem 4 partes</h2>
+      <div class="content">
+        <div class="split">
+          <div class="col">
+            <div class="cards dois">
+              <div class="card">
+                <h3>1. Método</h3>
+                <p>O que quero fazer: ler, criar, trocar, apagar.</p>
+                <p>GET · POST · PUT · PATCH · DELETE</p>
+              </div>
+              <div class="card">
+                <h3>2. URL</h3>
+                <p>De quem estou falando.</p>
+                <p><code>/api/contribuintes/10</code></p>
+              </div>
+              <div class="card">
+                <h3>3. Headers</h3>
+                <p>Etiquetas do envelope.</p>
+                <p>Ex.: “vou mandar JSON”.</p>
+              </div>
+              <div class="card">
+                <h3>4. Body</h3>
+                <p>A carta — só quando há dados.</p>
+                <p>POST e PUT levam. GET quase nunca.</p>
+              </div>
+            </div>
+          </div>
+          <aside class="lado">
+            <h3>No balcão</h3>
+            <p><strong>Método</strong> — o gesto (consultar / cadastrar).</p>
+            <p><strong>URL</strong> — a janela (contribuintes ou pedidos).</p>
+            <p><strong>Body</strong> — o formulário preenchido.</p>
+            <p class="rodape">Os próximos slides abrem cada verbo.</p>
+          </aside>
+        </div>
+      </div>
+    </section>
+
+    <section class="slide compact">
+      <h2>GET — só ler</h2>
+      <div class="content">
+        <div class="split">
+          <div class="col">
+            <p>No balcão: “mostra os contribuintes. <strong>Não mexe em nada.</strong>”</p>
+            <div class="cards dois">
+              <div class="card">
+                <h3>GET /api/contribuintes</h3>
+                <p>A lista toda. Sem id na URL.</p>
+              </div>
+              <div class="card">
+                <h3>GET /api/contribuintes/10</h3>
+                <p>Uma ficha. Se o 10 não existe → 404.</p>
+              </div>
+            </div>
+          </div>
+          <aside class="lado">
+            <h3>Lembre</h3>
+            <p>GET não leva body.</p>
+            <p>É consulta — como pedir a ficha no arquivo.</p>
+            <p>Pode repetir mil vezes: o cadastro não muda.</p>
+          </aside>
+        </div>
+      </div>
+    </section>
+
+    <section class="slide compact">
+      <h2>POST — criar</h2>
+      <div class="content">
+        <div class="split">
+          <div class="col">
+            <p>No balcão: “quero cadastrar a Ana. NUIT 123456789.”</p>
+            <div class="cards dois">
+              <div class="card">
+                <h3>Body</h3>
+                <p>O papel do cadastro: nuit, nome. Sem body não tem o que gravar.</p>
+              </div>
+              <div class="card">
+                <h3>Dois POST</h3>
+                <p>Duas fichas. POST cria. Não atualiza a mesma pessoa.</p>
+              </div>
+            </div>
+          </div>
+          <aside class="lado">
+            <h3>Resposta</h3>
+            <p><strong>201</strong> — criei, aqui está o id.</p>
+            <p><strong>400</strong> — NUIT inválido ou nome vazio.</p>
+            <p class="rodape">POST /api/contribuintes</p>
+          </aside>
+        </div>
+      </div>
+    </section>
+
+    <section class="slide compact">
+      <h2>PUT — trocar a ficha inteira</h2>
+      <div class="content">
+        <div class="split">
+          <div class="col">
+            <p>A Ana mudou nome e data. Você manda a ficha <strong>completa</strong> de novo.</p>
+            <div class="cards dois">
+              <div class="card">
+                <h3>Foto nova</h3>
+                <p>O que não mandar some ou fica vazio.</p>
+              </div>
+              <div class="card">
+                <h3>Id na URL</h3>
+                <p>PUT /api/contribuintes/10 — quem atualizar.</p>
+              </div>
+            </div>
+          </div>
+          <aside class="lado">
+            <h3>PUT × PATCH</h3>
+            <p>PUT = ficha inteira.</p>
+            <p>PATCH = um recorte (próximo slide).</p>
+            <p>Id inexistente → 404.</p>
+          </aside>
+        </div>
+      </div>
+    </section>
+
+    <section class="slide compact">
+      <h2>PATCH — mudar só um pedaço</h2>
+      <div class="content">
+        <div class="split">
+          <div class="col">
+            <p>Muda só o estado: ativo → inativo. Nome e NUIT ficam.</p>
+            <div class="cards dois">
+              <div class="card">
+                <h3>No INSS</h3>
+                <p>Inativar contribuinte sem reescrever a ficha toda.</p>
+              </div>
+              <div class="card">
+                <h3>Body pequeno</h3>
+                <p>Só o campo que muda. Ex.: { "status": "Inativo" }</p>
+              </div>
+            </div>
+          </div>
+          <aside class="lado">
+            <h3>Quando usar</h3>
+            <p>PUT — correção completa da ficha.</p>
+            <p>PATCH — um detalhe (status).</p>
+          </aside>
+        </div>
+      </div>
+    </section>
+
+    <section class="slide compact">
+      <h2>DELETE — apagar</h2>
+      <div class="content">
+        <div class="split">
+          <div class="col">
+            <p>No INSS real quase não se apaga ficha. Aqui o DELETE serve para praticar o verbo.</p>
+            <div class="cards">
+              <div class="card">
+                <h3>Sem body</h3>
+                <p>O id já vai na URL. Não manda JSON.</p>
+              </div>
+              <div class="card">
+                <h3>204</h3>
+                <p>Deu certo e não vem corpo. O Swagger fica “vazio” — está ok.</p>
+              </div>
+              <div class="card">
+                <h3>404</h3>
+                <p>O id 10 não existia. Não tinha o que apagar.</p>
+              </div>
+            </div>
+          </div>
+          <aside class="lado">
+            <h3>No Swagger</h3>
+            <ol>
+              <li>DELETE /api/contribuintes/{id}</li>
+              <li>Try it out · id = 10</li>
+              <li>Execute</li>
+              <li>Olhe o código: 204 ou 404</li>
+            </ol>
+            <p class="rodape">Depois um GET na lista: a Ana não aparece mais.</p>
+          </aside>
+        </div>
+      </div>
+    </section>
+
+    <section class="slide compact">
+      <h2>URL — de quem estamos falando</h2>
+      <div class="content">
+        <div class="split">
+          <div class="col">
+            <p>Em REST, <strong>recurso</strong> é o que a API expõe: a <strong>lista</strong> ou a <strong>ficha</strong> (contribuinte, pedido). A URL aponta para isso.</p>
+            <div class="cards">
+              <div class="card">
+                <h3>Coleção</h3>
+                <p>Sem id: a lista toda. GET ou POST.</p>
+              </div>
+              <div class="card">
+                <h3>Um item</h3>
+                <p>O <strong>10</strong> não é página 10. É o id da ficha.</p>
+              </div>
+              <div class="card">
+                <h3>Outro balcão</h3>
+                <p>Pedidos de benefício: <code>/api/pedidos</code>.</p>
+              </div>
+            </div>
+          </div>
+          <aside class="lado">
+            <h3>Lembre</h3>
+            <p>Mesma URL + verbo diferente = ação diferente.</p>
+            <p>GET …/10 lê. PUT …/10 troca. DELETE …/10 apaga.</p>
+          </aside>
+        </div>
+      </div>
+    </section>
+
+    <section class="slide compact">
+      <h2>Headers e Body</h2>
+      <div class="content">
+        <div class="split">
+          <div class="col">
+            <p>GET e DELETE quase não levam body. POST, PUT e PATCH levam JSON.</p>
+            <div class="cards dois">
+              <div class="card">
+                <h3>Header</h3>
+                <p>Etiqueta no envelope. Ex.: <code>Content-Type: application/json</code>.</p>
+              </div>
+              <div class="card">
+                <h3>Body</h3>
+                <p>A carta. Só quando há dados para enviar (cadastro, correção).</p>
+              </div>
+            </div>
+          </div>
+          <aside class="lado">
+            <h3>No Swagger</h3>
+            <p>O body aparece na caixa preta quando o verbo precisa dele.</p>
+            <p>GET / DELETE: a caixa some — está certo.</p>
+          </aside>
+        </div>
+      </div>
+    </section>
+
+    <section class="slide compact">
+      <h2>3 — API</h2>
+      <div class="content">
+        <div class="split">
+          <div class="col">
+            <p>API = contrato do posto: “se perguntar assim, respondemos assim.” Swagger, app ou React usam a mesma API.</p>
+            <div class="cards">
+              <div class="card">
+                <h3>Cliente</h3>
+                <p>Quem pergunta: Swagger, app, outro sistema.</p>
+              </div>
+              <div class="card">
+                <h3>Contrato</h3>
+                <p>Rotas + verbos HTTP + formato JSON combinados.</p>
+              </div>
+              <div class="card">
+                <h3>Servidor</h3>
+                <p>A <code>InssApi</code> processa e responde.</p>
+              </div>
+            </div>
+          </div>
+          <aside class="lado">
+            <h3>Por isso</h3>
+            <p>Muda quem pergunta. O balcão (as rotas) é o mesmo.</p>
+            <p class="rodape">Hoje o cliente é o Swagger. Depois pode ser o React.</p>
+          </aside>
+        </div>
+      </div>
+    </section>
+
+    <section class="slide compact">
+      <h2>4 — Input e Output</h2>
+      <div class="content">
+        <div class="split">
+          <div class="col">
+            <p>O cliente manda o <strong>input</strong> (Request). A API processa. Devolve o <strong>output</strong> (Response).</p>
+            <div class="tela">
+              <div class="tela-bar">Cadastrar a Ana</div>
+              <div class="tela-body">Input:
+{ "nuit": "123456789", "nome": "Ana Mucavel" }
+
+Output (já com id):
+{ "id": 10, "nuit": "123456789", "nome": "Ana Mucavel" }</div>
+            </div>
+          </div>
+          <aside class="lado">
+            <h3>O fluxo</h3>
+            <ol>
+              <li>Request carrega o input</li>
+              <li>A API processa (valida, grava)</li>
+              <li>Response entrega o output</li>
+            </ol>
+            <p class="rodape">O id nasce no servidor. O cliente não inventa.</p>
+          </aside>
+        </div>
+      </div>
+    </section>
+
+    <section class="slide compact">
+      <h2>5 — O que é REST</h2>
+      <div class="content">
+        <div class="split">
+          <div class="col">
+            <p>REST é o <strong>jeito padrão</strong> de organizar a API: cada ficha ou lista tem um endereço; o verbo HTTP diz o que fazer.</p>
+            <div class="cards">
+              <div class="card">
+                <h3>1. Recurso</h3>
+                <p>O que a API expõe: lista de contribuintes, uma ficha, um pedido.</p>
+              </div>
+              <div class="card">
+                <h3>2. URL + método</h3>
+                <p>URL = <em>qual</em> recurso. Método = <em>o que fazer</em> (GET, POST, PUT…).</p>
+              </div>
+              <div class="card">
+                <h3>3. Pedido completo</h3>
+                <p>Cada request traz tudo o que precisa. A API não “lembra” o passo anterior.</p>
+              </div>
+            </div>
+          </div>
+          <aside class="lado">
+            <h3>Como escrevemos</h3>
+            <p><code>/criarContribuinte</code> — não.</p>
+            <p><code>POST /api/contribuintes</code> — sim.</p>
+            <p class="rodape">No Portal: Contribuinte · PedidoBeneficio</p>
+          </aside>
+        </div>
+      </div>
+    </section>
+
+    <section class="slide compact">
+      <h2>REST no Portal — exemplos</h2>
+      <div class="content">
+        <div class="split">
+          <div class="col">
+            <p>Mesma ideia dos verbos HTTP. Agora com o nome REST: substantivo na URL, verbo no método.</p>
+            <div class="cards">
+              <div class="card">
+                <h3>GET /api/contribuintes</h3>
+                <p>Lista todos</p>
+              </div>
+              <div class="card">
+                <h3>GET …/10</h3>
+                <p>Uma ficha (id 10)</p>
+              </div>
+              <div class="card">
+                <h3>POST /api/contribuintes</h3>
+                <p>Cria (com body)</p>
+              </div>
+              <div class="card">
+                <h3>PUT …/10</h3>
+                <p>Troca a ficha toda</p>
+              </div>
+              <div class="card">
+                <h3>PATCH …/10</h3>
+                <p>Muda um pedaço</p>
+              </div>
+              <div class="card">
+                <h3>DELETE …/10</h3>
+                <p>Apaga</p>
+              </div>
+            </div>
+          </div>
+          <aside class="lado">
+            <h3>Atenção</h3>
+            <p>Não usem <code>/criarContribuinte</code>.</p>
+            <p>Usem <code>POST /api/contribuintes</code>.</p>
+            <p class="rodape">No Portal: Contribuinte · PedidoBeneficio</p>
+          </aside>
+        </div>
+      </div>
+    </section>
+
+    <section class="slide compact">
+      <h2>6 — Endpoint</h2>
+      <div class="content">
+        <div class="split">
+          <div class="col">
+            <p>Endpoint = uma “janela” do balcão: método HTTP + rota (+ body, se precisar).</p>
+            <pre class="term">GET /api/contribuintes/10
+↑ método     ↑ rota + parâmetro {id}</pre>
+            <div class="cards">
+              <div class="card">
+                <h3>Método</h3>
+                <p>GET, POST, PUT…</p>
+              </div>
+              <div class="card">
+                <h3>Rota</h3>
+                <p>O endereço + {id}</p>
+              </div>
+              <div class="card">
+                <h3>Resposta</h3>
+                <p>JSON + status</p>
+              </div>
+            </div>
+          </div>
+          <aside class="lado">
+            <h3>Tem sempre</h3>
+            <p>Parâmetros · request · response · status.</p>
+            <p>Cada endpoint é uma janela do balcão.</p>
+          </aside>
+        </div>
+      </div>
+    </section>
+
+    <section class="slide compact">
+      <h2>7 — Controller</h2>
+      <div class="content">
+        <div class="split">
+          <div class="col">
+            <p>O <strong>balcão</strong> dos contribuintes: recebe o pedido HTTP e devolve JSON.</p>
+            <div class="tela">
+              <div class="tela-bar">Controllers/ContribuintesController.cs</div>
+              <div class="tela-body">using Microsoft.AspNetCore.Mvc;
+
+namespace InssApi.Controllers;
+
+[<span class="hi">ApiController</span>]
+[<span class="hi">Route</span>("api/[controller]")]
+public class ContribuintesController : ControllerBase
+{
+}</div>
+            </div>
+          </div>
+          <aside class="lado">
+            <h3>Três papéis</h3>
+            <ol>
+              <li><strong>Recebe</strong> — o pedido HTTP</li>
+              <li><strong>Processa</strong> — valida e decide</li>
+              <li><strong>Devolve</strong> — status + JSON</li>
+            </ol>
+            <p class="rodape">Um controller por recurso.</p>
+          </aside>
+        </div>
+      </div>
+    </section>
+
+    <section class="slide compact">
+      <h2>8 — Route</h2>
+      <div class="content">
+        <div class="split">
+          <div class="col">
+            <p>Route = o endereço na porta do balcão. Diz qual URL cai em qual método.</p>
+            <pre class="term">// Controllers/ContribuintesController.cs
+[Route("api/[controller]")]
+[HttpGet("{id:int}")]
+public IActionResult GetById(int id) { ... }
+
+// vira: GET /api/contribuintes/10</pre>
+            <div class="cards">
+              <div class="card">
+                <h3>Base</h3>
+                <p><code>[Route]</code> — api/contribuintes</p>
+              </div>
+              <div class="card">
+                <h3>Parâmetro</h3>
+                <p><code>{id}</code> — o 10 da URL</p>
+              </div>
+              <div class="card">
+                <h3>Nome</h3>
+                <p>Tira “Controller” do nome da classe.</p>
+              </div>
+            </div>
+          </div>
+          <aside class="lado">
+            <h3>Como lê</h3>
+            <p><code>ContribuintesController</code> → <code>contribuintes</code>.</p>
+            <p>O {id} cai no argumento do método.</p>
+          </aside>
+        </div>
+      </div>
+    </section>
+
+    <section class="slide compact">
+      <h2>9 — Action</h2>
+      <div class="content">
+        <div class="split">
+          <div class="col">
+            <p>Action = o método C# que roda quando aquele pedido chega. Ex.: GET → Get() → Ok(lista).</p>
+            <div class="tela">
+              <div class="tela-bar">Controllers/ContribuintesController.cs</div>
+              <div class="tela-body">private static readonly List&lt;Contribuinte&gt; _store = new();
+
+[<span class="mark">HttpGet</span>]
+public IActionResult Get()
+{
+    return Ok(_store);
+}</div>
+            </div>
+          </div>
+          <aside class="lado">
+            <h3>Três tempos</h3>
+            <p><strong>Recebe</strong> o pedido.</p>
+            <p><strong>Executa</strong> (lista, valida, grava).</p>
+            <p><strong>Retorna</strong> 200 / 201 / 400…</p>
+          </aside>
+        </div>
+      </div>
+    </section>
+
+    <section class="slide compact">
+      <h2>10 — DTO</h2>
+      <div class="content">
+        <div class="split">
+          <div class="col">
+            <p>DTO = Data Transfer Object: o <strong>formulário</strong> que atravessa o balcão (só o que o cliente manda ou recebe).</p>
+            <div class="tela">
+              <div class="tela-bar">Models/CriarContribuinteRequest.cs</div>
+              <div class="tela-body">namespace InssApi.Models;
+
+public class CriarContribuinteRequest
+{
+    public string Nuit { get; set; } = string.Empty;
+    public string Nome { get; set; } = string.Empty;
+}</div>
+            </div>
+          </div>
+          <aside class="lado">
+            <h3>Por que existe</h3>
+            <p><strong>Transporta</strong> só o que o cliente pode ver/mandar.</p>
+            <p><strong>Protege</strong> o objeto interno (id, status, regras).</p>
+            <p class="rodape">No POST: o body JSON vira este DTO.</p>
+          </aside>
+        </div>
+      </div>
+    </section>
+
+    <section class="slide compact">
+      <h2>11 — Serialização</h2>
+      <div class="content">
+        <div class="split">
+          <div class="col">
+            <p>Serialização = traduzir C# ↔ JSON. O ASP.NET faz sozinho — vocês não montam o JSON na mão.</p>
+            <table>
+              <tr><th>C#</th><th>JSON</th></tr>
+              <tr><td><code>Nome = "Ana"</code></td><td><code>"nome": "Ana"</code></td></tr>
+              <tr><td><code>Nuit = "123456789"</code></td><td><code>"nuit": "123456789"</code></td></tr>
+            </table>
+            <div class="cards dois">
+              <div class="card">
+                <h3>Serializar</h3>
+                <p>Objeto → JSON (na Response)</p>
+              </div>
+              <div class="card">
+                <h3>Desserializar</h3>
+                <p>JSON → objeto (no Request)</p>
+              </div>
+            </div>
+          </div>
+          <aside class="lado">
+            <h3>Vocês não fazem</h3>
+            <p>Não montam string JSON à mão.</p>
+            <p><code>return Ok(c)</code> já vira JSON.</p>
+          </aside>
+        </div>
+      </div>
+    </section>
+
+    <section class="slide compact">
+      <h2>12 — Validação</h2>
+      <div class="content">
+        <div class="split">
+          <div class="col">
+            <p>Validação = o porteiro do balcão. Formulário incompleto? Volta 400. Válido? Segue e grava.</p>
+            <div class="cards dois">
+              <div class="card">
+                <h3>NUIT</h3>
+                <p>9 dígitos. Senão 400.</p>
+              </div>
+              <div class="card">
+                <h3>Nome</h3>
+                <p>Vazio também volta 400. A API não inventa dado.</p>
+              </div>
+            </div>
+          </div>
+          <aside class="lado">
+            <h3>Antes de gravar</h3>
+            <p>Toda entrada passa por validação.</p>
+            <p>Inválido = 400 na hora. Não processa.</p>
+          </aside>
+        </div>
+      </div>
+    </section>
+
+    <section class="slide compact">
+      <h2>13 — A resposta não é só o JSON</h2>
+      <div class="content">
+        <div class="split">
+          <div class="col">
+            <p>Uma API devolve três pedaços. Olhem o status primeiro — depois o JSON.</p>
+            <div class="tela">
+              <div class="tela-bar">HTTP/1.1 201 Created</div>
+              <div class="tela-body">Content-Type: application/json
+
+{ "id": 10, "nuit": "123456789", "nome": "Ana Mucavel" }</div>
+            </div>
+          </div>
+          <aside class="lado">
+            <h3>Três pedaços</h3>
+            <p><strong>Status</strong> — 201 = criei.</p>
+            <p><strong>Headers</strong> — Content-Type JSON.</p>
+            <p><strong>Body</strong> — a ficha (ou vazio no 204).</p>
+          </aside>
+        </div>
+      </div>
+    </section>
+
+    <section class="slide compact">
+      <h2>Status — sucesso</h2>
+      <div class="content">
+        <div class="split">
+          <div class="col">
+            <p>Olhe o número no Swagger <strong>antes</strong> do JSON.</p>
+            <div class="cards">
+              <div class="card">
+                <h3>200</h3>
+                <p>“Aqui está.” GET, PUT, PATCH.</p>
+              </div>
+              <div class="card">
+                <h3>201</h3>
+                <p>“Criei.” POST. Vem a ficha nova, já com id.</p>
+              </div>
+              <div class="card">
+                <h3>204</h3>
+                <p>“Apaguei.” DELETE. Sem body. Está tudo bem.</p>
+              </div>
+            </div>
+          </div>
+          <aside class="lado">
+            <h3>Atalho</h3>
+            <p>GET → 200</p>
+            <p>POST → 201</p>
+            <p>DELETE → 204</p>
+          </aside>
+        </div>
+      </div>
+    </section>
+
+    <section class="slide compact">
+      <h2>Status — o cliente errou</h2>
+      <div class="content">
+        <div class="split">
+          <div class="col">
+            <div class="cards">
+              <div class="card">
+                <h3>400</h3>
+                <p>JSON incompleto ou NUIT inválido. Não gravamos.</p>
+              </div>
+              <div class="card">
+                <h3>404</h3>
+                <p>Pediu o contribuinte 99 e ele não existe.</p>
+              </div>
+              <div class="card">
+                <h3>500</h3>
+                <p>Quebrou do nosso lado (null, banco…). Não é o cidadão.</p>
+              </div>
+            </div>
+          </div>
+          <aside class="lado">
+            <h3>No Swagger</h3>
+            <p><strong>400</strong> — leia a mensagem.</p>
+            <p><strong>404</strong> — o id está errado.</p>
+            <p><strong>500</strong> — olhe o código.</p>
+          </aside>
+        </div>
+      </div>
+    </section>
+
+    <section class="slide fill">
+      <h1>Manhã · Prática</h1>
+      <p class="highlight">Agora: Visual Studio e Swagger.</p>
+      <p>Eu mostro o Contribuinte. Depois vocês fazem o Pedido sozinhos.</p>
+      <p>Projeto do dia: <code>InssApi</code> em <code>C:\fiap_turma_2</code></p>
+    </section>
+
+    <section class="slide compact">
+      <h2>Roteiro da prática</h2>
+      <div class="content">
+        <div class="split">
+          <div class="col">
+            <ol>
+              <li>Abrir o Visual Studio 2026</li>
+              <li>Criar o projeto <code>InssApi</code> (template certo) em <code>C:\fiap_turma_2</code></li>
+              <li>Na tela Informações adicionais: OpenAPI + Usar controles → <strong>Criar</strong></li>
+              <li>Ligar a tela do Swagger no <code>Program.cs</code> (passo abaixo)</li>
+              <li>F5 → abrir <code>/swagger</code></li>
+              <li>Testar WeatherForecast: Try it out → Execute → <strong>200</strong></li>
+              <li>Eu mostro: montar o Contribuinte (models + controller)</li>
+              <li><strong>Prova:</strong> testar Contribuintes no Swagger (Ana)</li>
+              <li>Vocês sozinhos: Pedido de benefício (só depois da prova)</li>
+            </ol>
+          </div>
+          <aside class="lado">
+            <h3>Atenção</h3>
+            <p>Um passo de cada vez. Esperem eu dizer “próximo”.</p>
+            <p class="rodape">Não comecem o Pedido antes da hora.</p>
+          </aside>
+        </div>
+      </div>
+    </section>
+
+    <section class="slide compact">
+      <h2>Passo 1 — Abrir o Visual Studio</h2>
+      <div class="content">
+        <div class="split">
+          <div class="col">
+            <ol>
+              <li>Menu Iniciar → digitem <strong>Visual Studio 2026</strong> → abram</li>
+              <li>Esperem a tela inicial carregar</li>
+              <li>Cliquem em <strong>Criar um novo projeto</strong></li>
+              <li>(Ou: menu <strong>Arquivo</strong> → <strong>Novo</strong> → <strong>Projeto</strong>)</li>
+            </ol>
+          </div>
+          <aside class="lado">
+            <h3>Antes do próximo</h3>
+            <p>Todo mundo na tela de escolher o template.</p>
+            <p class="rodape">Se o VS pedir login, podem pular por agora.</p>
+          </aside>
+        </div>
+      </div>
+    </section>
+
+    <section class="slide compact">
+      <h2>Passo 2 — Template e nomes</h2>
+      <div class="content">
+        <div class="split">
+          <div class="col">
+            <p>Escolham o template e preencham os três campos — valores exatos:</p>
+            <ol>
+              <li>Na busca: digitem <code>ASP.NET Core Web API</code></li>
+              <li>Selecionem <strong>API Web do ASP.NET Core</strong> — linguagem <strong>C#</strong></li>
+              <li>Cliquem em <strong>Próximo</strong></li>
+              <li><strong>Nome do projeto:</strong> <code>InssApi</code></li>
+              <li><strong>Local:</strong> <code>C:\fiap_turma_2</code></li>
+              <li><strong>Nome da solução:</strong> <code>InssApi</code> (igual ao projeto)</li>
+              <li><strong>Colocar a solução e o projeto no mesmo diretório</strong> → <strong>marcado</strong></li>
+              <li>Cliquem em <strong>Próximo</strong> de novo</li>
+            </ol>
+          </div>
+          <aside class="lado">
+            <h3>Atenção — não escolham</h3>
+            <p>Não: AOT · F# · Aspire · app Web.</p>
+            <p>Só: <strong>API Web do ASP.NET Core</strong> (C#).</p>
+            <p>Projeto = solução = <code>InssApi</code></p>
+            <p>Marquem “mesmo diretório” — pasta mais simples.</p>
+            <p class="rodape">Local: <code>C:\fiap_turma_2</code> · Swagger não é nesta tela.</p>
+          </aside>
+        </div>
+      </div>
+    </section>
+
+    <section class="slide compact">
+      <h2>Passo 3 — OpenAPI / Swagger e Criar</h2>
+      <div class="content">
+        <div class="split">
+          <div class="col">
+            <p>Tela <strong>Informações adicionais</strong> — é <strong>aqui</strong> que ligam o Swagger:</p>
+            <ol>
+              <li>Framework: <strong>.NET 10.0</strong> (ou o padrão da máquina)</li>
+              <li>Tipo de autenticação: <strong>Nenhum</strong></li>
+              <li><strong>Configurar para HTTPS</strong> → marcado</li>
+              <li><strong>Habilitar o suporte a OpenAPI</strong> → <strong>marcado</strong> (é o Swagger)</li>
+              <li><strong>Usar controles</strong> → <strong>marcado</strong> (controllers — obrigatório)</li>
+              <li>Deixem desmarcados: contêineres · Aspire · “Não use instruções de nível superior”</li>
+              <li>Cliquem em <strong>Criar</strong> e esperem o Solution Explorer</li>
+            </ol>
+          </div>
+          <aside class="lado">
+            <h3>Atenção</h3>
+            <p>OpenAPI marcado = base pronta.</p>
+            <p>A <strong>tela</strong> <code>/swagger</code> a gente liga no próximo passo.</p>
+            <p><strong>Usar controles</strong> tem que estar marcado.</p>
+            <p class="rodape">Confiram os checks antes de Criar.</p>
+          </aside>
+        </div>
+      </div>
+    </section>
+
+    <section class="slide compact">
+      <h2>Passo 4 — Pacote Swashbuckle</h2>
+      <div class="content">
+        <div class="split">
+          <div class="col">
+            <p class="passo-limpo">No .NET 10, OpenAPI sozinho <strong>não</strong> abre o Swagger. Antes do F5:</p>
+            <ol>
+              <li>Menu <strong>Projeto</strong> → <strong>Gerenciar Pacotes NuGet…</strong></li>
+              <li>Aba <strong>Procurar</strong> → digitem <code>Swashbuckle.AspNetCore</code></li>
+              <li>Cliquem em <strong>Instalar</strong> → aceitem</li>
+            </ol>
+          </div>
+          <aside class="lado">
+            <h3>Atenção</h3>
+            <p>Sem este pacote: F5 abre, mas <code>/swagger</code> dá <strong>404</strong>.</p>
+            <p class="rodape">Código do Program.cs no próximo slide.</p>
+          </aside>
+        </div>
+      </div>
+    </section>
+
+    <section class="slide compact">
+      <h2>Passo 4 — Program.cs (Swagger)</h2>
+      <div class="content">
+        <div class="split">
+          <div class="col">
+            <p class="passo-limpo">Abram <code>Program.cs</code> e deixem assim (podem apagar o que estiver):</p>
+            <div class="tela">
+              <div class="tela-bar">Program.cs</div>
+              <div class="tela-body denso"><span class="a">builder</span>.Services.<span class="m">AddControllers</span>();
+<span class="a">builder</span>.Services.<span class="m">AddEndpointsApiExplorer</span>();
+<span class="a">builder</span>.Services.<span class="m">AddSwaggerGen</span>();
+
+<span class="k">var</span> <span class="a">app</span> = <span class="a">builder</span>.Build();
+
+<span class="k">if</span> (<span class="a">app</span>.Environment.IsDevelopment())
+{
+    <span class="a">app</span>.<span class="m">UseSwagger</span>();
+    <span class="a">app</span>.<span class="m">UseSwaggerUI</span>();
+}
+
+<span class="a">app</span>.<span class="m">UseHttpsRedirection</span>();
+<span class="a">app</span>.<span class="m">MapControllers</span>();
+<span class="a">app</span>.<span class="m">Run</span>();</div>
+            </div>
+          </div>
+          <aside class="lado">
+            <h3>O que entra</h3>
+            <p><code>AddSwaggerGen</code></p>
+            <p><code>UseSwagger</code> + <code>UseSwaggerUI</code></p>
+            <p class="rodape">Eu mostro. Vocês repetem.</p>
+          </aside>
+        </div>
+      </div>
+    </section>
+
+    <section class="slide compact">
+      <h2>Passo 5 — F5 e abrir o Swagger</h2>
+      <div class="content">
+        <div class="split">
+          <div class="col">
+            <ol>
+              <li>Apertem <strong>F5</strong> (ou o play verde)</li>
+              <li>Se o browser abrir sozinho: ok</li>
+              <li>Se não abrir: no console copiem a URL <code>https://localhost:…</code> e acrescentem <code>/swagger</code></li>
+              <li>Exemplo: <code>https://localhost:7271/swagger</code></li>
+              <li>Vocês devem ver a página do Swagger com <strong>WeatherForecast</strong></li>
+            </ol>
+            <div class="fluxo">
+              <div class="passo">F5</div>
+              <span class="seta">→</span>
+              <div class="passo">Browser</div>
+              <span class="seta">→</span>
+              <div class="passo">/swagger</div>
+            </div>
+          </div>
+          <aside class="lado">
+            <h3>Se der 404</h3>
+            <p>Voltem ao Passo 4 (pacote + <code>Program.cs</code>).</p>
+            <p>Parem a API (Shift+F5) e F5 de novo.</p>
+            <p class="rodape">Ainda não mexam no Contribuinte.</p>
+          </aside>
+        </div>
+      </div>
+    </section>
+
+    <section class="slide compact">
+      <h2>Passo 6 — Testar no Swagger</h2>
+      <div class="content">
+        <div class="split">
+          <div class="col">
+            <p>Vocês devem estar na página <code>/swagger</code> com o título <strong>WeatherForecast</strong>. Façam:</p>
+            <ol>
+              <li>Cliquem em <strong>GET /WeatherForecast</strong> (abre o painel)</li>
+              <li>Cliquem em <strong>Try it out</strong></li>
+              <li>Cliquem no botão azul <strong>Execute</strong></li>
+              <li>Em <strong>Responses</strong> → <strong>Server response</strong>: Code <strong>200</strong></li>
+              <li>Em <strong>Response body</strong>: um JSON (lista com date, temperatureC, summary…)</li>
+            </ol>
+          </div>
+          <aside class="lado">
+            <h3>O que isso prova</h3>
+            <p>Vocês pediram → a API respondeu.</p>
+            <p><strong>200</strong> = deu certo.</p>
+            <p class="rodape">Depois apagamos o tempo e montamos o Contribuinte.</p>
+          </aside>
+        </div>
+      </div>
+    </section>
+
+    <section class="slide compact">
+      <h2>Passo 7 — Montar o Contribuinte</h2>
+      <div class="content">
+        <div class="split">
+          <div class="col">
+            <p>Vocês acompanham no projetor. Eu mostro. O Pedido fica para vocês.</p>
+            <ol>
+              <li>Parem a API (Shift+F5) se ainda estiver rodando</li>
+              <li>Apaguem <code>WeatherForecastController.cs</code> (e o model do tempo, se existir)</li>
+              <li>Criem a pasta <code>Models</code> no projeto</li>
+              <li>Dentro de Models: <code>Contribuinte.cs</code> + <code>CriarContribuinteRequest.cs</code></li>
+              <li>Criem <code>Controllers/ContribuintesController.cs</code></li>
+              <li>F5 de novo → testem no Swagger</li>
+            </ol>
+          </div>
+          <aside class="lado">
+            <h3>Dois arquivos em Models</h3>
+            <p><code>Contribuinte.cs</code> — ficha completa (id, status…).</p>
+            <p><code>CriarContribuinteRequest.cs</code> — DTO do POST (só Nuit e Nome).</p>
+            <p class="rodape">Ainda memória. Banco é à tarde.</p>
+          </aside>
+        </div>
+      </div>
+    </section>
+
+    <section class="slide compact">
+      <h2>Passo 7 — Dois arquivos em Models</h2>
+      <div class="content">
+        <div class="split">
+          <div class="col">
+            <p>Na pasta <code>Models</code> criamos <strong>dois</strong> arquivos com estes nomes exatos:</p>
+            <div class="cards dois">
+              <div class="card">
+                <h3>Contribuinte.cs</h3>
+                <p>A <strong>ficha</strong>: Id, Nuit, Nome, DataNascimento, Status.</p>
+              </div>
+              <div class="card">
+                <h3>CriarContribuinteRequest.cs</h3>
+                <p>O <strong>DTO</strong> (= formulário do POST): só Nuit e Nome.</p>
+              </div>
+            </div>
+          </div>
+          <aside class="lado">
+            <h3>Atenção</h3>
+            <p>Não juntem tudo num arquivo só.</p>
+            <p>Sem Id e sem Status no DTO — isso o servidor define.</p>
+          </aside>
+        </div>
+      </div>
+    </section>
+
+    <section class="slide compact">
+      <h2>Passo 7 — O DTO (formulário)</h2>
+      <div class="content">
+        <div class="split">
+          <div class="col">
+            <div class="tela">
+              <div class="tela-bar">Models/CriarContribuinteRequest.cs</div>
+              <div class="tela-body"><span class="k">namespace</span> InssApi.Models;
+
+<span class="k">public class</span> <span class="t">CriarContribuinteRequest</span>
+{
+    <span class="k">public</span> <span class="t">string</span> Nuit { <span class="k">get</span>; <span class="k">set</span>; } = <span class="t">string</span>.Empty;
+    <span class="k">public</span> <span class="t">string</span> Nome { <span class="k">get</span>; <span class="k">set</span>; } = <span class="t">string</span>.Empty;
+}</div>
+            </div>
+          </div>
+          <aside class="lado">
+            <h3>No POST</h3>
+            <p>O body JSON entra neste tipo (DTO).</p>
+            <p>Depois a action monta o <code>Contribuinte</code>.</p>
+            <p class="rodape">Arquivo: <code>CriarContribuinteRequest.cs</code></p>
+          </aside>
+        </div>
+      </div>
+    </section>
+
+    <section class="slide compact">
+      <h2>Passo 7 — A ficha (Contribuinte)</h2>
+      <div class="content">
+        <div class="split">
+          <div class="col">
+            <div class="tela">
+              <div class="tela-bar">Models/Contribuinte.cs</div>
+              <div class="tela-body"><span class="k">namespace</span> InssApi.Models;
+
+<span class="k">public class</span> <span class="t">Contribuinte</span>
+{
+    <span class="k">public int</span> Id { <span class="k">get</span>; <span class="k">set</span>; }
+    <span class="k">public</span> <span class="t">string</span> Nuit { <span class="k">get</span>; <span class="k">set</span>; } = <span class="t">string</span>.Empty;
+    <span class="k">public</span> <span class="t">string</span> Nome { <span class="k">get</span>; <span class="k">set</span>; } = <span class="t">string</span>.Empty;
+    <span class="k">public</span> <span class="t">DateOnly</span>? DataNascimento { <span class="k">get</span>; <span class="k">set</span>; }
+    <span class="k">public</span> <span class="t">string</span> Status { <span class="k">get</span>; <span class="k">set</span>; } = <span class="s">"Ativo"</span>;
+}</div>
+            </div>
+          </div>
+          <aside class="lado">
+            <h3>Campos</h3>
+            <p><strong>Nuit</strong> — 9 dígitos</p>
+            <p><strong>Nome</strong> — do cidadão</p>
+            <p><strong>Status</strong> — Ativo / Inativo</p>
+            <p class="rodape">Id nasce no servidor — não vem no DTO.</p>
+          </aside>
+        </div>
+      </div>
+    </section>
+
+    <section class="slide compact">
+      <h2>Passo 8 — Criar o controller (no VS)</h2>
+      <div class="content">
+        <div class="split">
+          <div class="col">
+            <p>Depois dos Models, criem o arquivo do balcão:</p>
+            <ol>
+              <li>No Solution Explorer: pasta <strong>Controllers</strong> → botão direito</li>
+              <li><strong>Adicionar</strong> → <strong>Classe…</strong> (ou Controller)</li>
+              <li>Nome: <code>ContribuintesController.cs</code> → <strong>Adicionar</strong></li>
+              <li>Apaguem o conteúdo padrão e copiem o esqueleto do próximo slide</li>
+            </ol>
+          </div>
+          <aside class="lado">
+            <h3>Atenção</h3>
+            <p>Nome no plural: <code>ContribuintesController</code></p>
+            <p>A rota vira <code>/api/contribuintes</code>.</p>
+            <p class="rodape">Eu mostro. Vocês digitam junto.</p>
+          </aside>
+        </div>
+      </div>
+    </section>
+
+    <section class="slide compact">
+      <h2>Passo 8 — Esqueleto do controller</h2>
+      <div class="content">
+        <div class="split codigo">
+          <div class="col">
+            <div class="tela">
+              <div class="tela-bar">Controllers/ContribuintesController.cs</div>
+              <div class="tela-body denso"><span class="k">using</span> InssApi.Models;
+<span class="k">using</span> Microsoft.AspNetCore.Mvc;
+
+<span class="k">namespace</span> InssApi.Controllers;
+
+[<span class="at">ApiController</span>]
+[<span class="at">Route</span>(<span class="s">"api/[controller]"</span>)]
+<span class="k">public class</span> <span class="t">ContribuintesController</span> : <span class="t">ControllerBase</span>
+{
+    <span class="c">// Lista em memória (some se fechar a API)</span>
+    <span class="k">private static readonly</span> <span class="t">List</span>&lt;<span class="t">Contribuinte</span>&gt; _store = <span class="k">new</span>();
+
+    <span class="c">// actions GET / POST / … entram aqui</span>
+}</div>
+            </div>
+          </div>
+          <aside class="lado">
+            <h3>O que é isso</h3>
+            <p><code>[Route]</code> = endereço do balcão.</p>
+            <p><code>_store</code> = a lista da manhã.</p>
+          </aside>
+        </div>
+      </div>
+    </section>
+
+    <section class="slide compact">
+      <h2>Passo 8 — GET (listar e buscar)</h2>
+      <div class="content">
+        <div class="split codigo">
+          <div class="col">
+            <div class="tela">
+              <div class="tela-bar">Dentro da classe ContribuintesController</div>
+              <div class="tela-body denso">[<span class="at">HttpGet</span>]
+<span class="k">public</span> <span class="t">IActionResult</span> <span class="m">Get</span>()
+    =&gt; <span class="m">Ok</span>(_store);   <span class="c">// 200 + lista</span>
+
+[<span class="at">HttpGet</span>(<span class="s">"{id:int}"</span>)]
+<span class="k">public</span> <span class="t">IActionResult</span> <span class="m">GetById</span>(<span class="k">int</span> <span class="a">id</span>)
+{
+    <span class="k">var</span> <span class="a">c</span> = _store.FirstOrDefault(x =&gt; x.Id == <span class="a">id</span>);
+    <span class="k">return</span> <span class="a">c</span> <span class="k">is null</span> ? <span class="m">NotFound</span>() : <span class="m">Ok</span>(<span class="a">c</span>);  <span class="c">// 404 ou 200</span>
+}</div>
+            </div>
+          </div>
+          <aside class="lado">
+            <h3>No Swagger</h3>
+            <p>GET lista → 200 (começa vazia).</p>
+            <p>GET por id → 200 ou 404.</p>
+          </aside>
+        </div>
+      </div>
+    </section>
+
+    <section class="slide compact">
+      <h2>Passo 8 — POST (cadastrar)</h2>
+      <div class="content">
+        <div class="split codigo">
+          <div class="col">
+            <div class="tela">
+              <div class="tela-bar">Controllers/ContribuintesController.cs</div>
+              <div class="tela-body denso">[<span class="at">HttpPost</span>]
+<span class="k">public</span> <span class="t">IActionResult</span> <span class="m">Create</span>([<span class="at">FromBody</span>] <span class="t">CriarContribuinteRequest</span> <span class="a">req</span>)
+{
+    <span class="k">if</span> (<span class="t">string</span>.IsNullOrWhiteSpace(<span class="a">req</span>.Nuit) || <span class="a">req</span>.Nuit.Length != <span class="n">9</span>)
+        <span class="k">return</span> <span class="m">BadRequest</span>(<span class="s">"NUIT deve ter 9 dígitos."</span>);
+
+    <span class="k">var</span> <span class="a">c</span> = <span class="k">new</span> <span class="t">Contribuinte</span> {
+        Id = _store.Count == <span class="n">0</span> ? <span class="n">1</span> : _store.Max(x =&gt; x.Id) + <span class="n">1</span>,
+        Nuit = <span class="a">req</span>.Nuit, Nome = <span class="a">req</span>.Nome
+    };
+    _store.Add(<span class="a">c</span>);
+    <span class="k">return</span> <span class="m">CreatedAtAction</span>(<span class="k">nameof</span>(GetById), <span class="k">new</span> { id = <span class="a">c</span>.Id }, <span class="a">c</span>);
+}</div>
+            </div>
+          </div>
+          <aside class="lado">
+            <h3>Em ordem</h3>
+            <p>1. Valida → 400</p>
+            <p>2. DTO → ficha</p>
+            <p>3. Add → <strong>201</strong></p>
+            <p class="rodape">Body: nuit + nome</p>
+          </aside>
+        </div>
+      </div>
+    </section>
+
+    <section class="slide compact">
+      <h2>Passo 8 — Demais verbos</h2>
+      <div class="content">
+        <div class="split">
+          <div class="col">
+            <p>Eu mostro PUT, PATCH e DELETE no projetor (mesmo arquivo). Resumo:</p>
+            <table>
+              <tr><th>HTTP</th><th>Rota</th><th>Status</th></tr>
+              <tr><td>GET</td><td><code>/api/contribuintes</code></td><td>200</td></tr>
+              <tr><td>GET</td><td><code>/api/contribuintes/{id}</code></td><td>200 / 404</td></tr>
+              <tr><td>POST</td><td><code>/api/contribuintes</code></td><td>201 / 400</td></tr>
+              <tr><td>PUT</td><td><code>/api/contribuintes/{id}</code></td><td>200 / 404</td></tr>
+              <tr><td>PATCH</td><td><code>…/{id}/status</code></td><td>200 / 404</td></tr>
+              <tr><td>DELETE</td><td><code>/api/contribuintes/{id}</code></td><td>204 / 404</td></tr>
+            </table>
+          </div>
+          <aside class="lado">
+            <h3>Próximo</h3>
+            <p>Antes do Pedido: todo mundo testa o Contribuinte no Swagger.</p>
+            <p class="rodape">Slide seguinte = prova da Ana.</p>
+          </aside>
+        </div>
+      </div>
+    </section>
+
+    <section class="slide compact">
+      <h2>Passo 8 — Prova: testem o Contribuinte</h2>
+      <div class="content">
+        <div class="split">
+          <div class="col">
+            <div class="tag gold">Obrigatório — antes do Pedido</div>
+            <p class="passo-limpo">F5 → Swagger → grupo <strong>Contribuintes</strong>. Façam nesta ordem:</p>
+            <ol>
+              <li>GET lista → <strong>200</strong> (pode estar vazia)</li>
+              <li>POST a Ana → body abaixo → <strong>201</strong></li>
+              <li>GET pelo <code>id</code> que voltou → <strong>200</strong></li>
+              <li>PUT (nome completo) · PATCH status · DELETE → conferir códigos</li>
+              <li>GET lista de novo → a Ana sumiu se deletaram</li>
+            </ol>
+            <div class="term-bar">Body do POST (Request body)</div>
+            <pre class="term vs">{
+  "nuit": "123456789",
+  "nome": "Ana Mucavel"
+}</pre>
+          </div>
+          <aside class="lado">
+            <h3>Só avançam se</h3>
+            <p>POST deu <strong>201</strong> e GET pelo id deu <strong>200</strong>.</p>
+            <p>Se travarem: eu ajudo no Contribuinte.</p>
+            <p class="rodape">Pedido só depois desta prova.</p>
+          </aside>
+        </div>
+      </div>
+    </section>
+
+    <section class="slide compact">
+      <h2>Passo 9 — Pedidos (vocês sozinhos)</h2>
+      <div class="content">
+        <div class="split">
+          <div class="col">
+            <div class="tag gold">Sem eu mostrar o controller no projetor</div>
+            <p>Contribuinte já passou no Swagger? Então usem esta <strong>estrutura</strong>. Os verbos vocês espelham do Contribuinte.</p>
+            <ol>
+              <li>Criem os 2 Models (campos no próximo slide)</li>
+              <li>Criem <code>PedidosController.cs</code> → rota <code>/api/pedidos</code></li>
+              <li>Mesmos verbos: GET · POST · PUT · PATCH · DELETE</li>
+              <li>Testem no Swagger (mesma ordem da Ana)</li>
+            </ol>
+          </div>
+          <aside class="lado">
+            <h3>Dica</h3>
+            <p>Abram o <code>ContribuintesController</code> ao lado e espelhem.</p>
+            <p>DTO · 400 · 404 — iguais.</p>
+            <p class="rodape">Não inventem rota tipo /criarPedido.</p>
+          </aside>
+        </div>
+      </div>
+    </section>
+
+    <section class="slide compact">
+      <h2>Passo 9 — estrutura dos Models</h2>
+      <div class="content">
+        <div class="split">
+          <div class="col">
+            <p class="passo-limpo">Na pasta <code>Models</code>, estes nomes e campos (não inventem outros):</p>
+            <div class="cards dois">
+              <div class="card">
+                <h3>PedidoBeneficio.cs</h3>
+                <p><strong>Id</strong> · <strong>ContribuinteId</strong> · <strong>Tipo</strong> · <strong>Status</strong> (= <code>"Aberto"</code>)</p>
+              </div>
+              <div class="card">
+                <h3>CriarPedidoRequest.cs</h3>
+                <p>DTO do POST: só <strong>ContribuinteId</strong> + <strong>Tipo</strong> (ex.: Velhice)</p>
+              </div>
+            </div>
+          </div>
+          <aside class="lado">
+            <h3>Igual ao Contribuinte</h3>
+            <p>Ficha tem Id + Status.</p>
+            <p>DTO <strong>não</strong> traz Id nem Status.</p>
+            <p class="rodape">Tipo = Velhice ou Invalidez.</p>
+          </aside>
+        </div>
+      </div>
+    </section>
+
+    <section class="slide compact">
+      <h2>Passo 9 — copiem estes Models</h2>
+      <div class="content">
+        <div class="split" style="grid-template-columns:1fr 1fr">
+          <div class="col">
+            <div class="tela">
+              <div class="tela-bar">Models/PedidoBeneficio.cs</div>
+              <div class="tela-body denso"><span class="k">namespace</span> InssApi.Models;
+
+<span class="k">public class</span> <span class="t">PedidoBeneficio</span>
+{
+    <span class="k">public int</span> Id { <span class="k">get</span>; <span class="k">set</span>; }
+    <span class="k">public int</span> ContribuinteId { <span class="k">get</span>; <span class="k">set</span>; }
+    <span class="k">public</span> <span class="t">string</span> Tipo { <span class="k">get</span>; <span class="k">set</span>; } = <span class="t">string</span>.Empty;
+    <span class="k">public</span> <span class="t">string</span> Status { <span class="k">get</span>; <span class="k">set</span>; } = <span class="s">"Aberto"</span>;
+}</div>
+            </div>
+          </div>
+          <div class="col">
+            <div class="tela">
+              <div class="tela-bar">Models/CriarPedidoRequest.cs</div>
+              <div class="tela-body denso"><span class="k">namespace</span> InssApi.Models;
+
+<span class="k">public class</span> <span class="t">CriarPedidoRequest</span>
+{
+    <span class="k">public int</span> ContribuinteId { <span class="k">get</span>; <span class="k">set</span>; }
+    <span class="k">public</span> <span class="t">string</span> Tipo { <span class="k">get</span>; <span class="k">set</span>; } = <span class="t">string</span>.Empty;
+}</div>
+            </div>
+            <p class="passo-limpo">DTO: sem Id e sem Status. O controller é o exercício.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="slide compact">
+      <h2>Passo 9 — esqueleto do controller</h2>
+      <div class="content">
+        <div class="split">
+          <div class="col">
+            <p class="passo-limpo">Criem o arquivo e comecem assim. O resto = espelhar o Contribuinte.</p>
+            <div class="tela">
+              <div class="tela-bar">Controllers/PedidosController.cs</div>
+              <div class="tela-body denso"><span class="k">using</span> InssApi.Models;
+<span class="k">using</span> Microsoft.AspNetCore.Mvc;
+
+<span class="k">namespace</span> InssApi.Controllers;
+
+[<span class="at">ApiController</span>]
+[<span class="at">Route</span>(<span class="s">"api/[controller]"</span>)]
+<span class="k">public class</span> <span class="t">PedidosController</span> : <span class="t">ControllerBase</span>
+{
+    <span class="k">private static readonly</span> <span class="t">List</span>&lt;<span class="t">PedidoBeneficio</span>&gt; _store = <span class="k">new</span>();
+
+    <span class="c">// GET, GET/{id}, POST, PUT, PATCH, DELETE</span>
+    <span class="c">// → abram ContribuintesController e espelhem</span>
+}</div>
+            </div>
+          </div>
+          <aside class="lado">
+            <h3>Trocas</h3>
+            <p><code>Contribuinte</code> → <code>PedidoBeneficio</code></p>
+            <p><code>CriarContribuinteRequest</code> → <code>CriarPedidoRequest</code></p>
+            <p>POST: validar <code>ContribuinteId &gt; 0</code> e <code>Tipo</code> não vazio</p>
+            <p class="rodape">Status inicial = "Aberto"</p>
+          </aside>
+        </div>
+      </div>
+    </section>
+
+    <section class="slide compact">
+      <h2>Passo 9 — checklist (Pedido)</h2>
+      <div class="content">
+        <div class="split">
+          <div class="col">
+            <p>Entreguem isto — marquem um por um:</p>
+            <ol>
+              <li><code>PedidoBeneficio</code> + <code>CriarPedidoRequest</code> com os campos do slide</li>
+              <li><code>PedidosController</code> com GET · POST · PUT · PATCH · DELETE</li>
+              <li>Validação: ContribuinteId ≤ 0 ou Tipo vazio → <strong>400</strong></li>
+              <li>Id inexistente → <strong>404</strong> · POST ok → <strong>201</strong> · DELETE ok → <strong>204</strong></li>
+              <li>Body de teste no Swagger: <code>{"contribuinteId":1,"tipo":"Velhice"}</code></li>
+              <li>Cada verbo testado (Try it out → Execute)</li>
+            </ol>
+          </div>
+          <aside class="lado">
+            <h3>Pronto quando</h3>
+            <p>Os seis itens acima estão ok.</p>
+            <p class="rodape">F5 de novo = some. Ainda é memória. Banco é à tarde.</p>
+          </aside>
+        </div>
+      </div>
+    </section>
+
+    <section class="slide fill">
+      <h1>M6 · Tarde</h1>
+      <p class="highlight">Persistência com Entity Framework Core</p>
+      <p>Primeiro os conceitos. Depois a prática.</p>
+      <p>14:00 às 18:00</p>
+    </section>
+
+    <section class="slide fill">
+      <h1>Tarde · Conceitos</h1>
+      <p class="highlight">Ainda não gravamos no banco. Primeiro entendemos.</p>
+      <p>DbContext · Migration · SaveChanges</p>
+    </section>
+
+    <section class="slide compact">
+      <h2>O que vamos persistir hoje</h2>
+      <div class="content">
+        <div class="split">
+          <div class="col">
+            <p>A mesma API da manhã (<code>InssApi</code>). Agora: gravar de verdade com Entity Framework Core.</p>
+            <div class="cards">
+              <div class="card">
+                <h3>DbContext</h3>
+                <p>A “sessão” da API com o banco: quais tabelas existem.</p>
+              </div>
+              <div class="card">
+                <h3>Migrations</h3>
+                <p>Criar/atualizar as tabelas no arquivo <code>inss.db</code>.</p>
+              </div>
+              <div class="card">
+                <h3>CRUD + banco</h3>
+                <p>Mesmos endpoints. Por dentro: Add + SaveChanges.</p>
+              </div>
+            </div>
+          </div>
+          <aside class="lado">
+            <h3>Como esta aula</h3>
+            <ol>
+              <li>Conceitos</li>
+              <li>Prática no Visual Studio</li>
+            </ol>
+            <p class="rodape">14:00 às 18:00 · M6 · mesmo projeto <code>InssApi</code></p>
+          </aside>
+        </div>
+      </div>
+    </section>
+
+    <section class="slide compact">
+      <h2>Lembra o tempo de manhã?</h2>
+      <div class="content">
+        <div class="split">
+          <div class="col">
+            <p>De manhã a Ana estava só na memória. POST → RAM → F5 → some.</p>
+            <div class="cards dois">
+              <div class="card">
+                <h3>Posto de verdade</h3>
+                <p>Um INSS não pode apagar a ficha ao fechar o expediente.</p>
+              </div>
+              <div class="card">
+                <h3>O que muda</h3>
+                <p>O balcão (Swagger) fica igual. Por trás, a lista vira o arquivo do banco.</p>
+              </div>
+            </div>
+          </div>
+          <aside class="lado">
+            <h3>Meta da tarde</h3>
+            <p>Reiniciar a API e a Ana continuar lá.</p>
+            <p class="rodape">Esse é o teste final do M6.</p>
+          </aside>
+        </div>
+      </div>
+    </section>
+
+    <section class="slide compact">
+      <h2>Lousa ou caderno?</h2>
+      <div class="content">
+        <div class="split">
+          <div class="col">
+            <p>Persistir é trocar a lousa pelo caderno: o que está escrito continua, mesmo fechando e abrindo.</p>
+            <table>
+              <tr><th>Memória (manhã)</th><th>Banco (tarde)</th></tr>
+              <tr><td>Lousa — apaga ao sair</td><td>Caderno — fica escrito</td></tr>
+              <tr><td>Rápido</td><td>Um pouco mais lento</td></tr>
+              <tr><td>Some no restart</td><td>Sobrevive ao F5</td></tr>
+            </table>
+          </div>
+          <aside class="lado">
+            <h3>Os dois</h3>
+            <p>RAM é rápida e volátil.</p>
+            <p>SQLite é um arquivo: <code>inss.db</code>.</p>
+            <p class="rodape">Hoje o caderno é o arquivo na pasta do projeto.</p>
+          </aside>
+        </div>
+      </div>
+    </section>
+
+    <section class="slide compact">
+      <h2>1 — DbContext</h2>
+      <div class="content">
+        <div class="split">
+          <div class="col">
+            <p>DbContext = a sessão da API com o banco. Como abrir o arquivo do posto: fichas + pedidos.</p>
+            <div class="tela">
+              <div class="tela-bar">Data/AppDbContext.cs</div>
+              <div class="tela-body">using Microsoft.EntityFrameworkCore;
+using InssApi.Models;
+
+namespace InssApi.Data;
+
+public class AppDbContext : DbContext
+{
+    public AppDbContext(DbContextOptions&lt;AppDbContext&gt; options)
+        : base(options) { }
+
+    public DbSet&lt;Contribuinte&gt; Contribuintes =&gt; Set&lt;Contribuinte&gt;();
+    public DbSet&lt;PedidoBeneficio&gt; Pedidos =&gt; Set&lt;PedidoBeneficio&gt;();
+}</div>
+            </div>
+          </div>
+          <aside class="lado">
+            <h3>O que ele faz</h3>
+            <p>Agrupa as tabelas (DbSets).</p>
+            <p>Rastreia o que mudou até o <code>SaveChanges</code>.</p>
+            <p class="rodape">Arquivo: <code>Data/AppDbContext.cs</code></p>
+          </aside>
+        </div>
+      </div>
+    </section>
+
+    <section class="slide compact">
+      <h2>2 — DbSet&lt;T&gt;</h2>
+      <div class="content">
+        <div class="split">
+          <div class="col">
+            <p>DbSet = uma gaveta do caderno (uma tabela). Só busca quando alguém pergunta.</p>
+            <div class="cards dois">
+              <div class="card">
+                <h3>Não carrega tudo</h3>
+                <p>Só busca quando você pede: <code>ToListAsync()</code>.</p>
+              </div>
+              <div class="card">
+                <h3>Porta da tabela</h3>
+                <p>Add, Find, Remove passam por aqui.</p>
+              </div>
+            </div>
+          </div>
+          <aside class="lado">
+            <h3>Na prática</h3>
+            <p><code>_db.Contribuintes</code> = a gaveta das fichas.</p>
+            <p><code>_db.Pedidos</code> = a gaveta dos pedidos.</p>
+          </aside>
+        </div>
+      </div>
+    </section>
+
+    <section class="slide compact">
+      <h2>3 — Fluent API</h2>
+      <div class="content">
+        <div class="split">
+          <div class="col">
+            <p class="passo-limpo">Fluent API = regras da tabela <strong>fora</strong> da classe: chave, tamanho, único.</p>
+            <pre class="term">// Data/AppDbContext.cs — OnModelCreating
+protected override void OnModelCreating(ModelBuilder modelBuilder)
+{
+    modelBuilder.Entity&lt;Contribuinte&gt;(e =&gt;
+    {
+        e.HasKey(c =&gt; c.Id);
+        e.Property(c =&gt; c.Nome).HasMaxLength(100);
+        e.HasIndex(c =&gt; c.Nuit).IsUnique();
+    });
+}</pre>
+          </div>
+          <aside class="lado">
+            <h3>Onde</h3>
+            <p>No <code>OnModelCreating</code>.</p>
+            <p>Chave = Id · Nome ≤ 100 · NUIT único.</p>
+            <p class="rodape">A classe Contribuinte fica limpa.</p>
+          </aside>
+        </div>
+      </div>
+    </section>
+
+    <section class="slide compact">
+      <h2>4 — Migration</h2>
+      <div class="content">
+        <div class="split">
+          <div class="col">
+            <p>Migration = receita que cria/atualiza as tabelas. C# muda → add → update → tabela no <code>inss.db</code>.</p>
+            <pre class="term">dotnet ef migrations add InitialCreate
+dotnet ef database update</pre>
+          </div>
+          <aside class="lado">
+            <h3>Dois passos</h3>
+            <p><strong>add</strong> — gera o C# da mudança.</p>
+            <p><strong>update</strong> — aplica no arquivo <code>inss.db</code>.</p>
+            <p class="rodape">Sem update, a tabela não existe.</p>
+          </aside>
+        </div>
+      </div>
+    </section>
+
+    <section class="slide compact">
+      <h2>5 — Connection string</h2>
+      <div class="content">
+        <div class="split">
+          <div class="col">
+            <p>Connection string = onde está o banco. No SQLite = um arquivo. Sem host, porta ou senha.</p>
+            <pre class="term">// appsettings.json
+{
+  "ConnectionStrings": {
+    "Default": "Data Source=inss.db"
+  }
+}</pre>
+            <pre class="term">// Program.cs
+builder.Services.AddDbContext&lt;AppDbContext&gt;(options =&gt;
+    options.UseSqlite(
+        builder.Configuration.GetConnectionString("Default")));</pre>
+          </div>
+          <aside class="lado">
+            <h3>Onde</h3>
+            <p>Arquivo: <code>appsettings.json</code></p>
+            <p>Depois do update, nasce o <code>inss.db</code> na pasta do projeto.</p>
+          </aside>
+        </div>
+      </div>
+    </section>
+
+    <section class="slide compact">
+      <h2>6 — SaveChanges()</h2>
+      <div class="content">
+        <div class="split">
+          <div class="col">
+            <p>Add / Update / Remove só anotam. <code>SaveChanges()</code> é o carimbo — grava de verdade no arquivo.</p>
+            <div class="cards dois">
+              <div class="card">
+                <h3>Lápis</h3>
+                <p>Add, Update, Remove — o EF só anota.</p>
+              </div>
+              <div class="card">
+                <h3>Tinta</h3>
+                <p><code>SaveChanges()</code> — agora grava no arquivo.</p>
+              </div>
+            </div>
+          </div>
+          <aside class="lado">
+            <h3>Atenção</h3>
+            <p>Nada vai para o banco antes desse momento.</p>
+            <p class="rodape">Esquecer o SaveChanges = a Ana some no F5 de novo.</p>
+          </aside>
+        </div>
+      </div>
+    </section>
+
+    <section class="slide fill">
+      <h1>Tarde · Prática</h1>
+      <p class="highlight">Agora o arquivo: SQLite.</p>
+      <p>Mesmo projeto <code>InssApi</code>. Mesmos GET e POST. Por dentro, gravar de verdade.</p>
+    </section>
+
+    <section class="slide compact">
+            <h2>Mapa do projeto</h2>
+      <div class="content">
+        <div class="split">
+          <div class="col">
+            <p class="passo-limpo">Antes da tarde, o Gerenciador de Soluções deve parecer com isto:</p>
+            <div class="arvore">
+              <div class="bar">Gerenciador de Soluções</div>
+              <ul>
+                <li class="pasta">InssApi</li>
+                <li class="indent pasta">Controllers</li>
+                <li class="indent2 cs">ContribuintesController.cs <span class="hint">balcão</span></li>
+                <li class="indent2 cs">PedidosController.cs</li>
+                <li class="indent pasta">Models</li>
+                <li class="indent2 cs">Contribuinte.cs · CriarContribuinteRequest.cs</li>
+                <li class="indent2 cs">PedidoBeneficio.cs · CriarPedidoRequest.cs</li>
+                <li class="indent cs">Program.cs <span class="hint">sobe a API</span></li>
+                <li class="indent cs">appsettings.json <span class="hint">configs</span></li>
+              </ul>
+            </div>
+          </div>
+          <aside class="lado">
+            <h3>Na tarde</h3>
+            <p>+ pasta <strong>Data</strong></p>
+            <p>editar <strong>Program.cs</strong></p>
+            <p>editar <strong>appsettings.json</strong></p>
+            <p>editar <strong>ContribuintesController</strong></p>
+            <p class="rodape">Models não mudam.</p>
+          </aside>
+        </div>
+      </div>
+    </section>
+
+    <section class="slide compact">
+      <h2>Roteiro da tarde</h2>
+      <div class="content">
+        <div class="split">
+          <div class="col">
+            <ol>
+              <li>NuGet + <code>dotnet-ef</code></li>
+              <li>Pasta <code>Data</code> → <code>AppDbContext.cs</code></li>
+              <li><code>appsettings.json</code> + <code>Program.cs</code></li>
+              <li>Terminal → migration + update → <code>inss.db</code></li>
+              <li><code>ContribuintesController</code> + <code>PedidosController</code>: _store → _db</li>
+              <li>Prova: POST → parar → F5 → GET</li>
+              <li>Conferir o mapa final (Data · Migrations · inss.db)</li>
+            </ol>
+          </div>
+          <aside class="lado">
+            <h3>Eu mostro</h3>
+            <p>Vocês acompanham no projetor.</p>
+            <p class="rodape">Não pulem o database update.</p>
+          </aside>
+        </div>
+      </div>
+    </section>
+
+    <section class="slide compact">
+      <h2>Tarde 1 — Pacotes NuGet</h2>
+      <div class="content">
+        <div class="split">
+          <div class="col">
+            <div class="vs-path">
+              <span class="chip">botão direito</span><span class="sep">›</span>
+              <span class="chip">InssApi</span><span class="sep">›</span>
+              <span class="chip accent">Gerenciar Pacotes NuGet…</span>
+            </div>
+            <div class="nuget">
+              <div class="nb"><span>Procurar</span> instalar estes dois</div>
+              <div class="row">Microsoft.EntityFrameworkCore.Sqlite <span class="btn">Instalar</span></div>
+              <div class="row">Microsoft.EntityFrameworkCore.Design <span class="btn">Instalar</span></div>
+            </div>
+            <div class="vs-path" style="margin-top:.55rem">
+              <span class="chip">Exibir</span><span class="sep">›</span>
+              <span class="chip accent">Terminal</span>
+            </div>
+            <div class="term-bar">Terminal — pasta InssApi</div>
+            <pre class="term vs">dotnet tool install --global dotnet-ef</pre>
+          </div>
+          <aside class="lado">
+            <h3>Nesta hora</h3>
+            <p>Não abram código.</p>
+            <p>Só pacotes + ferramenta.</p>
+            <p class="rodape">Sem dotnet-ef, migration falha.</p>
+          </aside>
+        </div>
+      </div>
+    </section>
+
+    <section class="slide compact">
+      <h2>Tarde 2 — Pasta Data</h2>
+      <div class="content">
+        <div class="split">
+          <div class="col">
+            <div class="vs-path">
+              <span class="chip">InssApi</span><span class="sep">›</span>
+              <span class="chip">Adicionar</span><span class="sep">›</span>
+              <span class="chip accent">Nova pasta → Data</span>
+            </div>
+            <div class="vs-path">
+              <span class="chip">Data</span><span class="sep">›</span>
+              <span class="chip">Adicionar</span><span class="sep">›</span>
+              <span class="chip accent">Classe… → AppDbContext.cs</span>
+            </div>
+            <p class="passo-limpo">Depois: copiem o código do projetor.</p>
+            <div class="tela">
+              <div class="tela-bar">Data/AppDbContext.cs</div>
+              <div class="tela-body denso"><span class="k">using</span> InssApi.Models;
+<span class="k">using</span> Microsoft.EntityFrameworkCore;
+
+<span class="k">namespace</span> InssApi.Data;
+
+<span class="k">public class</span> <span class="t">AppDbContext</span> : <span class="t">DbContext</span>
+{
+    <span class="k">public</span> <span class="m">AppDbContext</span>(<span class="t">DbContextOptions</span>&lt;<span class="t">AppDbContext</span>&gt; options)
+        : <span class="k">base</span>(options) { }
+
+    <span class="k">public</span> <span class="t">DbSet</span>&lt;<span class="t">Contribuinte</span>&gt; Contribuintes =&gt; <span class="m">Set</span>&lt;<span class="t">Contribuinte</span>&gt;();
+    <span class="k">public</span> <span class="t">DbSet</span>&lt;<span class="t">PedidoBeneficio</span>&gt; Pedidos =&gt; <span class="m">Set</span>&lt;<span class="t">PedidoBeneficio</span>&gt;();
+}</div>
+            </div>
+          </div>
+          <aside class="lado">
+            <h3>Solution Explorer</h3>
+            <div class="arvore">
+              <div class="bar">InssApi</div>
+              <ul>
+                <li class="indent pasta">Controllers</li>
+                <li class="indent pasta">Models</li>
+                <li class="indent foco pasta novo">Data</li>
+                <li class="indent2 foco cs novo">AppDbContext.cs</li>
+                <li class="indent cs">Program.cs</li>
+              </ul>
+            </div>
+            <p class="rodape">Cada DbSet = uma tabela.</p>
+          </aside>
+        </div>
+      </div>
+    </section>
+
+    <section class="slide compact">
+      <h2>Tarde 3 — appsettings.json</h2>
+      <div class="content">
+        <div class="split">
+          <div class="col">
+            <p class="passo-limpo">Duplo clique em <code>appsettings.json</code> → acrescentem <strong>dentro</strong> do JSON (não apaguem o resto):</p>
+            <div class="term-bar">appsettings.json</div>
+            <pre class="term vs">"ConnectionStrings": {
+  "Default": "Data Source=inss.db"
+}</pre>
+          </div>
+          <aside class="lado">
+            <h3>Atenção</h3>
+            <p>Vai <strong>dentro</strong> do <code>{ }</code>.</p>
+            <p>Não apaguem Logging nem o resto.</p>
+            <p class="rodape">Program.cs no próximo slide.</p>
+          </aside>
+        </div>
+      </div>
+    </section>
+
+    <section class="slide compact">
+      <h2>Tarde 3 — Program.cs (AddDbContext)</h2>
+      <div class="content">
+        <div class="split">
+          <div class="col">
+            <p class="passo-limpo">Abram <code>Program.cs</code>:</p>
+            <ul>
+              <li>No <strong>topo</strong>: os dois <code>using</code></li>
+              <li>Depois de <code>AddControllers()</code>: o <code>AddDbContext</code></li>
+            </ul>
+            <div class="term-bar">Program.cs</div>
+            <pre class="term vs">using InssApi.Data;
+using Microsoft.EntityFrameworkCore;
+
+builder.Services.AddDbContext&lt;AppDbContext&gt;(options =&gt;
+    options.UseSqlite(
+        builder.Configuration.GetConnectionString("Default")));</pre>
+          </div>
+          <aside class="lado">
+            <h3>Sem isto</h3>
+            <p>A migration falha: “Unable to create a DbContext”.</p>
+            <p class="rodape">inss.db nasce no próximo passo.</p>
+          </aside>
+        </div>
+      </div>
+    </section>
+
+    <section class="slide compact">
+      <h2>Tarde 4 — Terminal: migration</h2>
+      <div class="content">
+        <div class="split">
+          <div class="col">
+            <div class="vs-path">
+              <span class="chip">Exibir</span><span class="sep">›</span>
+              <span class="chip accent">Terminal</span>
+            </div>
+            <div class="term-bar">Terminal — pasta InssApi · um comando de cada vez</div>
+            <pre class="term vs">dotnet ef migrations add InitialCreate
+
+dotnet ef database update</pre>
+            <p class="passo-limpo">1º → pasta <code>Migrations</code> · 2º → arquivo <code>inss.db</code></p>
+            <p class="passo-limpo">Se não ver o <code>inss.db</code>: ícone no topo do Solution Explorer → <strong>Mostrar todos os arquivos</strong>.</p>
+          </div>
+          <aside class="lado">
+            <h3>Nascem no projeto</h3>
+            <div class="arvore">
+              <div class="bar">InssApi</div>
+              <ul>
+                <li class="indent foco pasta novo">Migrations</li>
+                <li class="indent2 cs novo">…_InitialCreate.cs</li>
+                <li class="indent2 cs novo">…ModelSnapshot.cs</li>
+                <li class="indent foco cs novo">inss.db</li>
+                <li class="indent pasta">Data</li>
+              </ul>
+            </div>
+            <p class="rodape">Sem update = sem tabela.</p>
+          </aside>
+        </div>
+      </div>
+    </section>
+
+    <section class="slide compact">
+      <h2>Tarde 5 — Abrir o ContribuintesController</h2>
+      <div class="content">
+        <div class="split">
+          <div class="col">
+            <div class="vs-path">
+              <span class="chip">Controllers</span><span class="sep">›</span>
+              <span class="chip accent">ContribuintesController.cs</span>
+            </div>
+            <p class="passo-limpo">Duplo clique e copiem do projetor:</p>
+            <ol>
+              <li>Apaguem a linha da lista: <code>_store = new()</code></li>
+              <li>No topo, acrescentem os <code>using</code></li>
+              <li>Copiem o construtor com <code>_db</code> do projetor</li>
+            </ol>
+            <div class="tela">
+              <div class="tela-bar">Controllers/ContribuintesController.cs</div>
+              <div class="tela-body denso"><span class="k">using</span> InssApi.Data;
+<span class="k">using</span> Microsoft.EntityFrameworkCore;
+
+<span class="c">// apaguem: private static readonly List&lt;Contribuinte&gt; _store = new();</span>
+
+<span class="k">private readonly</span> <span class="t">AppDbContext</span> _db;
+<span class="k">public</span> <span class="m">ContribuintesController</span>(<span class="t">AppDbContext</span> <span class="a">db</span>) =&gt; _db = <span class="a">db</span>;</div>
+            </div>
+          </div>
+          <aside class="lado">
+            <h3>Onde no VS</h3>
+            <div class="arvore">
+              <div class="bar">Controllers</div>
+              <ul>
+                <li class="foco cs">ContribuintesController.cs</li>
+                <li class="cs">PedidosController.cs</li>
+              </ul>
+            </div>
+            <p class="rodape">Models e Data não mexem agora.</p>
+          </aside>
+        </div>
+      </div>
+    </section>
+
+    <section class="slide compact">
+      <h2>Tarde 6 — GET e GET/{id} com EF</h2>
+      <div class="content">
+        <div class="split">
+          <div class="col">
+            <p class="passo-limpo">Ainda em <code>ContribuintesController.cs</code> — troquem o GET:</p>
+            <div class="tela">
+              <div class="tela-bar">Controllers/ContribuintesController.cs</div>
+              <div class="tela-body denso">[<span class="at">HttpGet</span>]
+<span class="k">public async</span> <span class="t">Task</span>&lt;<span class="t">IActionResult</span>&gt; <span class="m">Get</span>()
+{
+    <span class="k">var</span> <span class="a">lista</span> = <span class="k">await</span> _db.Contribuintes.AsNoTracking().ToListAsync();
+    <span class="k">return</span> <span class="m">Ok</span>(<span class="a">lista</span>);
+}
+
+[<span class="at">HttpGet</span>(<span class="s">"{id:int}"</span>)]
+<span class="k">public async</span> <span class="t">Task</span>&lt;<span class="t">IActionResult</span>&gt; <span class="m">GetById</span>(<span class="k">int</span> <span class="a">id</span>)
+{
+    <span class="k">var</span> <span class="a">c</span> = <span class="k">await</span> _db.Contribuintes.AsNoTracking()
+        .FirstOrDefaultAsync(x =&gt; x.Id == <span class="a">id</span>);
+    <span class="k">return</span> <span class="a">c</span> <span class="k">is null</span> ? <span class="m">NotFound</span>() : <span class="m">Ok</span>(<span class="a">c</span>);
+}</div>
+            </div>
+          </div>
+          <aside class="lado">
+            <h3>Diferença</h3>
+            <p>Manhã: <code>_store</code></p>
+            <p>Tarde: <code>_db</code> + <code>AsNoTracking</code></p>
+            <p class="rodape">POST no próximo slide.</p>
+          </aside>
+        </div>
+      </div>
+    </section>
+
+    <section class="slide compact">
+      <h2>Tarde 6 — POST com EF</h2>
+      <div class="content">
+        <div class="split">
+          <div class="col">
+            <p class="passo-limpo">Mesmo arquivo — troquem o POST. Sem <code>SaveChangesAsync</code> a Ana some.</p>
+            <div class="tela">
+              <div class="tela-bar">Controllers/ContribuintesController.cs</div>
+              <div class="tela-body denso">[<span class="at">HttpPost</span>]
+<span class="k">public async</span> <span class="t">Task</span>&lt;<span class="t">IActionResult</span>&gt; <span class="m">Create</span>(
+    [<span class="at">FromBody</span>] <span class="t">CriarContribuinteRequest</span> <span class="a">req</span>)
+{
+    <span class="k">if</span> (<span class="t">string</span>.IsNullOrWhiteSpace(<span class="a">req</span>.Nuit) || <span class="a">req</span>.Nuit.Length != <span class="n">9</span>)
+        <span class="k">return</span> <span class="m">BadRequest</span>(<span class="s">"NUIT deve ter 9 dígitos."</span>);
+
+    <span class="k">var</span> <span class="a">c</span> = <span class="k">new</span> <span class="t">Contribuinte</span> {
+        Nuit = <span class="a">req</span>.Nuit, Nome = <span class="a">req</span>.Nome
+    };
+    _db.Contribuintes.Add(<span class="a">c</span>);
+    <span class="k">await</span> _db.SaveChangesAsync();
+    <span class="k">return</span> <span class="m">CreatedAtAction</span>(<span class="k">nameof</span>(GetById),
+        <span class="k">new</span> { id = <span class="a">c</span>.Id }, <span class="a">c</span>);
+}</div>
+            </div>
+          </div>
+          <aside class="lado">
+            <h3>Obrigatório</h3>
+            <p><code>Add</code> só anota.</p>
+            <p><code>SaveChangesAsync</code> grava no <code>inss.db</code>.</p>
+            <p class="rodape">PUT / PATCH / DELETE: Find + SaveChanges.</p>
+          </aside>
+        </div>
+      </div>
+    </section>
+
+    <section class="slide compact">
+      <h2>Tarde 6b — Pedidos (mesmo padrão)</h2>
+      <div class="content">
+        <div class="split">
+          <div class="col">
+            <p class="passo-limpo">Repitam no <code>PedidosController.cs</code> o que fizeram no Contribuinte:</p>
+            <ol>
+              <li>Tirem o <code>_store</code></li>
+              <li>Injete <code>AppDbContext _db</code> no construtor</li>
+              <li>GET / POST usam <code>_db.Pedidos</code> + <code>SaveChangesAsync</code></li>
+            </ol>
+            <div class="tela">
+              <div class="tela-bar">Controllers/PedidosController.cs — ideia</div>
+              <div class="tela-body denso"><span class="k">private readonly</span> <span class="t">AppDbContext</span> _db;
+<span class="k">public</span> <span class="m">PedidosController</span>(<span class="t">AppDbContext</span> <span class="a">db</span>) =&gt; _db = <span class="a">db</span>;
+
+<span class="c">// GET:  await _db.Pedidos.AsNoTracking().ToListAsync()</span>
+<span class="c">// POST: _db.Pedidos.Add(p); await _db.SaveChangesAsync();</span></div>
+            </div>
+          </div>
+          <aside class="lado">
+            <h3>Solution Explorer</h3>
+            <div class="arvore">
+              <div class="bar">Controllers</div>
+              <ul>
+                <li class="cs">ContribuintesController.cs</li>
+                <li class="foco cs">PedidosController.cs</li>
+              </ul>
+            </div>
+            <p class="rodape">Eu mostro se alguém travar.</p>
+          </aside>
+        </div>
+      </div>
+    </section>
+
+    <section class="slide compact">
+      <h2>Tarde 7 — Prova (obrigatória)</h2>
+      <div class="content">
+        <div class="split">
+          <div class="col">
+            <ol>
+              <li>F5 → Swagger</li>
+              <li>POST a Ana → deve voltar <strong>201</strong></li>
+              <li>Shift+F5 (parar a API)</li>
+              <li>F5 de novo</li>
+              <li>GET lista → a Ana <strong>tem que continuar</strong></li>
+            </ol>
+            <p>Se sumiu: faltou <code>SaveChangesAsync</code> ou a migration/update.</p>
+          </div>
+          <aside class="lado">
+            <h3>Pronto quando</h3>
+            <p>Restart e a Ana ainda está.</p>
+            <div class="arvore"><div class="bar">projeto</div><ul><li class="foco cs novo">inss.db</li></ul></div>
+            <p class="rodape">Aí a lousa virou caderno.</p>
+          </aside>
+        </div>
+      </div>
+    </section>
+
+    <section class="slide compact mapa-final">
+      <h2>Mapa final — deve ficar assim</h2>
+      <div class="content">
+        <div class="split">
+          <div class="col">
+            <p class="passo-limpo">No Gerenciador de Soluções, no fim da tarde:</p>
+            <div class="arvore">
+              <div class="bar">Gerenciador de Soluções</div>
+              <ul>
+                <li class="pasta">InssApi</li>
+                <li class="indent pasta">Controllers</li>
+                <li class="indent2 cs">ContribuintesController.cs</li>
+                <li class="indent2 cs">PedidosController.cs</li>
+                <li class="indent pasta novo">Data</li>
+                <li class="indent2 cs novo">AppDbContext.cs</li>
+                <li class="indent pasta novo">Migrations</li>
+                <li class="indent2 cs novo">…InitialCreate.cs</li>
+                <li class="indent2 cs novo">…ModelSnapshot.cs</li>
+                <li class="indent pasta">Models</li>
+                <li class="indent2 cs">Contribuinte + Pedido (+ DTOs)</li>
+                <li class="indent cs">appsettings.json</li>
+                <li class="indent cs novo">inss.db</li>
+                <li class="indent cs">Program.cs</li>
+              </ul>
+            </div>
+          </div>
+          <aside class="lado">
+            <h3>Checklist</h3>
+            <p>✓ Data + AppDbContext</p>
+            <p>✓ Migrations</p>
+            <p>✓ inss.db</p>
+            <p>✓ Controllers com _db</p>
+            <p class="rodape">Models iguais à manhã.</p>
+          </aside>
+        </div>
+      </div>
+    </section>
+
+    <section class="slide compact">
+      <h2>O que muda no CRUD</h2>
+      <div class="content">
+        <div class="split">
+          <div class="col">
+            <p>As rotas no Swagger não mudam. Só a implementação por dentro.</p>
+            <table>
+              <tr><th>M5 (manhã)</th><th>M6 (tarde)</th></tr>
+              <tr><td><code>List&lt;Contribuinte&gt;</code></td><td>DbContext + SQLite</td></tr>
+              <tr><td><code>Add()</code> na lista</td><td><code>Add()</code> + <code>SaveChangesAsync()</code></td></tr>
+              <tr><td>Restart some</td><td>Restart continua</td></tr>
+            </table>
+          </div>
+          <aside class="lado">
+            <h3>No Swagger</h3>
+            <p>O balcão é o mesmo.</p>
+            <p>Mudou o arquivo atrás — a lousa virou caderno.</p>
+          </aside>
+        </div>
+      </div>
+    </section>
+
+    <section class="slide compact">
+      <h2>Checklist do dia</h2>
+      <div class="content">
+        <div class="split">
+          <div class="col">
+            <div class="cards dois">
+              <div class="card">
+                <h3>Manhã</h3>
+                <p><code>InssApi</code> · Contribuinte no projetor · Pedido sozinhos</p>
+              </div>
+              <div class="card">
+                <h3>Tarde</h3>
+                <p><code>AppDbContext</code> · <code>inss.db</code> · migration + update</p>
+              </div>
+              <div class="card">
+                <h3>Prova</h3>
+                <p>POST → F5 → GET: a Ana continua</p>
+              </div>
+              <div class="card">
+                <h3>Status</h3>
+                <p>200 · 201 · 400 · 404 · 204 no Swagger</p>
+              </div>
+            </div>
+          </div>
+          <aside class="lado">
+            <h3>Fio do dia</h3>
+            <p>M5 — o balcão atende.</p>
+            <p>M6 — o arquivo não apaga.</p>
+            <p class="rodape">Um projeto: <code>InssApi</code></p>
+          </aside>
+        </div>
+      </div>
+    </section>
+
+    <section class="slide compact">
+      <h2>Se der errado</h2>
+      <div class="content">
+        <div class="split">
+          <div class="col">
+            <table>
+              <tr><th>Problema</th><th>Façam isso</th></tr>
+              <tr><td><code>dotnet ef</code> não existe</td><td><code>dotnet tool install --global dotnet-ef</code></td></tr>
+              <tr><td>UseSqlite não acha</td><td>Pacote Sqlite + <code>using</code> no Program</td></tr>
+              <tr><td>Tabela não existe</td><td><code>dotnet ef database update</code></td></tr>
+              <tr><td>NUIT duplicado</td><td>Índice único — tratem como 400, não 500</td></tr>
+              <tr><td>Ana some no F5</td><td>Faltou <code>SaveChangesAsync</code> no POST</td></tr>
+            </table>
+          </div>
+          <aside class="lado">
+            <h3>Ordem</h3>
+            <p>Pacote → contexto → add → update → F5.</p>
+            <p class="rodape">Pular o update é o erro mais comum.</p>
+          </aside>
+        </div>
+      </div>
+    </section>
+
+    <section class="slide compact">
+      <h2>O que ficou deste dia</h2>
+      <div class="content">
+        <div class="split">
+          <div class="col">
+            <div class="cards dois">
+              <div class="card">
+                <h3>M5</h3>
+                <p>API no Swagger: controller, rota, DTO (= formulário), validação, 200 / 201 / 400.</p>
+              </div>
+              <div class="card">
+                <h3>M6</h3>
+                <p>A mesma API grava no SQLite: DbContext, migration, SaveChanges.</p>
+              </div>
+            </div>
+          </div>
+          <aside class="lado">
+            <h3>Em resumo</h3>
+            <p>Um único projeto: <code>InssApi</code>.</p>
+            <p>De manhã a API atende. À tarde os dados ficam no arquivo.</p>
+          </aside>
+        </div>
+      </div>
+    </section>
+
+    <section class="slide fill">
+      <h1>Fim do dia</h1>
+      <p class="highlight">M5 + M6</p>
+      <div class="callout green">API no ar · dados no arquivo · testado no Swagger.</div>
+    </section>
+
+  </div>
+
+  <div class="nav-bar">
+    <button type="button" id="prev" disabled>← Anterior</button>
+    <span class="slide-counter"><span id="cur">1</span> / <span id="total">1</span></span>
+    <button type="button" id="next">Próximo →</button>
+  </div>
+
+  <script>
+    const slides = [...document.querySelectorAll('.slide')];
+    const total = slides.length;
+    let i = 0;
+    document.getElementById('total').textContent = total;
+    function show(n) {
+      i = Math.max(0, Math.min(total - 1, n));
+      slides.forEach((s, idx) => s.classList.toggle('active', idx === i));
+      document.getElementById('cur').textContent = i + 1;
+      document.getElementById('prev').disabled = i === 0;
+      document.getElementById('next').disabled = i === total - 1;
+      document.getElementById('progress').style.width = ((i + 1) / total * 100) + '%';
+    }
+    document.getElementById('prev').onclick = () => show(i - 1);
+    document.getElementById('next').onclick = () => show(i + 1);
+    document.addEventListener('keydown', (e) => {
+      if (e.target.matches('input, textarea')) return;
+      if (['ArrowRight', 'PageDown', ' ', 'Enter'].includes(e.key)) { e.preventDefault(); show(i + 1); }
+      if (['ArrowLeft', 'PageUp', 'Backspace'].includes(e.key)) { e.preventDefault(); show(i - 1); }
+      if (e.key === 'Home') show(0);
+      if (e.key === 'End') show(total - 1);
+    });
+    show(0);
+  </script>
+</body>
+</html>

@@ -1,0 +1,222 @@
+C:\fiap\projeto\api\src\Contribuintes.Infrastructure\Contribuintes.Infrastructure.csproj : warning NU1903: O pacote 'System.Security.Cryptography.Xml' 9.0.0 tem uma alta vulnerabilidade de gravidade conhecida, https://github.com/advisories/GHSA-23rf-6693-g89p [C:\fiap\projeto\api\src\Contribuintes.Api\Contribuintes.Api.csproj]
+C:\fiap\projeto\api\src\Contribuintes.Infrastructure\Contribuintes.Infrastructure.csproj : warning NU1903: O pacote 'System.Security.Cryptography.Xml' 9.0.0 tem uma alta vulnerabilidade de gravidade conhecida, https://github.com/advisories/GHSA-37gx-xxp4-5rgx [C:\fiap\projeto\api\src\Contribuintes.Api\Contribuintes.Api.csproj]
+C:\fiap\projeto\api\src\Contribuintes.Infrastructure\Contribuintes.Infrastructure.csproj : warning NU1903: O pacote 'System.Security.Cryptography.Xml' 9.0.0 tem uma alta vulnerabilidade de gravidade conhecida, https://github.com/advisories/GHSA-6588-8gv4-xfgh [C:\fiap\projeto\api\src\Contribuintes.Api\Contribuintes.Api.csproj]
+C:\fiap\projeto\api\src\Contribuintes.Infrastructure\Contribuintes.Infrastructure.csproj : warning NU1903: O pacote 'System.Security.Cryptography.Xml' 9.0.0 tem uma alta vulnerabilidade de gravidade conhecida, https://github.com/advisories/GHSA-8q5v-6pqq-x66h [C:\fiap\projeto\api\src\Contribuintes.Api\Contribuintes.Api.csproj]
+C:\fiap\projeto\api\src\Contribuintes.Infrastructure\Contribuintes.Infrastructure.csproj : warning NU1903: O pacote 'System.Security.Cryptography.Xml' 9.0.0 tem uma alta vulnerabilidade de gravidade conhecida, https://github.com/advisories/GHSA-cvvh-rhrc-wg4q [C:\fiap\projeto\api\src\Contribuintes.Api\Contribuintes.Api.csproj]
+C:\fiap\projeto\api\src\Contribuintes.Infrastructure\Contribuintes.Infrastructure.csproj : warning NU1903: O pacote 'System.Security.Cryptography.Xml' 9.0.0 tem uma alta vulnerabilidade de gravidade conhecida, https://github.com/advisories/GHSA-g8r8-53c2-pm3f [C:\fiap\projeto\api\src\Contribuintes.Api\Contribuintes.Api.csproj]
+C:\fiap\projeto\api\src\Contribuintes.Infrastructure\Contribuintes.Infrastructure.csproj : warning NU1903: O pacote 'System.Security.Cryptography.Xml' 9.0.0 tem uma alta vulnerabilidade de gravidade conhecida, https://github.com/advisories/GHSA-mmjf-rqrv-855v [C:\fiap\projeto\api\src\Contribuintes.Api\Contribuintes.Api.csproj]
+C:\fiap\projeto\api\src\Contribuintes.Infrastructure\Contribuintes.Infrastructure.csproj : warning NU1903: O pacote 'System.Security.Cryptography.Xml' 9.0.0 tem uma alta vulnerabilidade de gravidade conhecida, https://github.com/advisories/GHSA-w3x6-4m5h-cxqf [C:\fiap\projeto\api\src\Contribuintes.Api\Contribuintes.Api.csproj]
+C:\fiap\projeto\api\src\Contribuintes.Infrastructure\Contribuintes.Infrastructure.csproj : warning NU1903: O pacote 'System.Security.Cryptography.Xml' 9.0.0 tem uma alta vulnerabilidade de gravidade conhecida, https://github.com/advisories/GHSA-23rf-6693-g89p
+C:\fiap\projeto\api\src\Contribuintes.Infrastructure\Contribuintes.Infrastructure.csproj : warning NU1903: O pacote 'System.Security.Cryptography.Xml' 9.0.0 tem uma alta vulnerabilidade de gravidade conhecida, https://github.com/advisories/GHSA-37gx-xxp4-5rgx
+C:\fiap\projeto\api\src\Contribuintes.Infrastructure\Contribuintes.Infrastructure.csproj : warning NU1903: O pacote 'System.Security.Cryptography.Xml' 9.0.0 tem uma alta vulnerabilidade de gravidade conhecida, https://github.com/advisories/GHSA-6588-8gv4-xfgh
+C:\fiap\projeto\api\src\Contribuintes.Infrastructure\Contribuintes.Infrastructure.csproj : warning NU1903: O pacote 'System.Security.Cryptography.Xml' 9.0.0 tem uma alta vulnerabilidade de gravidade conhecida, https://github.com/advisories/GHSA-8q5v-6pqq-x66h
+C:\fiap\projeto\api\src\Contribuintes.Infrastructure\Contribuintes.Infrastructure.csproj : warning NU1903: O pacote 'System.Security.Cryptography.Xml' 9.0.0 tem uma alta vulnerabilidade de gravidade conhecida, https://github.com/advisories/GHSA-cvvh-rhrc-wg4q
+C:\fiap\projeto\api\src\Contribuintes.Infrastructure\Contribuintes.Infrastructure.csproj : warning NU1903: O pacote 'System.Security.Cryptography.Xml' 9.0.0 tem uma alta vulnerabilidade de gravidade conhecida, https://github.com/advisories/GHSA-g8r8-53c2-pm3f
+C:\fiap\projeto\api\src\Contribuintes.Infrastructure\Contribuintes.Infrastructure.csproj : warning NU1903: O pacote 'System.Security.Cryptography.Xml' 9.0.0 tem uma alta vulnerabilidade de gravidade conhecida, https://github.com/advisories/GHSA-mmjf-rqrv-855v
+C:\fiap\projeto\api\src\Contribuintes.Infrastructure\Contribuintes.Infrastructure.csproj : warning NU1903: O pacote 'System.Security.Cryptography.Xml' 9.0.0 tem uma alta vulnerabilidade de gravidade conhecida, https://github.com/advisories/GHSA-w3x6-4m5h-cxqf
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (28ms) [Parameters=[], CommandType='Text', CommandTimeout='30']
+      SELECT "MigrationId", "ProductVersion"
+      FROM "__EFMigrationsHistory"
+      ORDER BY "MigrationId";
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (7ms) [Parameters=[], CommandType='Text', CommandTimeout='30']
+      SELECT 1
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (5ms) [Parameters=[], CommandType='Text', CommandTimeout='30']
+      CREATE TABLE IF NOT EXISTS "__EFMigrationsHistory" (
+          "MigrationId" character varying(150) NOT NULL,
+          "ProductVersion" character varying(32) NOT NULL,
+          CONSTRAINT "PK___EFMigrationsHistory" PRIMARY KEY ("MigrationId")
+      );
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (1ms) [Parameters=[], CommandType='Text', CommandTimeout='30']
+      LOCK TABLE "__EFMigrationsHistory" IN ACCESS EXCLUSIVE MODE
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (3ms) [Parameters=[], CommandType='Text', CommandTimeout='30']
+      SELECT "MigrationId", "ProductVersion"
+      FROM "__EFMigrationsHistory"
+      ORDER BY "MigrationId";
+info: Microsoft.EntityFrameworkCore.Migrations[20405]
+      No migrations were applied. The database is already up to date.
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (7ms) [Parameters=[], CommandType='Text', CommandTimeout='30']
+      SELECT EXISTS (
+          SELECT 1
+          FROM "Contribuintes" AS c)
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (16ms) [Parameters=[@nuit='?'], CommandType='Text', CommandTimeout='30']
+      SELECT c."Id", c."CriadoEm", c."DataNascimento", c."Nome", c."Nuit", c."Perfil", c."SalarioMensal", c."Situacao"
+      FROM "Contribuintes" AS c
+      WHERE c."Nuit" = @nuit
+      LIMIT 1
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (2ms) [Parameters=[@nuit='?'], CommandType='Text', CommandTimeout='30']
+      SELECT c."Id", c."CriadoEm", c."DataNascimento", c."Nome", c."Nuit", c."Perfil", c."SalarioMensal", c."Situacao"
+      FROM "Contribuintes" AS c
+      WHERE c."Nuit" = @nuit
+      LIMIT 1
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (2ms) [Parameters=[@nuit='?'], CommandType='Text', CommandTimeout='30']
+      SELECT c."Id", c."CriadoEm", c."DataNascimento", c."Nome", c."Nuit", c."Perfil", c."SalarioMensal", c."Situacao"
+      FROM "Contribuintes" AS c
+      WHERE c."Nuit" = @nuit
+      LIMIT 1
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (1ms) [Parameters=[@nuit='?'], CommandType='Text', CommandTimeout='30']
+      SELECT c."Id", c."CriadoEm", c."DataNascimento", c."Nome", c."Nuit", c."Perfil", c."SalarioMensal", c."Situacao"
+      FROM "Contribuintes" AS c
+      WHERE c."Nuit" = @nuit
+      LIMIT 1
+info: Microsoft.Hosting.Lifetime[14]
+      Now listening on: http://0.0.0.0:5001
+info: Microsoft.Hosting.Lifetime[0]
+      Application started. Press Ctrl+C to shut down.
+info: Microsoft.Hosting.Lifetime[0]
+      Hosting environment: Development
+info: Microsoft.Hosting.Lifetime[0]
+      Content root path: C:\fiap\projeto\api\src\Contribuintes.Api
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (3ms) [Parameters=[@nuit='?'], CommandType='Text', CommandTimeout='30']
+      SELECT c."Id", c."CriadoEm", c."DataNascimento", c."Nome", c."Nuit", c."Perfil", c."SalarioMensal", c."Situacao"
+      FROM "Contribuintes" AS c
+      WHERE c."Nuit" = @nuit AND c."Perfil" = 'Pensionista'
+      LIMIT 1
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (2ms) [Parameters=[@nuit='?'], CommandType='Text', CommandTimeout='30']
+      SELECT c."Id", c."CriadoEm", c."DataNascimento", c."Nome", c."Nuit", c."Perfil", c."SalarioMensal", c."Situacao"
+      FROM "Contribuintes" AS c
+      WHERE c."Nuit" = @nuit AND c."Perfil" = 'Pensionista'
+      LIMIT 1
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (806ms) [Parameters=[@nuit='?'], CommandType='Text', CommandTimeout='30']
+      SELECT c."Id", c."CriadoEm", c."DataNascimento", c."Nome", c."Nuit", c."Perfil", c."SalarioMensal", c."Situacao"
+      FROM "Contribuintes" AS c
+      WHERE c."Nuit" = @nuit AND c."Perfil" = 'Pensionista'
+      LIMIT 1
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (3ms) [Parameters=[@nuit='?'], CommandType='Text', CommandTimeout='30']
+      SELECT c."Id", c."CriadoEm", c."DataNascimento", c."Nome", c."Nuit", c."Perfil", c."SalarioMensal", c."Situacao"
+      FROM "Contribuintes" AS c
+      WHERE c."Nuit" = @nuit AND c."Perfil" = 'Pensionista'
+      LIMIT 1
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (39ms) [Parameters=[@nuit='?'], CommandType='Text', CommandTimeout='30']
+      SELECT c."Id", c."CriadoEm", c."DataNascimento", c."Nome", c."Nuit", c."Perfil", c."SalarioMensal", c."Situacao"
+      FROM "Contribuintes" AS c
+      WHERE c."Nuit" = @nuit AND c."Perfil" = 'Pensionista'
+      LIMIT 1
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (6ms) [Parameters=[@nuit='?'], CommandType='Text', CommandTimeout='30']
+      SELECT c."Id", c."CriadoEm", c."DataNascimento", c."Nome", c."Nuit", c."Perfil", c."SalarioMensal", c."Situacao"
+      FROM "Contribuintes" AS c
+      WHERE c."Nuit" = @nuit AND c."Perfil" = 'Pensionista'
+      LIMIT 1
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (68ms) [Parameters=[@nuit='?'], CommandType='Text', CommandTimeout='30']
+      SELECT c."Id", c."CriadoEm", c."DataNascimento", c."Nome", c."Nuit", c."Perfil", c."SalarioMensal", c."Situacao"
+      FROM "Contribuintes" AS c
+      WHERE c."Nuit" = @nuit AND c."Perfil" = 'Pensionista'
+      LIMIT 1
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (3ms) [Parameters=[@nuit='?'], CommandType='Text', CommandTimeout='30']
+      SELECT c."Id", c."CriadoEm", c."DataNascimento", c."Nome", c."Nuit", c."Perfil", c."SalarioMensal", c."Situacao"
+      FROM "Contribuintes" AS c
+      WHERE c."Nuit" = @nuit AND c."Perfil" = 'Pensionista'
+      LIMIT 1
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (3ms) [Parameters=[@nuit='?'], CommandType='Text', CommandTimeout='30']
+      SELECT c."Id", c."CriadoEm", c."DataNascimento", c."Nome", c."Nuit", c."Perfil", c."SalarioMensal", c."Situacao"
+      FROM "Contribuintes" AS c
+      WHERE c."Nuit" = @nuit AND c."Perfil" = 'Pensionista'
+      LIMIT 1
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (8ms) [Parameters=[@nuit='?'], CommandType='Text', CommandTimeout='30']
+      SELECT c."Id", c."CriadoEm", c."DataNascimento", c."Nome", c."Nuit", c."Perfil", c."SalarioMensal", c."Situacao"
+      FROM "Contribuintes" AS c
+      WHERE c."Nuit" = @nuit AND c."Perfil" = 'Pensionista'
+      LIMIT 1
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (4ms) [Parameters=[@nuit='?'], CommandType='Text', CommandTimeout='30']
+      SELECT c."Id", c."CriadoEm", c."DataNascimento", c."Nome", c."Nuit", c."Perfil", c."SalarioMensal", c."Situacao"
+      FROM "Contribuintes" AS c
+      WHERE c."Nuit" = @nuit AND c."Perfil" = 'Pensionista'
+      LIMIT 1
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (2ms) [Parameters=[@nuit='?'], CommandType='Text', CommandTimeout='30']
+      SELECT c."Id", c."CriadoEm", c."DataNascimento", c."Nome", c."Nuit", c."Perfil", c."SalarioMensal", c."Situacao"
+      FROM "Contribuintes" AS c
+      WHERE c."Nuit" = @nuit AND c."Perfil" = 'Pensionista'
+      LIMIT 1
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (4ms) [Parameters=[@nuit='?'], CommandType='Text', CommandTimeout='30']
+      SELECT c."Id", c."CriadoEm", c."DataNascimento", c."Nome", c."Nuit", c."Perfil", c."SalarioMensal", c."Situacao"
+      FROM "Contribuintes" AS c
+      WHERE c."Nuit" = @nuit AND c."Perfil" = 'Pensionista'
+      LIMIT 1
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (5ms) [Parameters=[@nuit='?'], CommandType='Text', CommandTimeout='30']
+      SELECT c."Id", c."CriadoEm", c."DataNascimento", c."Nome", c."Nuit", c."Perfil", c."SalarioMensal", c."Situacao"
+      FROM "Contribuintes" AS c
+      WHERE c."Nuit" = @nuit AND c."Perfil" = 'Pensionista'
+      LIMIT 1
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (7ms) [Parameters=[@nuit='?'], CommandType='Text', CommandTimeout='30']
+      SELECT c."Id", c."CriadoEm", c."DataNascimento", c."Nome", c."Nuit", c."Perfil", c."SalarioMensal", c."Situacao"
+      FROM "Contribuintes" AS c
+      WHERE c."Nuit" = @nuit AND c."Perfil" = 'Pensionista'
+      LIMIT 1
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (11ms) [Parameters=[@nuit='?'], CommandType='Text', CommandTimeout='30']
+      SELECT c."Id", c."CriadoEm", c."DataNascimento", c."Nome", c."Nuit", c."Perfil", c."SalarioMensal", c."Situacao"
+      FROM "Contribuintes" AS c
+      WHERE c."Nuit" = @nuit AND c."Perfil" = 'Pensionista'
+      LIMIT 1
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (4ms) [Parameters=[@nuit='?'], CommandType='Text', CommandTimeout='30']
+      SELECT c."Id", c."CriadoEm", c."DataNascimento", c."Nome", c."Nuit", c."Perfil", c."SalarioMensal", c."Situacao"
+      FROM "Contribuintes" AS c
+      WHERE c."Nuit" = @nuit AND c."Perfil" = 'Pensionista'
+      LIMIT 1
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (3ms) [Parameters=[@nuit='?'], CommandType='Text', CommandTimeout='30']
+      SELECT c."Id", c."CriadoEm", c."DataNascimento", c."Nome", c."Nuit", c."Perfil", c."SalarioMensal", c."Situacao"
+      FROM "Contribuintes" AS c
+      WHERE c."Nuit" = @nuit AND c."Perfil" = 'Pensionista'
+      LIMIT 1
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (3ms) [Parameters=[@nuit='?'], CommandType='Text', CommandTimeout='30']
+      SELECT c."Id", c."CriadoEm", c."DataNascimento", c."Nome", c."Nuit", c."Perfil", c."SalarioMensal", c."Situacao"
+      FROM "Contribuintes" AS c
+      WHERE c."Nuit" = @nuit AND c."Perfil" = 'Pensionista'
+      LIMIT 1
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (50ms) [Parameters=[@nuit='?'], CommandType='Text', CommandTimeout='30']
+      SELECT c."Id", c."CriadoEm", c."DataNascimento", c."Nome", c."Nuit", c."Perfil", c."SalarioMensal", c."Situacao"
+      FROM "Contribuintes" AS c
+      WHERE c."Nuit" = @nuit AND c."Perfil" = 'Pensionista'
+      LIMIT 1
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (4ms) [Parameters=[@nuit='?'], CommandType='Text', CommandTimeout='30']
+      SELECT c."Id", c."CriadoEm", c."DataNascimento", c."Nome", c."Nuit", c."Perfil", c."SalarioMensal", c."Situacao"
+      FROM "Contribuintes" AS c
+      WHERE c."Nuit" = @nuit AND c."Perfil" = 'Pensionista'
+      LIMIT 1
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (24ms) [Parameters=[@nuit='?'], CommandType='Text', CommandTimeout='30']
+      SELECT c."Id", c."CriadoEm", c."DataNascimento", c."Nome", c."Nuit", c."Perfil", c."SalarioMensal", c."Situacao"
+      FROM "Contribuintes" AS c
+      WHERE c."Nuit" = @nuit AND c."Perfil" = 'Pensionista'
+      LIMIT 1
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (4ms) [Parameters=[@nuit='?'], CommandType='Text', CommandTimeout='30']
+      SELECT c."Id", c."CriadoEm", c."DataNascimento", c."Nome", c."Nuit", c."Perfil", c."SalarioMensal", c."Situacao"
+      FROM "Contribuintes" AS c
+      WHERE c."Nuit" = @nuit AND c."Perfil" = 'Pensionista'
+      LIMIT 1
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (30ms) [Parameters=[@nuit='?'], CommandType='Text', CommandTimeout='30']
+      SELECT c."Id", c."CriadoEm", c."DataNascimento", c."Nome", c."Nuit", c."Perfil", c."SalarioMensal", c."Situacao"
+      FROM "Contribuintes" AS c
+      WHERE c."Nuit" = @nuit AND c."Perfil" = 'Pensionista'
+      LIMIT 1

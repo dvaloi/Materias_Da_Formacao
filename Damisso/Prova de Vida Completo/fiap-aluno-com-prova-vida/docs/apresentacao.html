@@ -1,0 +1,897 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>INSS Moçambique — Modernização Full-Stack | FIAP 2026</title>
+  <style>
+    /* Tema claro + cores da bandeira de Moçambique — projecção em quadro branco */
+    :root {
+      --green: #006233;
+      --green-dark: #004d28;
+      --green-soft: #e6f4ec;
+      --gold: #c9a227;
+      --gold-soft: #fff8e1;
+      --red: #ce1126;
+      --red-soft: #fde8ea;
+      --black: #111111;
+      --ok: #006233;
+      --ok-soft: #e6f4ec;
+      --bg: #ffffff;
+      --surface: #f4f6f5;
+      --border: #94a3b8;
+      --text: #000000;
+      --muted: #1a1a1a;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: 'Segoe UI', system-ui, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      overflow: hidden;
+      height: 100vh;
+      font-weight: 600;
+    }
+
+    /* Faixa da bandeira */
+    .flag-bar {
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      height: 10px;
+      background: linear-gradient(90deg,
+        #006233 0%, #006233 25%,
+        #111111 25%, #111111 50%,
+        #fcd116 50%, #fcd116 75%,
+        #ce1126 75%, #ce1126 100%);
+      z-index: 200;
+    }
+
+    .deck { height: 100vh; position: relative; }
+
+    .slide {
+      display: none;
+      height: 100vh;
+      padding: 2.25rem 3rem 5.75rem;
+      flex-direction: column;
+      justify-content: flex-start;
+      animation: fadeIn 0.3s ease;
+    }
+    .slide.active { display: flex; }
+    .slide.fill { justify-content: center; }
+
+    @keyframes fadeIn {
+      from { opacity: 0; }
+      to { opacity: 1; }
+    }
+
+    h1 {
+      font-size: clamp(2.6rem, 5vw, 3.8rem);
+      line-height: 1.1;
+      margin-bottom: 0.75rem;
+      color: var(--text);
+      font-weight: 900;
+    }
+    h2 {
+      font-size: clamp(2.2rem, 4vw, 3rem);
+      color: var(--green);
+      margin-bottom: 1rem;
+      border-bottom: 5px solid var(--gold);
+      padding-bottom: 0.45rem;
+      font-weight: 900;
+      flex-shrink: 0;
+    }
+    h3 {
+      font-size: clamp(1.45rem, 2.2vw, 1.85rem);
+      color: var(--green-dark);
+      margin: 0.6rem 0 0.45rem;
+      font-weight: 800;
+    }
+    p, li {
+      font-size: clamp(1.35rem, 2vw, 1.7rem);
+      line-height: 1.5;
+      color: var(--text);
+      font-weight: 700;
+    }
+    ul { margin-left: 1.75rem; margin-top: 0.4rem; }
+    li { margin-bottom: 0.65rem; }
+    strong { color: var(--text); font-weight: 900; }
+    .highlight {
+      color: var(--red);
+      font-size: clamp(1.5rem, 2.4vw, 1.95rem);
+      font-weight: 800;
+      margin-bottom: 0.85rem;
+    }
+    .badge {
+      display: inline-block;
+      background: var(--green);
+      color: #fff;
+      padding: 0.4rem 1rem;
+      border-radius: 6px;
+      font-size: 1.15rem;
+      font-weight: 800;
+      margin: 0.3rem;
+    }
+    .badge.gold { background: var(--gold); color: #111; }
+    .badge.red { background: var(--red); }
+
+    .content { flex: 1; display: flex; flex-direction: column; min-height: 0; gap: 0.75rem; }
+
+    .grid-2 {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1.5rem;
+      margin-top: 0.25rem;
+      flex: 1;
+      align-items: stretch;
+    }
+    .card {
+      background: var(--surface);
+      padding: 1.5rem 1.75rem;
+      border-radius: 14px;
+      border: 3px solid var(--border);
+      border-left: 10px solid var(--green);
+      display: flex;
+      flex-direction: column;
+    }
+    .card.bad {
+      border-left-color: var(--red);
+      background: var(--red-soft);
+    }
+    .card.good {
+      border-left-color: var(--ok);
+      background: var(--ok-soft);
+    }
+    .card h3 { margin-top: 0; font-size: clamp(1.5rem, 2.2vw, 1.9rem); }
+    .card li {
+      font-size: clamp(1.25rem, 1.9vw, 1.55rem);
+      font-weight: 700;
+      color: #000;
+    }
+
+    .code-block {
+      background: #fffef8;
+      border: 3px solid var(--gold);
+      border-radius: 12px;
+      padding: 1.15rem 1.4rem;
+      font-family: 'Consolas', 'Courier New', monospace;
+      font-size: clamp(1.45rem, 2.2vw, 1.95rem);
+      line-height: 1.5;
+      margin: 0.5rem 0;
+      color: #000;
+      white-space: pre-wrap;
+      word-break: break-word;
+      font-weight: 700;
+      flex-shrink: 0;
+      overflow: visible;
+      max-height: none;
+    }
+    .code-block .comment { color: #444; font-weight: 700; }
+    .code-block .keyword { color: #9f1239; font-weight: 900; }
+    .code-block .type { color: #1d4ed8; font-weight: 900; }
+
+    .architecture {
+      display: flex;
+      gap: 1rem;
+      align-items: center;
+      justify-content: center;
+      flex-wrap: wrap;
+      margin: 0.75rem 0;
+    }
+    .arch-box {
+      background: var(--green-soft);
+      border: 4px solid var(--green);
+      padding: 1.15rem 1.5rem;
+      border-radius: 14px;
+      text-align: center;
+      min-width: 190px;
+      font-size: clamp(1.2rem, 1.7vw, 1.45rem);
+      font-weight: 800;
+      color: #000;
+    }
+    .arch-box small {
+      display: block;
+      font-weight: 700;
+      color: #222;
+      margin-top: 0.3rem;
+      font-size: 0.9em;
+    }
+    .arch-arrow {
+      font-size: 2.5rem;
+      color: var(--red);
+      font-weight: 900;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 0.4rem 0;
+      font-size: clamp(1.3rem, 1.9vw, 1.6rem);
+      font-weight: 700;
+    }
+    th, td {
+      padding: 0.85rem 1rem;
+      text-align: left;
+      border: 2px solid var(--border);
+    }
+    th {
+      background: var(--green);
+      color: #fff;
+      font-weight: 900;
+      font-size: 1.05em;
+    }
+    td { background: #fff; color: #000; font-weight: 700; }
+    tr:nth-child(even) td { background: var(--gold-soft); }
+
+    /* Tabelas longas (roteiro) — cabem na tela sem cortar */
+    table.compact {
+      font-size: clamp(1.2rem, 1.7vw, 1.45rem);
+    }
+    table.compact th,
+    table.compact td {
+      padding: 0.45rem 0.75rem;
+    }
+    .slide.dense {
+      padding-top: 1.75rem;
+      padding-bottom: 5.25rem;
+    }
+    .slide.dense h2 {
+      margin-bottom: 0.65rem;
+      font-size: clamp(1.85rem, 3.2vw, 2.4rem);
+    }
+
+    .nav-bar {
+      position: fixed;
+      bottom: 0; left: 0; right: 0;
+      background: #fff;
+      padding: 0.85rem 2rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-top: 4px solid var(--green);
+      z-index: 100;
+      box-shadow: 0 -3px 14px rgba(0,0,0,.08);
+    }
+    .nav-bar button {
+      background: var(--green);
+      color: #fff;
+      border: none;
+      padding: 0.75rem 1.6rem;
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 1.2rem;
+      font-weight: 800;
+      min-width: 150px;
+    }
+    .nav-bar button:hover { background: var(--green-dark); }
+    .nav-bar button:disabled { opacity: 0.35; cursor: not-allowed; }
+    .slide-counter {
+      color: #000;
+      font-size: 1.25rem;
+      font-weight: 900;
+    }
+    .progress {
+      position: fixed;
+      top: 10px; left: 0;
+      height: 6px;
+      background: var(--red);
+      transition: width 0.3s;
+      z-index: 100;
+    }
+
+    .title-slide { text-align: center; justify-content: center; }
+    .title-slide h1 { font-size: clamp(2.8rem, 5.2vw, 4.2rem); color: var(--green); }
+    .title-slide .subtitle {
+      font-size: clamp(1.5rem, 2.6vw, 2rem);
+      color: #111;
+      margin-bottom: 1.25rem;
+      font-weight: 700;
+    }
+    .flags { font-size: 4rem; margin-bottom: 0.75rem; }
+    .meta { font-size: 1.45rem; color: #111; margin-top: 1.25rem; font-weight: 700; }
+
+    .solid-grid {
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      gap: 0.85rem;
+      margin: 0.5rem 0;
+    }
+    .solid-item {
+      background: var(--green-soft);
+      border: 3px solid var(--green);
+      padding: 1.15rem 0.65rem;
+      border-radius: 12px;
+      text-align: center;
+    }
+    .solid-item .letter {
+      font-size: 3rem;
+      font-weight: 900;
+      color: var(--green);
+      line-height: 1;
+    }
+    .solid-item strong {
+      display: block;
+      margin: 0.45rem 0 0.3rem;
+      font-size: clamp(1.15rem, 1.5vw, 1.35rem);
+      font-weight: 900;
+    }
+    .solid-item p {
+      font-size: clamp(1.1rem, 1.4vw, 1.3rem);
+      color: #111;
+      line-height: 1.3;
+      font-weight: 700;
+    }
+
+    .two-col-stack {
+      display: grid;
+      grid-template-columns: 1.1fr 1fr;
+      gap: 1.25rem;
+      flex: 1;
+      align-items: stretch;
+    }
+
+    .callout {
+      background: var(--gold-soft);
+      border: 4px solid var(--gold);
+      border-radius: 12px;
+      padding: 1.15rem 1.4rem;
+      margin-top: 0.5rem;
+      font-size: clamp(1.35rem, 2vw, 1.7rem);
+      line-height: 1.4;
+      font-weight: 800;
+      color: #111;
+    }
+    .callout strong { color: #5c4500; font-weight: 900; }
+
+    .moz-chip {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+      background: var(--green-soft);
+      border: 2px solid var(--green);
+      padding: 0.35rem 0.85rem;
+      border-radius: 999px;
+      font-weight: 800;
+      font-size: 1.1rem;
+      margin: 0.25rem;
+    }
+
+    @media (max-width: 900px) {
+      .slide { padding: 1.5rem 1.1rem 5.25rem; }
+      .grid-2, .solid-grid, .two-col-stack { grid-template-columns: 1fr; }
+      .solid-grid { grid-template-columns: 1fr 1fr; }
+    }
+
+    .flow {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: stretch;
+      justify-content: center;
+      gap: 0.65rem 0.55rem;
+      margin: 0.9rem auto;
+      max-width: 62rem;
+    }
+    .flow-col {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 0.45rem;
+      flex: 1 1 12rem;
+      min-width: 11rem;
+    }
+    .flow-box {
+      background: #fff;
+      border: 3px solid var(--green);
+      border-radius: 12px;
+      padding: 1rem 1.25rem;
+      text-align: center;
+      font-weight: 800;
+      font-size: clamp(1.4rem, 2.2vw, 1.85rem);
+      line-height: 1.3;
+      width: 100%;
+      box-shadow: 0 2px 0 rgba(0,98,51,.08);
+      color: #000;
+    }
+    .flow-box small {
+      display: block;
+      font-weight: 700;
+      font-size: clamp(1.15rem, 1.7vw, 1.4rem);
+      color: #222;
+      margin-top: 0.3rem;
+    }
+    .flow-box.portal { background: #e6f4ec; border-color: var(--green); }
+    .flow-box.api { background: #fff8e1; border-color: var(--gold); border-width: 3px; }
+    .flow-box.db {
+      background: #eef1f0;
+      border: 3px solid #333;
+      border-radius: 14px;
+      font-size: clamp(1.3rem, 2vw, 1.7rem);
+    }
+    .flow-box.domain {
+      background: #e6f4ec;
+      border-width: 5px;
+      font-size: clamp(1.55rem, 2.5vw, 2.05rem);
+    }
+    .flow-box.thin {
+      background: #f8faf9;
+      border: 3px dashed var(--green);
+    }
+    .flow-arrow {
+      align-self: center;
+      color: var(--green);
+      font-weight: 900;
+      font-size: clamp(1.75rem, 2.5vw, 2.25rem);
+      line-height: 1;
+      padding: 0.15rem 0.25rem;
+    }
+    .flow-arrow.down { transform: rotate(90deg); }
+    .flow-label {
+      font-size: clamp(1rem, 1.4vw, 1.2rem);
+      font-weight: 800;
+      color: #222;
+      text-align: center;
+    }
+    .flow-stack {
+      display: flex;
+      flex-direction: column;
+      align-items: stretch;
+      gap: 0.45rem;
+      max-width: 40rem;
+      width: 100%;
+      margin: 0.85rem auto;
+      flex: 1;
+      justify-content: center;
+    }
+    .flow-stack .flow-arrow { align-self: center; transform: none; }
+  </style>
+</head>
+<body>
+  <div class="flag-bar" aria-hidden="true"></div>
+  <div class="progress" id="progress"></div>
+
+  <div class="deck" id="deck">
+
+    <!-- 1 -->
+    <section class="slide active title-slide fill">
+      <div class="flags">🇲🇿</div>
+      <h1>Modernização do Sistema INSS</h1>
+      <p class="subtitle">Instituto Nacional de Segurança Social — República de Moçambique</p>
+      <p class="subtitle" style="font-size:1.45rem; margin-top:-0.5rem;">De .NET MVC Legado para .NET Core + Microsserviços</p>
+      <p>
+        <span class="badge">FIAP</span>
+        <span class="badge gold">Maputo</span>
+        <span class="badge red">G1 Full-Stack</span>
+      </p>
+      <p>
+        <span class="moz-chip">NUIT</span>
+        <span class="moz-chip">Metical (MZN)</span>
+        <span class="moz-chip">Contribuintes</span>
+      </p>
+      <p class="meta">Prof. Fernando Lopes Cardoso Ferreira<br/>25–26 Agosto 2026</p>
+    </section>
+
+    <!-- 2 -->
+    <section class="slide">
+      <h2>Contexto — Por que modernizar?</h2>
+      <div class="content">
+        <p class="highlight">O INSS Moçambique gerencia contribuintes e benefícios em Metical (MZN).</p>
+        <p>O sistema antigo é um <strong>legado MVC</strong>: difícil de testar, escalar e evoluir. Nestes dois dias vamos entender e praticar a versão <strong>moderna</strong>.</p>
+        <div class="grid-2">
+          <div class="card bad">
+            <h3>Antes — Legado</h3>
+            <ul>
+              <li>Monolito — tudo num só projeto</li>
+              <li>Controller com regra de negócio</li>
+              <li>Tela acoplada ao servidor</li>
+              <li>Testar e publicar: “tudo ou nada”</li>
+            </ul>
+          </div>
+          <div class="card good">
+            <h3>Agora — Moderno</h3>
+            <ul>
+              <li>Microsserviços (APIs independentes)</li>
+              <li>Portal React separado</li>
+              <li>Camadas DDD testáveis</li>
+              <li>CI/CD e deploys por serviço</li>
+            </ul>
+          </div>
+        </div>
+        <div class="callout">
+          <strong>Lembrete:</strong> o comparativo legado fica nestes slides. No Visual Studio vocês abrem só o sistema moderno.
+        </div>
+      </div>
+    </section>
+
+    <!-- 2b -->
+    <section class="slide">
+      <h2>Legado × Moderno — no código</h2>
+      <div class="content">
+        <p>A diferença não é só “pasta nova”. É <strong>onde mora a regra de negócio</strong>.</p>
+        <div class="grid-2">
+          <div>
+            <p class="highlight" style="color:var(--red)">Legado — regra no controller</p>
+            <div class="code-block"><span class="comment">// Tudo misturado na tela/servidor</span>
+public IActionResult Index() {
+  foreach (var c in lista)
+    c.Contribuicao = c.Salario * 0.03m;
+  return View(lista);
+}</div>
+          </div>
+          <div>
+            <p class="highlight" style="color:var(--green)">Moderno — regra no Domain</p>
+            <div class="code-block"><span class="comment">// Contribuinte.cs — testável e reutilizável</span>
+public decimal CalcularContribuicaoMensal() {
+  return Math.Round(SalarioMensal * 0.03m, 2);
+}
+<span class="comment">// A API só orquestra — não calcula “na mão”</span></div>
+          </div>
+        </div>
+        <div class="callout">
+          <strong>Na prática:</strong> abrimos <code>Contribuinte.cs</code> e o controller fino.
+          Vocês vão ver a mesma ideia no React (validar no form) e no Domain (proteger de verdade).
+        </div>
+      </div>
+    </section>
+
+    <!-- 3 -->
+    <section class="slide">
+      <h2>Arquitetura — o mapa do projeto</h2>
+      <div class="content">
+        <p class="highlight">Um portal. Duas APIs. Dois bancos.</p>
+        <div class="flow-stack" style="max-width:42rem" aria-hidden="true">
+          <div class="flow-box portal">Portal React<small>:5173 / Vercel · HTTP + JWT</small></div>
+          <div class="flow-arrow">↓</div>
+          <div class="flow" style="margin:0">
+            <div class="flow-col">
+              <div class="flow-box api">API Contribuintes<small>:5001</small></div>
+              <div class="flow-arrow">↓</div>
+              <div class="flow-box db">Postgres<small>inss_contribuintes</small></div>
+            </div>
+            <div class="flow-col">
+              <div class="flow-box api">API Benefícios<small>:5002</small></div>
+              <div class="flow-arrow">↓</div>
+              <div class="flow-box db">Postgres<small>inss_beneficios</small></div>
+            </div>
+          </div>
+        </div>
+        <p>O React <strong>não</strong> acessa o banco. As APIs <strong>não</strong> se chamam entre si — só o front fala com as duas.</p>
+        <div class="callout">
+          <strong>Frase:</strong> “Um portal, dois departamentos, dois bancos.”
+        </div>
+      </div>
+    </section>
+
+    <!-- 4 -->
+    <section class="slide">
+      <h2>DDD — o negócio no centro</h2>
+      <div class="content">
+        <p class="highlight">DDD = <strong>Domain-Driven Design</strong> (design dirigido pelo domínio).</p>
+        <p>
+          É uma forma de organizar o código em torno do <strong>negócio</strong>, não da tecnologia.
+          No INSS, o domínio é: NUIT, contribuição em MZN, pedidos de benefício.
+        </p>
+        <div class="flow-stack" aria-hidden="true">
+          <div class="flow-box thin">API — HTTP fino</div>
+          <div class="flow-arrow">↓</div>
+          <div class="flow-box api">Application — orquestra</div>
+          <div class="flow-arrow">↓</div>
+          <div class="flow-box domain">Domain — regras do negócio<small>Nuit · Contribuinte · Pedido</small></div>
+          <div class="flow-arrow">↓</div>
+          <div class="flow-box db">Infrastructure — EF Core / Postgres</div>
+        </div>
+        <div class="callout">
+          <strong>Em uma frase:</strong> a regra mora no <strong>Domain</strong>; a API só recebe e responde.
+          Contribuintes ≠ Benefícios = dois bounded contexts (dois bancos).
+        </div>
+      </div>
+    </section>
+
+    <!-- 5 -->
+    <section class="slide">
+      <h2>SOLID — em uma frase cada</h2>
+      <div class="content">
+        <p>Princípios para código que cresce sem virar “spaghetti”.</p>
+        <div class="solid-grid">
+          <div class="solid-item"><div class="letter">S</div><strong>Single Responsibility</strong><p>Uma razão para mudar</p></div>
+          <div class="solid-item"><div class="letter">O</div><strong>Open/Closed</strong><p>Estende sem quebrar o que já funciona</p></div>
+          <div class="solid-item"><div class="letter">L</div><strong>Liskov</strong><p>Subtipos substituíveis</p></div>
+          <div class="solid-item"><div class="letter">I</div><strong>Interface Segregation</strong><p>Interfaces pequenas e específicas</p></div>
+          <div class="solid-item"><div class="letter">D</div><strong>Dependency Inversion</strong><p>Depende de abstração, não do EF Core</p></div>
+        </div>
+        <div class="callout">
+          <strong>No INSS:</strong> Service de contribuinte não autentica; Auth não calcula contribuição.
+          Service depende de <code>IContribuinteRepository</code> — por isso dá para testar com Moq (Dia 2).
+        </div>
+      </div>
+    </section>
+
+    <!-- 6 -->
+    <section class="slide">
+      <h2>Clean Code</h2>
+      <div class="content">
+        <div class="two-col-stack">
+          <div>
+            <h3>Princípios aplicados</h3>
+            <ul>
+              <li>Nomes claros (CriarAsync, ObterPorNuit)</li>
+              <li>Funções pequenas e focadas</li>
+              <li>Validação no Domain (NUIT, salário MZN)</li>
+              <li>Controllers finos — delegam ao Service</li>
+              <li>DomainException com mensagens claras</li>
+            </ul>
+          </div>
+          <div class="code-block"><span class="comment">// ❌ Legado — tudo no Controller</span>
+<span class="keyword">if</span> (nuit.Length != 9) { ViewBag.Erro = "..."; }
+contribuicao = salario * 0.03m;
+
+<span class="comment">// ✅ Moderno — Domain encapsula regras</span>
+<span class="keyword">var</span> nuit = Nuit.Criar(request.Nuit);
+<span class="keyword">var</span> c = Contribuinte.Criar(nuit, ...);
+<span class="keyword">var</span> valor = c.CalcularContribuicaoMensal();</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 7 -->
+    <section class="slide">
+      <h2>Microsserviços — como no INSS real</h2>
+      <div class="content">
+        <p class="highlight">Um portal · dois departamentos · dois bancos</p>
+        <div class="grid-2">
+          <div class="card bad">
+            <h3>Não é assim</h3>
+            <ul>
+              <li>Uma API só para tudo</li>
+              <li>Um banco com tudo misturado</li>
+              <li>API chamando outra API</li>
+            </ul>
+          </div>
+          <div class="card good">
+            <h3>É assim (nosso projeto)</h3>
+            <ul>
+              <li>Contribuintes :5001 + Benefícios :5002</li>
+              <li>Bancos <code>inss_contribuintes</code> e <code>inss_beneficios</code></li>
+              <li>React chama as duas; elas não se ligam</li>
+            </ul>
+          </div>
+        </div>
+        <p style="margin-top:1rem">Pedido de benefício guarda só o <strong>contribuinteId</strong> — referência por ID, sem compartilhar tabela.</p>
+        <div class="callout">
+          <strong>Repitam comigo:</strong> “Um portal, dois departamentos, dois bancos.”
+        </div>
+      </div>
+    </section>
+
+    <!-- 8b — resumo da aplicação + ligação aos 2 dias -->
+    <section class="slide">
+      <h2>O que a aplicação faz</h2>
+      <div class="content">
+        <p class="highlight">Portal INSS Moçambique — cadastro de contribuintes e pedidos de benefício</p>
+        <ul>
+          <li>Operador faz <strong>login</strong> e vê a lista de contribuintes (NUIT, salário em MZN, contribuição 3%)</li>
+          <li>Pode <strong>registrar</strong> contribuinte, abrir <strong>detalhe</strong> e criar <strong>pedido</strong> (reforma, pensão…)</li>
+          <li><strong>1 React</strong> → <strong>2 APIs</strong> → <strong>2 bancos Postgres</strong> (não compartilham tabelas)</li>
+        </ul>
+        <table class="compact" style="margin-top:1rem">
+          <tr><th>Onde roda</th><th>Local (aula)</th><th>Nuvem (demo)</th></tr>
+          <tr><td>Portal</td><td>localhost:5173</td><td>Vercel</td></tr>
+          <tr><td>APIs</td><td>:5001 e :5002</td><td>Render</td></tr>
+          <tr><td>Banco</td><td>Docker Postgres</td><td><strong>Neon</strong> (2 databases)</td></tr>
+        </table>
+        <p style="margin-top:1rem"><strong>Nos dois dias vamos cobrir isso assim:</strong></p>
+        <table class="compact">
+          <tr><th>Dia</th><th>Módulo</th><th>Na prática, na app</th></tr>
+          <tr><td>1 manhã</td><td><strong>M13</strong></td><td>Forms, rotas, lista, loading/erro, falar com a API</td></tr>
+          <tr><td>1 tarde</td><td><strong>M14</strong></td><td>Login, JWT, sessão, rotas protegidas</td></tr>
+          <tr><td>2 manhã</td><td><strong>M15</strong></td><td>Testes (NUIT, 3%, API, fluxo no portal)</td></tr>
+          <tr><td>2 tarde</td><td><strong>M16</strong></td><td>CI no GitHub — build e teste a cada push</td></tr>
+        </table>
+      </div>
+    </section>
+
+    <!-- 7b — ponte para a prática -->
+    <section class="slide">
+      <h2>Como vamos estudar</h2>
+      <div class="content">
+        <p class="highlight">Teoria nestes slides → conceitos M13–M16 → mão no código</p>
+        <ol style="font-size:1.25rem;line-height:1.7;margin-top:1rem">
+          <li><strong>Agora:</strong> visão do projeto (o que acabamos de ver)</li>
+          <li><strong>Em seguida:</strong> slides de conceito por módulo (<code>aulas-m13-m16.html</code>)</li>
+          <li><strong>Depois:</strong> portal React (front) e APIs .NET (back)</li>
+        </ol>
+        <div class="callout">
+          <strong>Ordem da prática:</strong> primeiro o front (forms, rotas, login), depois aprofundamos o Domain no back — a regra que o form já mostrou.
+        </div>
+      </div>
+    </section>
+
+    <!-- 8 -->
+    <section class="slide">
+      <h2>Dia 1 — Manhã · M13</h2>
+      <div class="content">
+        <p class="highlight">Formulários, rotas e falar com a API</p>
+        <p>Vocês vão ver na tela o que o React faz bem: capturar dado, validar, navegar e mostrar loading/erro.</p>
+        <ul>
+          <li>Formulário controlado (<code>useState</code>) + validação do NUIT</li>
+          <li>React Router — páginas e <code>/contribuintes/:id</code></li>
+          <li>Estados: loading, erro, vazio, sucesso</li>
+          <li><code>api.js</code> — fetch para :5001 e :5002</li>
+        </ul>
+        <div class="callout">
+          <strong>Exercício:</strong> registrar um contribuinte → listar → abrir detalhe → criar pedido em MZN.
+        </div>
+      </div>
+    </section>
+
+    <!-- 9 -->
+    <section class="slide">
+      <h2>Dia 1 — Tarde · M14</h2>
+      <div class="content">
+        <p class="highlight">Quem está logado? O que a tela pode mostrar?</p>
+        <ul>
+          <li><strong>Context API</strong> — sessão global (user + token)</li>
+          <li><strong>JWT</strong> — login → token → header <code>Authorization</code></li>
+          <li><strong>Rotas protegidas</strong> — sem login, volta para <code>/login</code></li>
+          <li><strong>401</strong> — limpa sessão e pede login de novo</li>
+          <li>UI responsiva + base de acessibilidade</li>
+        </ul>
+        <div class="code-block"><span class="comment">// Credenciais de demo</span>
+admin / 123</div>
+      </div>
+    </section>
+
+    <!-- 10 -->
+    <section class="slide">
+      <h2>Dia 2 — Manhã · M15</h2>
+      <div class="content">
+        <p class="highlight">Confiança: o código prova que a regra funciona</p>
+        <table>
+          <tr><th>Tipo</th><th>Ferramenta</th><th>Exemplo</th></tr>
+          <tr><td>Unitário</td><td>xUnit + Moq</td><td>NUIT, contribuição 3%</td></tr>
+          <tr><td>Integração</td><td>WebApplicationFactory</td><td>API HTTP de ponta a ponta</td></tr>
+          <tr><td>E2E</td><td>Playwright</td><td>Login + lista no portal</td></tr>
+        </table>
+        <p style="margin-top:1rem"><strong>AAA:</strong> Arrange (preparar) → Act (executar) → Assert (verificar)</p>
+        <div class="code-block">dotnet test</div>
+      </div>
+    </section>
+
+    <!-- 11 -->
+    <section class="slide">
+      <h2>Dia 2 — Tarde · M16</h2>
+      <div class="content">
+        <p class="highlight">A cada push, a máquina confere por nós</p>
+        <ul>
+          <li><strong>GitHub Actions</strong> — build + test automático</li>
+          <li><strong>Quality gate</strong> — falhou o teste, o pipeline para</li>
+          <li>Artefatos — resultados e build do front</li>
+        </ul>
+        <div class="code-block"><span class="comment">.github/workflows/ci.yml</span>
+push → restore → build → test → artifacts</div>
+        <div class="callout">
+          <strong>Depois do curso:</strong> Docker, API Gateway e migração gradual do INSS real (Strangler Fig).
+        </div>
+      </div>
+    </section>
+
+    <!-- 12 -->
+    <section class="slide dense">
+      <h2>Roteiro Prático — 2 Dias</h2>
+      <div class="content">
+        <table class="compact">
+          <tr><th>Horário</th><th>Atividade</th><th>Duração</th></tr>
+          <tr><td>D1 09:00</td><td>Slides: contexto + arquitetura + DDD/SOLID/MS</td><td>45 min</td></tr>
+          <tr><td>D1 09:45</td><td>Visão rápida das pastas no VS (mapa)</td><td>15–20 min</td></tr>
+          <tr><td>D1 10:15</td><td>M13 — conceitos + hands-on React</td><td>~2h</td></tr>
+          <tr><td>D1 14:00</td><td>M14 — JWT, Context, rotas protegidas</td><td>2h</td></tr>
+          <tr><td>D1 16:00</td><td>Pedidos (2º microsserviço) + Domain no back</td><td>2h</td></tr>
+          <tr><td>D2 09:00</td><td>M15 — testes AAA + Moq</td><td>2h</td></tr>
+          <tr><td>D2 11:00</td><td>Integração + Playwright</td><td>2h</td></tr>
+          <tr><td>D2 14:00</td><td>M16 — GitHub Actions + demo</td><td>2h</td></tr>
+          <tr><td>D2 16:30</td><td>Fechamento / migração INSS real</td><td>1h30</td></tr>
+        </table>
+      </div>
+    </section>
+
+    <!-- 13 -->
+    <section class="slide">
+      <h2>Como Executar o Projeto</h2>
+      <div class="content">
+        <div class="callout">
+          <strong>Banco:</strong> PostgreSQL no Docker + EF Migrations &nbsp;|&nbsp;
+          <strong>Consultas:</strong> docs/consultas-sql.md (SELECT como no SQL Server)
+        </div>
+        <div class="code-block"><span class="comment"># projeto/api — Visual Studio + Docker</span>
+docker compose up -d
+dotnet run --project src/Contribuintes.Api
+dotnet run --project src/Beneficios.Api
+
+<span class="comment"># projeto/app — VS Code</span>
+npm install && npm run dev
+
+<span class="comment"># Testes (na pasta api)</span>
+dotnet test</div>
+        <div class="callout">
+          <strong>Portal:</strong> http://localhost:5173 &nbsp;|&nbsp;
+          <strong>Login:</strong> admin / 123 &nbsp;|&nbsp;
+          <strong>Dados:</strong> contribuintes fictícios (seed demo)
+        </div>
+      </div>
+    </section>
+
+    <!-- 14 -->
+    <section class="slide title-slide fill">
+      <div class="flags">🇲🇿</div>
+      <h1>Obrigado!</h1>
+      <p class="subtitle">INSS Moçambique — Modernização Full-Stack</p>
+      <p style="font-size: 1.55rem; font-weight: 900; color: var(--green);">
+        SOLID · DDD · Clean Code · Testes · CI/CD
+      </p>
+      <p>
+        <span class="moz-chip">Ana Mabunda</span>
+        <span class="moz-chip">Graça Tembe</span>
+        <span class="moz-chip">Tomás Matola</span>
+      </p>
+      <p class="meta">
+        Prof. Fernando Lopes Cardoso Ferreira<br/>
+        FIAP × INSS Moçambique — G1 Full-Stack 2026
+      </p>
+    </section>
+
+  </div>
+
+  <nav class="nav-bar">
+    <button id="prev" disabled>← Anterior</button>
+    <span class="slide-counter" id="counter">1 / 14</span>
+    <button id="next">Próximo →</button>
+  </nav>
+
+  <script>
+    const slides = document.querySelectorAll('.slide');
+    const prev = document.getElementById('prev');
+    const next = document.getElementById('next');
+    const counter = document.getElementById('counter');
+    const progress = document.getElementById('progress');
+    let current = 0;
+
+    function showSlide(n) {
+      slides[current].classList.remove('active');
+      current = Math.max(0, Math.min(n, slides.length - 1));
+      slides[current].classList.add('active');
+      counter.textContent = `${current + 1} / ${slides.length}`;
+      progress.style.width = `${((current + 1) / slides.length) * 100}%`;
+      prev.disabled = current === 0;
+      next.disabled = current === slides.length - 1;
+    }
+
+    prev.addEventListener('click', () => showSlide(current - 1));
+    next.addEventListener('click', () => showSlide(current + 1));
+
+    // Trocador de slides / controle remoto costuma enviar PageDown/PageUp (não só setas).
+    // Clique na área do slide também avança (alguns controles enviam clique).
+    function onNavKey(e) {
+      const nextKeys = ['ArrowRight', 'ArrowDown', 'PageDown', ' ', 'Enter', 'n', 'N'];
+      const prevKeys = ['ArrowLeft', 'ArrowUp', 'PageUp', 'Backspace', 'p', 'P'];
+      if (nextKeys.includes(e.key)) {
+        e.preventDefault();
+        showSlide(current + 1);
+      } else if (prevKeys.includes(e.key)) {
+        e.preventDefault();
+        showSlide(current - 1);
+      }
+    }
+    document.addEventListener('keydown', onNavKey);
+
+    document.querySelector('.deck')?.addEventListener('click', (e) => {
+      if (e.target.closest('a, button, input, textarea, select, nav')) return;
+      showSlide(current + 1);
+    });
+
+    window.focus();
+    document.body.tabIndex = -1;
+    document.body.focus();
+    showSlide(0);
+  </script>
+</body>
+</html>

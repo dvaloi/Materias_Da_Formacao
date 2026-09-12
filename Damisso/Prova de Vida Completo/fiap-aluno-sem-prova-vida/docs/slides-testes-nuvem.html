@@ -1,0 +1,549 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Testes + Nuvem — Slides | FIAP × INSS</title>
+  <style>
+    :root {
+      --green: #006233; --green-dark: #004d28; --green-soft: #e6f4ec;
+      --gold: #c9a227; --gold-soft: #fff8e1; --red: #ce1126; --red-soft: #fde8ea;
+      --blue: #0b3d91; --purple: #7c3aed; --border: #94a3b8;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: 'Segoe UI', system-ui, sans-serif; background: #fff;
+      color: #000; overflow: hidden; height: 100vh; font-weight: 700;
+    }
+    .flag-bar {
+      position: fixed; top: 0; left: 0; right: 0; height: 10px; z-index: 200;
+      background: linear-gradient(90deg,#006233 0 25%,#111 25% 50%,#fcd116 50% 75%,#ce1126 75% 100%);
+    }
+    .progress {
+      position: fixed; top: 10px; left: 0; height: 6px;
+      background: var(--red); z-index: 100; transition: width .25s;
+    }
+    .slide {
+      display: none; height: 100vh; padding: 1.7rem 2.5rem 5.2rem;
+      flex-direction: column; animation: fadeIn .2s ease; overflow: hidden;
+    }
+    .slide.active { display: flex; }
+    .slide.fill { justify-content: center; text-align: center; }
+    @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+    h1 {
+      font-size: clamp(2rem, 4vw, 3rem); font-weight: 900; color: var(--green);
+      line-height: 1.1; margin-bottom: .6rem;
+    }
+    h2 {
+      font-size: clamp(1.5rem, 2.7vw, 2.15rem); color: var(--green); font-weight: 900;
+      border-bottom: 5px solid var(--gold); padding-bottom: .25rem; margin-bottom: .55rem;
+    }
+    p, li {
+      font-size: clamp(1.1rem, 1.7vw, 1.4rem); line-height: 1.35; font-weight: 700; margin-bottom: .4rem;
+    }
+    ul, ol { padding-left: 1.35rem; }
+    strong { font-weight: 900; }
+    code {
+      font-family: Consolas, monospace; background: #111; color: #e8f5ee;
+      padding: .06rem .3rem; border-radius: 4px; font-size: .88em; font-weight: 800;
+    }
+    .highlight { color: var(--red); font-size: clamp(1.2rem, 1.9vw, 1.6rem); font-weight: 900; margin-bottom: .55rem; }
+    .content { flex: 1; display: flex; flex-direction: column; gap: .45rem; min-height: 0; }
+    .callout {
+      background: var(--gold-soft); border: 3px solid var(--gold); border-left: 10px solid var(--gold);
+      border-radius: 12px; padding: .7rem 1rem; font-size: clamp(1.05rem, 1.5vw, 1.3rem); font-weight: 800;
+    }
+    .callout.green { background: var(--green-soft); border-color: var(--green); border-left-color: var(--green); }
+    .callout.red { background: var(--red-soft); border-color: var(--red); border-left-color: var(--red); }
+    .tag {
+      display: inline-block; background: var(--blue); color: #fff; font-weight: 900;
+      padding: .18rem .55rem; border-radius: 6px; font-size: .95rem;
+    }
+    .tag.cloud { background: var(--purple); }
+    .tag.ok { background: var(--green); }
+    .onde, .digite, .aparece {
+      display: inline-block; font-weight: 900; padding: .12rem .4rem; border-radius: 4px;
+      font-size: clamp(1rem, 1.4vw, 1.2rem); margin-right: .2rem;
+    }
+    .onde { background: var(--blue); color: #fff; }
+    .digite { background: #111; color: #7dffa8; }
+    .aparece { background: #1a3a2a; color: #b8f0c8; }
+    pre.term {
+      background: #0c0c0c; color: #d8d8d8; padding: .65rem .9rem; border-radius: 10px;
+      border: 2px solid #333; font-family: Consolas, monospace;
+      font-size: clamp(.95rem, 1.25vw, 1.15rem); line-height: 1.35; white-space: pre-wrap;
+    }
+    table { width: 100%; border-collapse: collapse; font-size: clamp(1rem, 1.35vw, 1.2rem); }
+    th, td { border: 2px solid var(--border); padding: .35rem .5rem; text-align: left; }
+    th { background: var(--green); color: #fff; }
+    .nav-bar {
+      position: fixed; bottom: 0; left: 0; right: 0; background: #fff;
+      padding: .55rem 1.3rem; display: flex; justify-content: space-between; align-items: center;
+      border-top: 4px solid var(--green); z-index: 100;
+    }
+    .nav-bar button {
+      background: var(--green); color: #fff; border: none; padding: .55rem 1.2rem;
+      border-radius: 8px; cursor: pointer; font-size: 1rem; font-weight: 800; min-width: 120px;
+    }
+    .nav-bar button:disabled { opacity: .35; }
+    .slide-counter { font-size: 1.05rem; font-weight: 900; }
+    .hint {
+      position: fixed; top: .95rem; right: .95rem; font-size: .8rem; font-weight: 800; color: #444;
+      z-index: 150; background: #fff; border: 2px solid var(--border); border-radius: 8px; padding: .22rem .45rem;
+    }
+  </style>
+</head>
+<body>
+  <div class="flag-bar"></div>
+  <div class="progress" id="progress" style="width:2%"></div>
+  <div class="hint">← → · PageUp/Down · F11</div>
+
+  <div class="deck">
+
+    <section class="slide fill active">
+      <h1>Testes + nuvem</h1>
+      <p class="highlight">PC → GitHub → Neon → Render → Vercel</p>
+      <div class="callout green" style="max-width:40rem;margin:1rem auto;text-align:left">
+        Um passo por slide.<br/>
+        Roteiro completo: <code>roteiro-testes-nuvem.html</code>
+      </div>
+    </section>
+
+    <section class="slide">
+      <h2>Minhas URLs</h2>
+      <div class="content">
+        <ol>
+          <li>Abram o roteiro: <code>roteiro-testes-nuvem.html</code></li>
+          <li>No topo: bloco <strong>Minhas URLs</strong></li>
+          <li>Quando GitHub / Render / Vercel gerar um endereço, colem no campo</li>
+          <li>Nos passos seguintes, usem esses campos</li>
+        </ol>
+        <div class="callout green">Salva automaticamente neste browser.</div>
+      </div>
+    </section>
+
+    <section class="slide fill">
+      <h1>Parte A</h1>
+      <p class="highlight">Testes no PC (5–10 min)</p>
+    </section>
+
+    <section class="slide">
+      <h2>A1 — Abrir a pasta api</h2>
+      <div class="content">
+        <div class="tag">A1</div>
+        <p><span class="onde">ONDE</span> PowerShell</p>
+        <p><span class="digite">DIGITAM</span></p>
+        <pre class="term">cd C:\fiap-aluno\projeto\api
+dir</pre>
+        <p><span class="aparece">APARECE</span> pasta <code>tests</code></p>
+        <div class="callout red">Pasta diferente? Usem o caminho real do HD.</div>
+      </div>
+    </section>
+
+    <section class="slide">
+      <h2>A2 — Rodar os testes</h2>
+      <div class="content">
+        <div class="tag">A2</div>
+        <p><span class="digite">DIGITAM</span></p>
+        <pre class="term">dotnet test --filter "FullyQualifiedName~UnitTests"</pre>
+        <p><span class="aparece">APARECE</span> <strong>Passed</strong> · Failed: 0</p>
+        <div class="callout">1ª vez pode demorar. Esperem.</div>
+      </div>
+    </section>
+
+    <section class="slide">
+      <h2>A3 — Abrir arquivo xUnit</h2>
+      <div class="content">
+        <div class="tag">A3</div>
+        <p><span class="digite">ABREM</span> no Bloco de Notas / VS Code:</p>
+        <pre class="term">tests\Contribuintes.UnitTests\Domain\ContribuinteTests.cs</pre>
+        <p><span class="aparece">PROCUREM</span> <code>1350m</code> → Assert do 3%</p>
+      </div>
+    </section>
+
+    <section class="slide">
+      <h2>A4 — Abrir arquivo Moq</h2>
+      <div class="content">
+        <div class="tag">A4</div>
+        <pre class="term">tests\Contribuintes.UnitTests\Application\ContribuinteServiceTests.cs</pre>
+        <p><span class="aparece">PROCUREM</span> <code>Mock</code> e <code>Setup</code></p>
+        <div class="callout green">Moq = banco falso · sem Postgres</div>
+      </div>
+    </section>
+
+    <section class="slide">
+      <h2>A5 — Quebrar e consertar</h2>
+      <div class="content">
+        <div class="tag">A5</div>
+        <ol>
+          <li>Mudem <code>1350m</code> → <code>999m</code> · salvem</li>
+          <li>Rode o filtro <code>ContribuinteTests</code></li>
+          <li>Vejam <strong>Failed</strong></li>
+          <li>Voltem <code>1350m</code> · verde</li>
+        </ol>
+      </div>
+    </section>
+
+    <section class="slide fill">
+      <h1>Parte B</h1>
+      <p class="highlight">Criar contas</p>
+      <div class="callout" style="max-width:36rem;margin:1rem auto">Um serviço por slide · Chrome</div>
+    </section>
+
+    <section class="slide">
+      <h2>B0.1 — GitHub (cadastro)</h2>
+      <div class="content">
+        <div class="tag cloud">CONTA 1/4</div>
+        <p><span class="digite">ABREM</span> <code>https://github.com/signup</code></p>
+        <ol>
+          <li>E-mail · senha · usuário</li>
+          <li>Confirmar e-mail</li>
+        </ol>
+        <p><span class="aparece">APARECE</span> avatar no canto superior direito</p>
+        <div class="callout green">Colem o usuário em Minhas URLs (roteiro)</div>
+        <div class="callout red">Já têm? Só façam login → próximo</div>
+      </div>
+    </section>
+
+    <section class="slide">
+      <h2>B0.2 — Neon (cadastro)</h2>
+      <div class="content">
+        <div class="tag cloud">CONTA 2/4</div>
+        <p><span class="digite">ABREM</span> <code>https://console.neon.tech/signup</code></p>
+        <ol>
+          <li>Cliquem <strong>Continue with GitHub</strong></li>
+          <li>Cliquem <strong>Authorize</strong></li>
+        </ol>
+        <p><span class="aparece">APARECE</span> painel Neon</p>
+      </div>
+    </section>
+
+    <section class="slide">
+      <h2>B0.3 — Render (cadastro)</h2>
+      <div class="content">
+        <div class="tag cloud">CONTA 3/4</div>
+        <p><span class="digite">ABREM</span> <code>https://dashboard.render.com/register</code></p>
+        <ol>
+          <li>Sign up with <strong>GitHub</strong></li>
+          <li>Authorize Render</li>
+          <li>Plano: <strong>Free</strong></li>
+        </ol>
+        <p><span class="aparece">APARECE</span> dashboard Render</p>
+      </div>
+    </section>
+
+    <section class="slide">
+      <h2>B0.4 — Vercel (cadastro)</h2>
+      <div class="content">
+        <div class="tag cloud">CONTA 4/4</div>
+        <p><span class="digite">ABREM</span> <code>https://vercel.com/signup</code></p>
+        <ol>
+          <li><strong>Continue with GitHub</strong></li>
+          <li>Authorize Vercel</li>
+          <li>Plano: <strong>Hobby</strong></li>
+        </ol>
+        <p><span class="aparece">APARECE</span> dashboard Vercel</p>
+        <div class="callout green">4 contas prontas → agora publicar código</div>
+      </div>
+    </section>
+
+    <section class="slide fill">
+      <h1>Parte C</h1>
+      <p class="highlight">Publicar o projeto de vocês</p>
+    </section>
+
+    <section class="slide">
+      <h2>C1 — Criar repo vazio</h2>
+      <div class="content">
+        <div class="tag cloud">C1</div>
+        <p><span class="onde">ONDE</span> GitHub logado</p>
+        <ol>
+          <li>Canto superior direito: <strong>+</strong></li>
+          <li><strong>New repository</strong></li>
+          <li>Name: <code>inss-fiap-</code> + vosso nome</li>
+          <li><strong>NÃO</strong> marcar README</li>
+          <li>Botão verde <strong>Create repository</strong></li>
+        </ol>
+        <div class="callout">Colem usuário + nome do repo em Minhas URLs</div>
+      </div>
+    </section>
+
+    <section class="slide">
+      <h2>C2a — Conferir o Git</h2>
+      <div class="content">
+        <div class="tag cloud">C2a</div>
+        <p><span class="digite">DIGITAM</span> no PowerShell</p>
+        <pre class="term">git --version</pre>
+        <p><span class="aparece">APARECE</span> <code>git version 2....</code></p>
+        <div class="callout red">Não reconhecido? Instalem o Git (<code>git-scm.com</code>) ou usem GitHub Desktop.</div>
+      </div>
+    </section>
+
+    <section class="slide">
+      <h2>C2b — Enviar o código</h2>
+      <div class="content">
+        <div class="tag cloud">C2b</div>
+        <p><span class="digite">DIGITAM</span> um de cada vez (troquem a URL!)</p>
+        <pre class="term">cd C:\fiap-aluno
+git init
+git add .
+git commit -m "INSS FIAP aluno"
+git branch -M main
+git remote add origin https://github.com/SEU_USUARIO/inss-fiap-SEU_NOME.git
+git push -u origin main</pre>
+      </div>
+    </section>
+
+    <section class="slide">
+      <h2>C2c — Conferir no browser</h2>
+      <div class="content">
+        <div class="tag cloud">C2c</div>
+        <p><span class="digite">ATUALIZEM</span> a página do repo no GitHub</p>
+        <p><span class="aparece">APARECE</span> pastas <code>projeto</code> e <code>docs</code></p>
+        <div class="callout green">Se as pastas não aparecerem, o push não concluiu — refaçam o C2b</div>
+      </div>
+    </section>
+
+    <section class="slide">
+      <h2>C3a — Neon: criar projeto</h2>
+      <div class="content">
+        <div class="tag cloud">C3a</div>
+        <p><span class="onde">ONDE</span> console.neon.tech</p>
+        <ol>
+          <li><strong>Create project</strong> · nome <code>inss-aula</code></li>
+          <li>Create</li>
+          <li>Abram <strong>Connect</strong> / Connection string</li>
+          <li>Copiem a string <code>postgresql://...</code> → Bloco de Notas</li>
+        </ol>
+      </div>
+    </section>
+
+    <section class="slide">
+      <h2>C3b — Neon: 2º database</h2>
+      <div class="content">
+        <div class="tag cloud">C3b</div>
+        <p><span class="onde">ONDE</span> SQL Editor no Neon</p>
+        <p><span class="digite">DIGITAM</span> e Run:</p>
+        <pre class="term">CREATE DATABASE inss_beneficios;</pre>
+        <p><span class="aparece">APARECE</span> sucesso</p>
+      </div>
+    </section>
+
+    <section class="slide">
+      <h2>C3c — Montar 2 connection strings</h2>
+      <div class="content">
+        <div class="tag cloud">C3c</div>
+        <p>No Bloco de Notas, 2 linhas (mesmo host/senha · Database diferente):</p>
+        <pre class="term">Host=....neon.tech;Database=neondb;Username=...;Password=...;SSL Mode=Require;Trust Server Certificate=true
+
+Host=....neon.tech;Database=inss_beneficios;Username=...;Password=...;SSL Mode=Require;Trust Server Certificate=true</pre>
+        <div class="callout">String 1 = Contribuintes · String 2 = Benefícios</div>
+      </div>
+    </section>
+
+    <section class="slide">
+      <h2>C4a — Render: New Web Service</h2>
+      <div class="content">
+        <div class="tag cloud">C4a</div>
+        <p><span class="onde">ONDE</span> dashboard.render.com</p>
+        <ol>
+          <li><strong>New +</strong></li>
+          <li><strong>Web Service</strong></li>
+          <li>Conectem GitHub se pedir</li>
+          <li>Cliquem no repo <code>inss-fiap-...</code></li>
+        </ol>
+      </div>
+    </section>
+
+    <section class="slide">
+      <h2>C4b — Render: campos Contribuintes</h2>
+      <div class="content">
+        <div class="tag cloud">C4b</div>
+        <table>
+          <tr><th>Campo</th><th>Valor</th></tr>
+          <tr><td>Name</td><td><code>inss-contrib-</code> + nome</td></tr>
+          <tr><td>Runtime</td><td><strong>Docker</strong></td></tr>
+          <tr><td>Root Directory</td><td><code>projeto/api</code></td></tr>
+          <tr><td>Dockerfile Path</td><td><code>docker/Dockerfile.contribuintes</code></td></tr>
+          <tr><td>Instance</td><td><strong>Free</strong></td></tr>
+        </table>
+      </div>
+    </section>
+
+    <section class="slide">
+      <h2>C4c — Render: variáveis Contribuintes</h2>
+      <div class="content">
+        <div class="tag cloud">C4c</div>
+        <p>Add Environment Variable (5 vezes):</p>
+        <table>
+          <tr><th>Key</th><th>Value</th></tr>
+          <tr><td><code>ASPNETCORE_ENVIRONMENT</code></td><td><code>Production</code></td></tr>
+          <tr><td><code>ConnectionStrings__Default</code></td><td>String 1 Neon</td></tr>
+          <tr><td><code>Jwt__Key</code></td><td><code>InssMozambique2026ChaveSecretaMin32Chars!</code></td></tr>
+          <tr><td><code>Jwt__Issuer</code></td><td><code>InssContribuintes</code></td></tr>
+          <tr><td><code>Jwt__Audience</code></td><td><code>InssPortal</code></td></tr>
+        </table>
+        <p>Depois: <strong>Create Web Service</strong> · esperem Live</p>
+      </div>
+    </section>
+
+    <section class="slide">
+      <h2>C4d — Copiar URL Contribuintes</h2>
+      <div class="content">
+        <div class="tag ok">C4d</div>
+        <p>No topo do serviço Render há:</p>
+        <pre class="term">https://algo.onrender.com</pre>
+        <div class="callout green">Colem em Minhas URLs → URL Contribuintes</div>
+        <div class="callout red">Build falhou? Confiram Root Directory = <code>projeto/api</code></div>
+      </div>
+    </section>
+
+    <section class="slide">
+      <h2>C5 — Render: Benefícios (igual)</h2>
+      <div class="content">
+        <div class="tag cloud">C5</div>
+        <p>New + → Web Service → <strong>mesmo</strong> repo</p>
+        <ul>
+          <li>Name: <code>inss-benef-</code> + nome</li>
+          <li>Dockerfile: <code>docker/Dockerfile.beneficios</code></li>
+          <li>Connection string: <strong>String 2</strong></li>
+          <li>JWT: iguais</li>
+        </ul>
+        <div class="callout green">Colem em Minhas URLs → URL Benefícios</div>
+      </div>
+    </section>
+
+    <section class="slide">
+      <h2>C6a — Vercel: importar projeto</h2>
+      <div class="content">
+        <div class="tag cloud">C6a</div>
+        <p><span class="onde">ONDE</span> vercel.com/dashboard</p>
+        <ol>
+          <li><strong>Add New…</strong> → <strong>Project</strong></li>
+          <li><strong>Import</strong> no repo <code>inss-fiap-...</code></li>
+          <li>Root Directory → Edit → <code>projeto/app</code></li>
+          <li>Framework: <strong>Vite</strong></li>
+        </ol>
+      </div>
+    </section>
+
+    <section class="slide">
+      <h2>C6b — Vercel: variáveis (importante!)</h2>
+      <div class="content">
+        <div class="tag cloud">C6b</div>
+        <p>Environment Variables — colem de <strong>Minhas URLs</strong>:</p>
+        <table>
+          <tr><th>Key</th><th>Value</th></tr>
+          <tr><td><code>VITE_CONTRIBUINTES_API</code></td><td>URL Render Contribuintes</td></tr>
+          <tr><td><code>VITE_BENEFICIOS_API</code></td><td>URL Render Benefícios</td></tr>
+        </table>
+        <div class="callout red">Sem barra / no final · https://…</div>
+      </div>
+    </section>
+
+    <section class="slide">
+      <h2>C6c — Vercel: Deploy</h2>
+      <div class="content">
+        <div class="tag cloud">C6c</div>
+        <ol>
+          <li>Cliquem <strong>Deploy</strong></li>
+          <li>Esperem 1–3 min</li>
+          <li><span class="aparece">APARECE</span> Congratulations</li>
+        </ol>
+        <div class="callout green">Colem em Minhas URLs → URL do portal</div>
+      </div>
+    </section>
+
+    <section class="slide">
+      <h2>C7 — CORS (obrigatório)</h2>
+      <div class="content">
+        <div class="tag cloud">C7</div>
+        <p>Render → serviço Contribuintes → <strong>Environment</strong></p>
+        <pre class="term">Key: Cors__Origins
+Value: https://SEU-PROJETO.vercel.app</pre>
+        <p>Save · <strong>repetir no Benefícios</strong></p>
+        <div class="callout red">Sem CORS = Failed to fetch no portal</div>
+      </div>
+    </section>
+
+    <section class="slide">
+      <h2>C8 — Testar a URL de VOCÊS</h2>
+      <div class="content">
+        <div class="tag ok">C8</div>
+        <ol>
+          <li>Abrir URL Contribuintes Render · esperar (pode 1 min)</li>
+          <li>Abrir URL Benefícios Render · esperar</li>
+          <li>Abrir <strong>sua</strong> URL Vercel</li>
+          <li>Login <code>admin</code> / <code>123</code></li>
+          <li>Ver lista · criar contribuinte · criar pedido</li>
+        </ol>
+        <div class="callout green">Isso = projeto de vocês na nuvem</div>
+      </div>
+    </section>
+
+    <section class="slide">
+      <h2>Se der errado</h2>
+      <div class="content">
+        <table>
+          <tr><th>Problema</th><th>Façam isto</th></tr>
+          <tr><td>Portal sem dados</td><td>Acordar Render · F5 · CORS</td></tr>
+          <tr><td>Mudou VITE_ e nada</td><td>Redeploy na Vercel</td></tr>
+          <tr><td>Build Render falhou</td><td>Root = projeto/api?</td></tr>
+          <tr><td>git push pediu senha</td><td>Token GitHub ou Desktop</td></tr>
+        </table>
+      </div>
+    </section>
+
+    <section class="slide">
+      <h2>Checklist</h2>
+      <div class="content">
+        <ul>
+          <li>[ ] Testes verdes no PC</li>
+          <li>[ ] Repo GitHub com <code>projeto</code></li>
+          <li>[ ] Neon + inss_beneficios</li>
+          <li>[ ] 2 Render Live</li>
+          <li>[ ] Vercel com login ok</li>
+          <li>[ ] CORS nas 2 APIs</li>
+        </ul>
+        <div class="callout green">Roteiro escrito: <code>roteiro-testes-nuvem.html</code></div>
+      </div>
+    </section>
+
+    <section class="slide fill">
+      <h1>Pronto</h1>
+      <p class="highlight">Contas → Git → Neon → Render → Vercel → CORS → testar</p>
+    </section>
+
+  </div>
+
+  <div class="nav-bar">
+    <button type="button" id="prev" disabled>← Anterior</button>
+    <span class="slide-counter"><span id="cur">1</span> / <span id="total">1</span></span>
+    <button type="button" id="next">Próximo →</button>
+  </div>
+
+  <script>
+    const slides = [...document.querySelectorAll('.slide')];
+    const total = slides.length;
+    let i = 0;
+    document.getElementById('total').textContent = total;
+    function show(n) {
+      i = Math.max(0, Math.min(total - 1, n));
+      slides.forEach((s, idx) => s.classList.toggle('active', idx === i));
+      document.getElementById('cur').textContent = i + 1;
+      document.getElementById('prev').disabled = i === 0;
+      document.getElementById('next').disabled = i === total - 1;
+      document.getElementById('progress').style.width = ((i + 1) / total * 100) + '%';
+    }
+    document.getElementById('prev').onclick = () => show(i - 1);
+    document.getElementById('next').onclick = () => show(i + 1);
+    document.addEventListener('keydown', (e) => {
+      if (['ArrowRight', 'PageDown', ' ', 'Enter'].includes(e.key)) { e.preventDefault(); show(i + 1); }
+      if (['ArrowLeft', 'PageUp', 'Backspace'].includes(e.key)) { e.preventDefault(); show(i - 1); }
+      if (e.key === 'Home') show(0);
+      if (e.key === 'End') show(total - 1);
+    });
+    show(0);
+  </script>
+</body>
+</html>
